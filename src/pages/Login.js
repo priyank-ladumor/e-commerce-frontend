@@ -1,5 +1,5 @@
 import React from 'react'
-import {CFormCheck} from "@coreui/react"
+import { CFormCheck } from "@coreui/react"
 import { NavLink } from 'react-router-dom'
 const Login = () => {
     return (
@@ -53,10 +53,30 @@ const Login = () => {
                             </div>
                         </div>
                         <div className="text-sm">
-                        <CFormCheck id="flexCheckDefault" label="Default checkbox" className='float-left'/>
-                            <a href="#" className="float-right font-semibold text-indigo-600 hover:text-indigo-500">
-                                Forgot password?
-                            </a>
+                            {/* <CFormCheck id="flexCheckDefault" label="Default checkbox" className='float-left' /> */}
+                            <div className="flex gap-x-1 justify-between">
+                                <div>
+                                    <div className="flex h-6 items-center">
+                                        <input
+                                            id="passwordshow"
+                                            name="offers"
+                                            type="checkbox"
+                                            className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                                        />
+                                        <div className="text-sm ms-1 leading-6">
+                                            <label htmlFor="passwordshow" className="font-medium text-gray-900">
+                                                Show Password
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div>
+                                    <a href="#" className="float-right font-semibold text-indigo-600 hover:text-indigo-500">
+                                        Forgot password?
+                                    </a>
+                                </div>
+                            </div>
                         </div>
                         <div>
                             <button

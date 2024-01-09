@@ -2,6 +2,7 @@ import React from 'react'
 import { Fragment } from 'react'
 import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { Bars3Icon, ShoppingBagIcon, XMarkIcon } from '@heroicons/react/24/outline'
+import { NavLink } from 'react-router-dom'
 
 const user = {
     name: 'Tom Cook',
@@ -37,11 +38,13 @@ const Navbar = ({ children }) => {
                                 <div className="flex h-16 items-center justify-between">
                                     <div className="flex items-center">
                                         <div className="flex-shrink-0">
-                                            <img
-                                                className="h-8 w-8"
-                                                src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
-                                                alt="Your Company"
-                                            />
+                                            <NavLink to="/">
+                                                <img
+                                                    className="h-8 w-8"
+                                                    src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
+                                                    alt="Your Company"
+                                                />
+                                            </NavLink>
                                         </div>
                                         <div className="hidden md:block">
                                             <div className="ml-10 flex items-baseline space-x-4">
@@ -65,13 +68,14 @@ const Navbar = ({ children }) => {
                                     </div>
                                     <div className="hidden md:block">
                                         <div className="ml-4 flex items-center md:ml-6">
-                                            <button
-                                                type="button"
+                                            <NavLink
+                                                // type="button"
+                                                to="/cart"
                                                 className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
                                             >
                                                 <span className="absolute -inset-1.5" />
                                                 <ShoppingBagIcon className="h-6 w-6" aria-hidden="true" />
-                                            </button>
+                                            </NavLink>
                                             <span
                                                 className="inline-flex items-center rounded-md mb-5 -ml-3 z-10 bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10">
                                                 2
@@ -157,13 +161,14 @@ const Navbar = ({ children }) => {
                                             <div className="text-base font-medium leading-none text-white">{user.name}</div>
                                             <div className="text-sm font-medium leading-none text-gray-400">{user.email}</div>
                                         </div>
-                                        <button
-                                            type="button"
+                                        <NavLink
+                                            // type="button"
+                                            to="/cart"
                                             className="relative ml-auto flex-shrink-0 rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
                                         >
                                             <span className="absolute -inset-1.5" />
                                             <ShoppingBagIcon className="h-6 w-6" aria-hidden="true" />
-                                        </button>
+                                        </NavLink>
                                         <span
                                             className="inline-flex items-center rounded-md mb-5 -ml-3 z-10 bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10">
                                             2

@@ -11,7 +11,6 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Cart from "./pages/Cart";
 import CheckOut from "./pages/CheckOut";
-import ProductDetails from "./components/ProductDetails";
 import ProductDetailsPage from "./pages/ProductDetailsPage";
 
 const router = createBrowserRouter([

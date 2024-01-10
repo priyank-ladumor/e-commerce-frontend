@@ -7,7 +7,7 @@ import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/20/solid'
 import { NavLink } from 'react-router-dom';
 import { MdStarRate } from "react-icons/md"
 import { useDispatch, useSelector } from 'react-redux'
-import { getProducts } from '../store/action/productsAction'
+import { getProducts } from '../../store/action/productsAction'
 
 const sortOptions = [
     { name: 'Best Rating', sort: 'rating', order: 'desc', current: false },

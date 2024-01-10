@@ -40,8 +40,8 @@ const Navbar = ({ children }) => {
                                         <div className="flex-shrink-0">
                                             <NavLink to="/">
                                                 <img
-                                                    className="h-8 w-8"
-                                                    src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
+                                                    className="h-15 w-12"
+                                                    src="https://i.imgur.com/d7MoWpc.png"
                                                     alt="Your Company"
                                                 />
                                             </NavLink>

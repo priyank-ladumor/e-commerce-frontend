@@ -1,6 +1,8 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { StarIcon } from '@heroicons/react/20/solid'
 import { RadioGroup } from '@headlessui/react'
+import { useParams } from 'react-router-dom'
+import { useSelector } from 'react-redux'
 
 const product = {
   name: 'Basic Tee 6-Pack',
@@ -64,6 +66,19 @@ export default function ProductDetails() {
   const [selectedColor, setSelectedColor] = useState(product.colors[0])
   const [selectedSize, setSelectedSize] = useState(product.sizes[2])
 
+  const { products } = useSelector((state) => state.products)
+  const { id } = useParams()
+  const [pdetails, setPdetails] = useState([])
+  useEffect(() => {
+    setPdetails(products)
+  }, [])
+  useEffect(() => {
+    setPdetails(products)
+  }, [products])
+  const singleProduct = pdetails.filter((e, i) =>
+    e.id === +id
+  )
+  console.log(singleProduct);
   return (
     <div className="bg-white">
       <div className="pt-6">
@@ -97,38 +112,39 @@ export default function ProductDetails() {
         </nav>
 
         {/* Image gallery */}
-        <div className="mx-auto mt-6 max-w-2xl sm:px-6 lg:grid lg:max-w-7xl lg:grid-cols-3 lg:gap-x-8 lg:px-8">
-          <div className="aspect-h-4 aspect-w-3 hidden overflow-hidden rounded-lg lg:block">
-            <img
-              src={product.images[0].src}
-              alt={product.images[0].alt}
-              className="h-full w-full object-cover object-center"
-            />
-          </div>
-          <div className="hidden lg:grid lg:grid-cols-1 lg:gap-y-8">
-            <div className="aspect-h-2 aspect-w-3 overflow-hidden rounded-lg">
+        {singleProduct &&
+          <div className="mx-auto mt-6 max-w-2xl sm:px-6 lg:grid lg:max-w-7xl lg:grid-cols-3 lg:gap-x-8 lg:px-8">
+            <div className="aspect-h-4 aspect-w-3 hidden overflow-hidden rounded-lg lg:block">
               <img
-                src={product.images[1].src}
-                alt={product.images[1].alt}
+                src={singleProduct[0]?.images[0]}
+                alt={singleProduct[0]?.images[0]}
                 className="h-full w-full object-cover object-center"
               />
             </div>
-            <div className="aspect-h-2 aspect-w-3 overflow-hidden rounded-lg">
+            <div className="hidden lg:grid lg:grid-cols-1 lg:gap-y-8">
+              <div className="aspect-h-2 aspect-w-3 overflow-hidden rounded-lg">
+                <img
+                  src={singleProduct[0]?.images[1]}
+                  alt={singleProduct[0]?.images[1]}
+                  className="h-full w-full object-cover object-center"
+                />
+              </div>
+              <div className="aspect-h-2 aspect-w-3 overflow-hidden rounded-lg">
+                <img
+                  src={singleProduct[0]?.images[2]}
+                  alt={singleProduct[0]?.images[2]}
+                  className="h-full w-full object-cover object-center"
+                />
+              </div>
+            </div>
+            <div className="aspect-h-5 aspect-w-4 lg:aspect-h-4 lg:aspect-w-3 sm:overflow-hidden sm:rounded-lg">
               <img
-                src={product.images[2].src}
-                alt={product.images[2].alt}
+                src={singleProduct[0]?.images[3]}
+                alt={singleProduct[0]?.images[3]}
                 className="h-full w-full object-cover object-center"
               />
             </div>
-          </div>
-          <div className="aspect-h-5 aspect-w-4 lg:aspect-h-4 lg:aspect-w-3 sm:overflow-hidden sm:rounded-lg">
-            <img
-              src={product.images[3].src}
-              alt={product.images[3].alt}
-              className="h-full w-full object-cover object-center"
-            />
-          </div>
-        </div>
+          </div>}
 
         {/* Product info */}
         <div className="mx-auto max-w-2xl px-4 pb-16 pt-10 sm:px-6 lg:grid lg:max-w-7xl lg:grid-cols-3 lg:grid-rows-[auto,auto,1fr] lg:gap-x-8 lg:px-8 lg:pb-24 lg:pt-16">

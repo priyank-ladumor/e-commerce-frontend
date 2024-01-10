@@ -1,11 +1,17 @@
 import React from 'react'
 import Navbar from '../components/navbar/Navbar'
-import ProductList from '../components/products/ProductList'
+import HomeCarousel from '../components/home/HomeCarousel.js'
+import HomeSectionCarousel from '../components/home/HomeSectionCarousel.js'
+import ProductList from "../components/products/ProductList.js"
 
 const Home = () => {
     return (
-        <div>
+        <div className='bg-white'>
             <Navbar>
+                <HomeCarousel />
+                <div className="space-y-10 py-20 flex flex-col justify-center px-5 lg:px-10">
+                    <HomeSectionCarousel />
+                </div>
                 <ProductList />
             </Navbar>
         </div>
@@ -13,9 +19,3 @@ const Home = () => {
 }
 
 export default Home
-
-{/* <div class="columns-4 gap-6 hover:columns-3">
-                    <img class="w-full aspect-video rounded-xl"  src="https://picsum.photos/id/237/200/300" />
-                    <img class="w-full aspect-square" src="https://picsum.photos/id/237/200/300" />
-                    <img class="w-full aspect-square" src="https://picsum.photos/id/237/200/300" />
-                </div> */}

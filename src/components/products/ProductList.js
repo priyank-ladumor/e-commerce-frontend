@@ -369,38 +369,38 @@ function ProductGrid({ newproduct }) {
                 <div className="mx-auto max-w-2xl px-4 py-16 sm:px-0 sm:py-0 lg:max-w-7xl lg:px-8">
                     <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:gap-x-8">
                         {newproduct && Array.from(newproduct)?.map((product) => (
-                            <NavLink to="/productdetails">
-                                <div key={product.id} className="group relative border-solid border-[1px] p-2 border-gray-300 rounded-md">
-                                    <div className="aspect-h-1 min-h-60 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-60">
-                                        <img
-                                            src={product.thumbnail}
-                                            alt={product.thumbnail}
-                                            className="h-full w-full object-cover object-center lg:h-full lg:w-full"
-                                        />
-                                    </div>
-                                    <div className="mt-4 flex justify-between">
-                                        <div className="inline">
-                                            <h3 className="text-sm text-black-900 font-bold">
-                                                <a href={product.href}>
-                                                    <span aria-hidden="true" className="absolute inset-0" />
-                                                    {product.title}
-                                                </a>
-                                            </h3>
+                        <NavLink to={`/productdetails/${product.id}`}>
+                            <div key={product.id} className="group relative border-solid border-[1px] p-2 border-gray-300 rounded-md">
+                                <div className="aspect-h-1 min-h-60 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-60">
+                                    <img
+                                        src={product.thumbnail}
+                                        alt={product.thumbnail}
+                                        className="h-full w-full object-cover object-center lg:h-full lg:w-full"
+                                    />
+                                </div>
+                                <div className="mt-4 flex justify-between">
+                                    <div className="inline">
+                                        <h3 className="text-sm text-black-900 font-bold">
+                                            <a href={product.href}>
+                                                <span aria-hidden="true" className="absolute inset-0" />
+                                                {product.title}
+                                            </a>
+                                        </h3>
 
-                                            <p className="mt-1 text-sm text-gray-700">
-                                                <MdStarRate className="w-6 h-6  inline" />
-                                                <span className="align-bottom">
-                                                    {product.rating}
-                                                </span>
-                                            </p>
-                                        </div>
-                                        <div className="inline">
-                                            <p className="text-sm font-bold  text-gray-900">${Math.round(product.price * (1 - product.discountPercentage / 100))}</p>
-                                            <p className="text-sm font-medium line-through text-gray-400">${product.price}</p>
-                                        </div>
+                                        <p className="mt-1 text-sm text-gray-700">
+                                            <MdStarRate className="w-6 h-6  inline" />
+                                            <span className="align-bottom">
+                                                {product.rating}
+                                            </span>
+                                        </p>
+                                    </div>
+                                    <div className="inline">
+                                        <p className="text-sm font-bold  text-gray-900">${Math.round(product.price * (1 - product.discountPercentage / 100))}</p>
+                                        <p className="text-sm font-medium line-through text-gray-400">${product.price}</p>
                                     </div>
                                 </div>
-                            </NavLink>
+                            </div>
+                        </NavLink>
                         ))}
                     </div>
                 </div>

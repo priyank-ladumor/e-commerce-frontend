@@ -52,7 +52,6 @@ const filters = [
 function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
 }
-
 const ProductList = () => {
     const [newproduct, setnewproduct] = useState()
     const { products } = useSelector((state) => state.products)
@@ -79,7 +78,6 @@ const ProductList = () => {
     const [filter, setfilter] = useState()
 
     const handleFilter = async (e, option, section) => {
-
         const newFilter = { ...filter }
         if (e.target.checked) {
             if (newFilter[section.id]) {
@@ -96,7 +94,6 @@ const ProductList = () => {
 
         setfilter(newFilter)
         console.log(filter, "filter");
-
     }
     const handleSort = (e, option) => {
         const newFilter = { ...filter, _sort: option.sort, _order: option.order }

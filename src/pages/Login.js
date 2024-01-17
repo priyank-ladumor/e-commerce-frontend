@@ -10,6 +10,7 @@ import TextField from '@mui/material/TextField';
 import FormControl from '@mui/material/FormControl';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import { userLogin } from '../store/action/authAction';
 
 const schema = yup.object({
     email: yup.string().email().required("please enter your email"),
@@ -22,6 +23,7 @@ const schema = yup.object({
 const Login = () => {
     const dispatch = useDispatch()
     const navigate = useNavigate()
+    const { userLoginError } = useSelector((state) => state.auth)
 
     const [showPassword, setShowPassword] = useState(false);
     const {
@@ -38,12 +40,23 @@ const Login = () => {
     const onChangeCaptcha = () => {
         setIsVerify(!isVerify)
     }
-    console.log(isVerify);
 
-    const onsubmit = (data) => {
+    const auth = localStorage.getItem("token")
+    useEffect(() => {
+        if (auth) {
+            navigate("/")
+        }
+    }, [auth])
+
+    const onsubmit = async (data) => {
 
         if (data && (isVerify === true)) {
-            console.log(data);
+            const items = {
+                email: data.email,
+                password: data.password
+            }
+            await dispatch(userLogin(items))
+            reset();
 
         } else {
             toast.error('Please solve the captcha ', {
@@ -58,6 +71,7 @@ const Login = () => {
             });
         }
     }
+
     return (
         <div>
             <div className=" min-h-full h-screen  px-6 py-12  grid place-content-center md:me-[200px]">
@@ -75,6 +89,14 @@ const Login = () => {
 
                     <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
                         <form className="space-y-6" onSubmit={handleSubmit(onsubmit)} noValidate>
+                            {
+                                userLoginError &&
+                                <div>
+                                    <span className="inline-flex w-[100%] items-center justify-center rounded-md bg-red-50 px-2 py-1 text-xl font-medium text-red-700 ring-1 ring-inset ring-red-600/10">
+                                        {userLoginError}
+                                    </span>
+                                </div>
+                            }
                             <div>
                                 <FormControl fullWidth sx={{ m: 0 }} size="large" >
                                     <TextField
@@ -131,9 +153,13 @@ const Login = () => {
                                 </button>
                             </div>
                         </form>
-
                         <p className="mt-10 text-center text-sm text-gray-500">
-                            Not a member?{' '}
+                            <NavLink to="/" className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
+                                Back to home page
+                            </NavLink>
+                        </p>
+                        <p className="mt-1 text-center text-sm text-gray-500">
+                            Already a member?{' '}
                             <NavLink to="/register" className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
                                 Create an account
                             </NavLink>

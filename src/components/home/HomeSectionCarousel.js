@@ -323,6 +323,7 @@ const mens_kurta = [
 const HomeSectionCarousel = () => {
     const responsive = {
         0: { items: 1 },
+        376: { items: 1.5 },
         520: { items: 2 },
         770: { items: 3 },
         1024: { items: 4 },

@@ -10,8 +10,7 @@ import TextField from '@mui/material/TextField';
 import FormControl from '@mui/material/FormControl';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-
-
+import { userCreate } from '../store/action/authAction';
 
 const schema = yup.object({
     email: yup.string().email().required("please enter your email"),
@@ -23,12 +22,19 @@ const schema = yup.object({
         .string()
         .oneOf([yup.ref("password"), null], "password does not match")
         .required(""),
-    username: yup.string().min(2, "username must be above 2 characters").max(16, "username must be within 16 characters").required("please enter your username"),
+    firstname: yup.string().min(2, "firstname must be above 2 characters").max(16, "firstname must be within 16 characters").required("please enter your firstname"),
+    lastname: yup.string().min(2, "lastname must be above 2 characters").max(16, "lastname must be within 16 characters").required("please enter your lastname"),
 });
 
 const Register = () => {
     const dispatch = useDispatch()
     const navigate = useNavigate()
+
+    const { userCreateError, userCreateSuccess } = useSelector((state) => state.auth)
+    const [registerSucc, setRegisterSucc] = useState(userCreateSuccess)
+    useEffect(() => {
+        setRegisterSucc(userCreateSuccess)
+    }, [userCreateSuccess])
 
     const [showPassword, setShowPassword] = useState(false);
     const {
@@ -50,8 +56,17 @@ const Register = () => {
     const onsubmit = (data) => {
 
         if (data && (isVerify === true)) {
-            console.log(data);
-
+            const itmes = {
+                firstName: data.firstname,
+                lastName: data.lastname,
+                email: data.email,
+                password: data.password
+            }
+            dispatch(userCreate(itmes))
+            if (registerSucc?.msg) {
+                navigate("/login")
+            }
+            reset();
         } else {
             toast.error('Please solve the captcha ', {
                 position: "top-right",
@@ -76,23 +91,45 @@ const Register = () => {
                             alt="Your Company"
                         />
                         <h2 className="mt-8 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-                            Welcome to Register in Shoppy.io 
+                            Welcome to Register in Shoppy.io
                         </h2>
                     </div>
 
                     <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
                         <form className="space-y-6" onSubmit={handleSubmit(onsubmit)} noValidate>
-                            <div>
-                                <FormControl fullWidth size="large" >
-                                    <TextField
-                                        error={errors && errors.username?.message}
-                                        id="standard-error-helper-text"
-                                        label="Username"
-                                        type='text'
-                                        {...register("username")}
-                                        helperText={errors && errors.username?.message}
-                                        variant="filled" />
-                                </FormControl>
+                            {
+                                userCreateError &&
+                                <div>
+                                    <span className="inline-flex w-[100%] items-center justify-center rounded-md bg-red-50 px-2 py-1 text-xl font-medium text-red-700 ring-1 ring-inset ring-red-600/10">
+                                        {userCreateError}
+                                    </span>
+                                </div>
+                            }
+                            <div className='grid grid-cols-12 gap-2'>
+                                <div className="col-span-6">
+                                    <FormControl fullWidth size="large" >
+                                        <TextField
+                                            error={errors && errors.firstname?.message}
+                                            id="standard-error-helper-text"
+                                            label="Firstname"
+                                            type='text'
+                                            {...register("firstname")}
+                                            helperText={errors && errors.firstname?.message}
+                                            variant="filled" />
+                                    </FormControl>
+                                </div>
+                                <div className="col-span-6">
+                                    <FormControl fullWidth size="large" >
+                                        <TextField
+                                            error={errors && errors.lastname?.message}
+                                            id="standard-error-helper-text"
+                                            label="Lastname"
+                                            type='text'
+                                            {...register("lastname")}
+                                            helperText={errors && errors.lastname?.message}
+                                            variant="filled" />
+                                    </FormControl>
+                                </div>
                             </div>
                             <div>
                                 <FormControl fullWidth sx={{ m: 0 }} size="large" >
@@ -106,29 +143,31 @@ const Register = () => {
                                         variant="filled" />
                                 </FormControl>
                             </div>
-                            <div>
-                                <FormControl fullWidth sx={{ m: 0 }} size="large" >
-                                    <TextField
-                                        error={errors && errors.password?.message}
-                                        id="standard-error-helper-text"
-                                        label="Password"
-                                        type={showPassword ? "text" : "password"}
-                                        {...register("password")}
-                                        helperText={errors && errors.password?.message}
-                                        variant="filled" />
-                                </FormControl>
-                            </div>
-                            <div>
-                                <FormControl fullWidth sx={{ m: 0 }} size="large" >
-                                    <TextField
-                                        error={errors && errors.confirmPassword?.message}
-                                        id="standard-error-helper-text"
-                                        label="Confirm Password"
-                                        type={showPassword ? "text" : "password"}
-                                        {...register("confirmPassword")}
-                                        helperText={errors && errors.confirmPassword?.message}
-                                        variant="filled" />
-                                </FormControl>
+                            <div className='grid grid-cols-12 gap-2'>
+                                <div className="col-span-6">
+                                    <FormControl fullWidth sx={{ m: 0 }} size="large" >
+                                        <TextField
+                                            error={errors && errors.password?.message}
+                                            id="standard-error-helper-text"
+                                            label="Password"
+                                            type={showPassword ? "text" : "password"}
+                                            {...register("password")}
+                                            helperText={errors && errors.password?.message}
+                                            variant="filled" />
+                                    </FormControl>
+                                </div>
+                                <div className="col-span-6">
+                                    <FormControl fullWidth sx={{ m: 0 }} size="large" >
+                                        <TextField
+                                            error={errors && errors.confirmPassword?.message}
+                                            id="standard-error-helper-text"
+                                            label="Confirm Password"
+                                            type={showPassword ? "text" : "password"}
+                                            {...register("confirmPassword")}
+                                            helperText={errors && errors.confirmPassword?.message}
+                                            variant="filled" />
+                                    </FormControl>
+                                </div>
                             </div>
                             <div className="text-sm">
                                 <div className="flex gap-x-1 justify-between">
@@ -164,6 +203,11 @@ const Register = () => {
                         </form>
 
                         <p className="mt-10 text-center text-sm text-gray-500">
+                            <NavLink to="/" className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
+                                Back to home page
+                            </NavLink>
+                        </p>
+                        <p className="mt-1 text-center text-sm text-gray-500">
                             Already a member?{' '}
                             <NavLink to="/login" className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
                                 Login

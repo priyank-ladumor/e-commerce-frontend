@@ -10,13 +10,7 @@ const productsSlice = createSlice({
     name: "products",
     initialState,
     reducers: {
-        Logout: (state) => {
-            // state.isuserToken = null;
-            // state.issuccess = false;
-            // state.success = false;
-            // state.isrefresh = true;
-            // localStorage.clear();
-        },
+
     },
     extraReducers: (builder) => {
 

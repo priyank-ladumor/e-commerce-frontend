@@ -18,6 +18,7 @@ import Cart from "./pages/Cart";
 import CheckOut from "./pages/CheckOut";
 import ProductDetailsPage from "./pages/ProductDetailsPage";
 import LoginVerified from "./pages/LoginVerified";
+import RegLogProtected from "./RegLogProtected";
 
 
 
@@ -30,9 +31,11 @@ function App() {
           <Route index element={<Home />} />
           <Route exact path="/productdetails/:id" element={<ProductDetailsPage />} />
           <Route exact path="/user/verified/:token" element={<LoginVerified />} />
-          <Route exact path="/cart" element={<Cart />} />
-          <Route exact path="/checkout" element={<CheckOut />} />
           <Route path='/' element={<Protected />}>
+            <Route exact path="/cart" element={<Cart />} />
+            <Route exact path="/checkout" element={<CheckOut />} />
+          </Route>
+          <Route path='/' element={<RegLogProtected />}>
             <Route exact path="/login" element={<Login />} />
             <Route exact path="/register" element={<Register />} />
           </Route>

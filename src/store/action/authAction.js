@@ -2,6 +2,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
+import Swal from 'sweetalert2'
 
 export const userCreate = createAsyncThunk(
     "user/create",
@@ -20,16 +21,18 @@ export const userCreate = createAsyncThunk(
             );
             localStorage.setItem("name", result.data.name)
             if (result.data.msg) {
-                toast.success(result.data.msg, {
-                    position: "top-right",
-                    autoClose: 3500,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "light",
-                });
+                Swal.fire({
+                    title: "Registered Successfully!",
+                    text: result.data.msg,
+                    icon: "success",
+                    confirmButtonColor: "green",
+                    confirmButtonText: "Go to Gmail"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = "https://mail.google.com/mail"
+
+                    }
+                })
             }
             return result.data;
         } catch (error) {
@@ -59,19 +62,8 @@ export const userLogin = createAsyncThunk(
                 }
             );
             localStorage.setItem("token", result.data.token)
+            localStorage.setItem("role", result.data.role)
             localStorage.removeItem("name")
-            if (result.data.msg) {
-                toast.success(result.data.msg, {
-                    position: "top-right",
-                    autoClose: 3500,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "light",
-                });
-            }
             return result.data;
         } catch (error) {
             if (error.response && error.response.data.msg) {
@@ -87,7 +79,7 @@ export const userLogin = createAsyncThunk(
 export const userAccountVerified = createAsyncThunk(
     "user/AccountVerify",
     async (token, { rejectWithValue }) => {
-        const navigate = useNavigate()
+        // const navigate = useNavigate()
         // const token = JSON.parse(localStorage.getItem('usertoken'))
         try {
             const result = await axios.post(
@@ -100,9 +92,34 @@ export const userAccountVerified = createAsyncThunk(
                     },
                 }
             );
-            if (result.data.msg) {
-                navigate("/login")
+            // if (result.data.msg) {
+            //     navigate("/login")
+            // }
+            return result.data;
+        } catch (error) {
+            if (error.response && error.response.data.msg) {
+                return rejectWithValue(error.response.data.msg);
+            } else {
+                return rejectWithValue(error.message);
             }
+        }
+    }
+);
+
+export const findUserRole = createAsyncThunk(
+    "user/role",
+    async (auth, { rejectWithValue }) => {
+        try {
+            const result = await axios.get(
+                `${process.env.REACT_APP_BASE_URL}/user/role`,
+                // data,
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": auth
+                    },
+                }
+            );
             return result.data;
         } catch (error) {
             if (error.response && error.response.data.msg) {

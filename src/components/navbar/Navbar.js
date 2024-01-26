@@ -4,6 +4,7 @@ import { Fragment, useState } from 'react'
 import { Dialog, Popover, Tab, Transition, Menu } from '@headlessui/react'
 import { Bars3Icon, MagnifyingGlassIcon, ShoppingBagIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { NavLink, useNavigate } from 'react-router-dom'
+import Button from '@mui/material/Button';
 
 
 const navigation = {
@@ -144,6 +145,8 @@ export default function Navbar({ children }) {
     const navigate = useNavigate()
 
     const auth = localStorage.getItem("token")
+    const role = localStorage.getItem("role")
+
 
     const logOutFunc = (name) => {
         if (name === "Sign out") {
@@ -266,19 +269,19 @@ export default function Navbar({ children }) {
                                         </div>
                                     ))}
                                 </div>
-
-                                <div className="space-y-6 border-t border-gray-200 px-4 py-6">
-                                    <div className="flow-root">
-                                        <NavLink to="/login" className="-m-2 block p-2 font-medium text-gray-900">
-                                            Login
-                                        </NavLink>
-                                    </div>
-                                    <div className="flow-root">
-                                        <NavLink to="/register" className="-m-2 block p-2 font-medium text-gray-900">
-                                            Create account
-                                        </NavLink>
-                                    </div>
-                                </div>
+                                {!auth &&
+                                    <div className="space-y-6 border-t border-gray-200 px-4 py-6">
+                                        <div className="flow-root">
+                                            <NavLink to="/login" className="-m-2 block p-2 font-medium text-gray-900">
+                                                Login
+                                            </NavLink>
+                                        </div>
+                                        <div className="flow-root">
+                                            <NavLink to="/register" className="-m-2 block p-2 font-medium text-gray-900">
+                                                Create account
+                                            </NavLink>
+                                        </div>
+                                    </div>}
 
                                 {/* <div className="border-t border-gray-200 px-4 py-6">
                                     <a href="#" className="-m-2 flex items-center p-2">
@@ -424,10 +427,13 @@ export default function Navbar({ children }) {
                                 </div>
                             </Popover.Group>
 
+                            {/* big screen  */}
                             {/* login and register page link and user profile  */}
                             <div className="ml-auto flex items-center">
                                 {auth ?
                                     <>
+                                    {/* {role === "ADMIN" && <Button variant="contained" size='sm'><NavLink to="/dashboard">Admin</NavLink></Button>} */}
+
                                         <Menu as="div" className="relative ml-3">
                                             <div>
                                                 <Menu.Button className="relative flex max-w-xs items-center rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
@@ -447,6 +453,7 @@ export default function Navbar({ children }) {
                                             >
                                                 <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                                                     {userNavigation.map((item) => (
+                                                        // logout //profile 
                                                         <Menu.Item key={item.name} onClick={() => logOutFunc(item.name)}>
                                                             {({ active }) => (
                                                                 <NavLink
@@ -490,12 +497,12 @@ export default function Navbar({ children }) {
                                 </div> */}
 
                                 {/* Search */}
-                                <div className="flex lg:ml-6">
+                                {/* <div className="flex lg:ml-6">
                                     <a href="#" className="p-2 text-gray-400 hover:text-gray-500">
                                         <span className="sr-only">Search</span>
                                         <MagnifyingGlassIcon className="h-6 w-6" aria-hidden="true" />
                                     </a>
-                                </div>
+                                </div> */}
 
                                 {/* Cart */}
                                 <div className="ml-4 flow-root lg:ml-6">

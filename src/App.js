@@ -20,14 +20,11 @@ import ProductDetailsPage from "./pages/ProductDetailsPage";
 import LoginVerified from "./pages/LoginVerified";
 import RegLogProtected from "./RegLogProtected";
 
-
-
 function App() {
   return (
     <div className="App">
       <BrowserRouter>
         <Routes>
-
           <Route index element={<Home />} />
           <Route exact path="/productdetails/:id" element={<ProductDetailsPage />} />
           <Route exact path="/user/verified/:token" element={<LoginVerified />} />

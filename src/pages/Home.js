@@ -1,10 +1,17 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import Navbar from '../components/navbar/Navbar'
 import HomeCarousel from '../components/home/HomeCarousel.js'
 import ProductList from "../components/products/ProductList.js"
 import HomeSectionCarousel from '../components/home/HomeSectionCarousel.js'
+import { useDispatch } from 'react-redux'
+import { findUserRole } from '../store/action/authAction.js'
 
 const Home = () => {
+    const dispatch = useDispatch()
+    const auth = localStorage.getItem("token")
+    useEffect(() => {
+        dispatch(findUserRole(auth))
+    }, [])
     return (
         <div className='bg-white'>
             <Navbar>

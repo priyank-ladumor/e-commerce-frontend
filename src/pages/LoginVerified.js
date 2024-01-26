@@ -7,9 +7,9 @@ const LoginVerified = () => {
     const { token } = useParams()
     const dispatch = useDispatch()
 
-    useEffect(() => {
+    if (token) {
         dispatch(userAccountVerified(token))
-    }, [token])
+    }
 
     const name = localStorage.getItem("name")
 

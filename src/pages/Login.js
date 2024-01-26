@@ -55,7 +55,7 @@ const Login = () => {
                 email: data.email,
                 password: data.password
             }
-            await dispatch(userLogin(items))
+            dispatch(userLogin(items))
             reset();
 
         } else {

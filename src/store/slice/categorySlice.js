@@ -1,11 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { getsecondlevelCategoryAction, getthirdlevelCategoryAction, gettoplevelCategoryAction } from "../action/categoryAction";
+import { getsecondlevelCategoryAction, getthirdlevelCategoryAction, getthirdlevelCategoryFilterAction, gettoplevelCategoryAction } from "../action/categoryAction";
 
 
 const initialState = {
     categoryTop: null,
     categorySecond: null,
     categoryThird: null,
+    categoryThirdFilter: null,
 };
 
 const categorySlice = createSlice({
@@ -50,6 +51,18 @@ const categorySlice = createSlice({
 
         builder.addCase(getthirdlevelCategoryAction.rejected, (state, { payload }) => {
             state.categoryThird = null;
+        })
+  
+        builder.addCase(getthirdlevelCategoryFilterAction.pending, (state, { payload }) => {
+            state.categoryThirdFilter = null;
+        })
+
+        builder.addCase(getthirdlevelCategoryFilterAction.fulfilled, (state, { payload }) => {
+            state.categoryThirdFilter = payload;
+        })
+
+        builder.addCase(getthirdlevelCategoryFilterAction.rejected, (state, { payload }) => {
+            state.categoryThirdFilter = null;
         })
 
     }

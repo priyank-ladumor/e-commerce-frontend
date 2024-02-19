@@ -28,7 +28,7 @@ function App() {
         <Routes>
           <Route index element={<Home />} />
           <Route exact path="/products/:topCategory" element={<FilterProductList />} />
-          <Route exact path="/productdetails/:id" element={<ProductDetailsPage />} />
+          <Route exact path="/products/:topCategory/:secondCategory/:thirdCategory/:id" element={<ProductDetailsPage />} />
           <Route exact path="/user/verified/:token" element={<LoginVerified />} />
           <Route path='/' element={<Protected />}>
             <Route exact path="/cart" element={<Cart />} />

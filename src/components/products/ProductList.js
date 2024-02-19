@@ -4,10 +4,16 @@ import { Dialog, Disclosure, Menu, Transition } from '@headlessui/react'
 import { StarIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { ChevronDownIcon, FunnelIcon, MinusIcon, PlusIcon, Squares2X2Icon } from '@heroicons/react/20/solid'
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/20/solid'
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, useParams } from 'react-router-dom';
 import { MdStarRate } from "react-icons/md"
 import { useDispatch, useSelector } from 'react-redux'
 import { getProducts } from '../../store/action/productsAction'
+import { getthirdlevelCategoryAction, getthirdlevelCategoryFilterAction } from '../../store/action/categoryAction'
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import Typography from '@mui/material/Typography';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 const sortOptions = [
     { name: 'Best Rating', sort: 'rating', order: 'desc', current: false },
@@ -15,55 +21,49 @@ const sortOptions = [
     { name: 'Price: High to Low', sort: 'price', order: 'desc', current: false },
 ]
 
-const filters = [
-    {
-        id: 'category',
-        name: 'Category',
-        options: [
-            { value: 'smartphones', label: 'smartphones', checked: false },
-            { value: 'laptops', label: 'laptops', checked: false },
-            { value: 'fragrances', label: 'fragrances', checked: false },
-            { value: 'skincares', label: 'skincares', checked: false },
-            { value: 'groceries', label: 'groceries', checked: false },
-            { value: 'home-decoration', label: 'home decoration', checked: false },
-        ],
-    },
-    {
-        id: 'brands',
-        name: 'brands',
-        options: [
-            { value: 'Apple', label: 'Apple', checked: false },
-            { value: 'Samsung', label: 'Samsung', checked: false },
-            { value: 'OPPO', label: 'OPPO', checked: false },
-            { value: 'Huawei', label: 'Huawei', checked: false },
-            { value: 'Microsoft-Surface', label: 'Microsoft Surface', checked: false },
-            { value: 'Infinix', label: 'Infinix', checked: false },
-            { value: 'HP-Pavilion', label: 'HP Pavilion', checked: false },
-            { value: 'Golden', label: 'Golden', checked: false },
-            { value: 'fauji', label: 'fauji', checked: false },
-            { value: 'Dry-Rose', label: 'Dry Rose', checked: false },
-            { value: 'Boho-Decor', label: 'Boho Decor', checked: false },
-            { value: 'Fair&Clear', label: 'Fair & Clear', checked: false },
-        ],
-    },
-
-]
-
 function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
 }
+
 const ProductList = () => {
+    const { categoryThirdFilter } = useSelector((state) => state.category)
     const location = useLocation()
+    const { topCategory } = useParams()
     const [newproduct, setnewproduct] = useState()
+    const [thirdparent, setthirdparent] = useState()
+    const [third, setthird] = useState()
     const { products } = useSelector((state) => state.products)
 
     const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
 
     const dispatch = useDispatch()
-    
+
+    useEffect(() => {
+        const parent = third && third.filter((data) => data.parentCategory?.name === location.search.split("category=")[1])
+        if (parent) {
+            setthirdparent(parent[0]?.parentCategory?._id)
+        }
+    }, [third, location.search])
+
+    useEffect(() => {
+        if (thirdparent) {
+            dispatch(getthirdlevelCategoryFilterAction({ parentCategory: thirdparent }))
+        }
+    }, [thirdparent])
+
     useEffect(() => {
         dispatch(getProducts(location.search))
     }, [location.search])
+
+    useEffect(() => {
+        dispatch(getthirdlevelCategoryFilterAction())
+    }, [location.search])
+
+    useEffect(() => {
+        if (categoryThirdFilter) {
+            setthird(categoryThirdFilter)
+        }
+    }, [categoryThirdFilter])
 
     useEffect(() => {
         if (products) {
@@ -71,36 +71,45 @@ const ProductList = () => {
         }
     }, [products])
 
-    const [filter, setfilter] = useState()
+    const [filter, setfilter] = useState([])
+    const categoriesSelected = [];
 
     const handleFilter = async (e, option, section) => {
-        const newFilter = { ...filter }
+        // const newFilter = { ...filter }
         if (e.target.checked) {
-            if (newFilter[section.id]) {
-                newFilter[section.id].push(option.value);
+            if (filter[section._id]) {
+                filter[section._id].push(option);
             } else {
-                newFilter[section.id] = [option.value];
+                filter[section._id] = option;
             }
         } else {
-            const index = newFilter[section.id].findIndex(
-                (el) => el === option.value
-            );
-            newFilter[section.id].splice(index, 1);
-        }
 
-        setfilter(newFilter)
-        console.log(filter, "filter");
+            // const index = newFilter[section._id].findIndex(
+            //     (el) => console.log(el === section._id)
+            //     );
+                // const index = filter.findIndex(option)
+                // filter[section._id].splice(index, 1);
+                const filtered = filter && filter.filter((ele) => ele)
+                console.log(filtered)
+            // filter.slice(section._id, 1);
+        }
+        // setfilter(newFilter)
+
+        // if (e.target.checked) {
+        //     categoriesSelected.push(option)
+        // }
+        console.log(filter);
     }
+
     const handleSort = (e, option) => {
-        const newFilter = { ...filter, _sort: option.sort, _order: option.order }
-        setfilter(newFilter)
-        console.log(newFilter);
-        // dispatch(getProductsByFilter(newFilter))
+        // const newFilter = { ...filter, _sort: option.sort, _order: option.order }
+        // setfilter(newFilter)
+        // // dispatch(getProductsByFilter(newFilter))
     }
 
     return (
         <div>
-            <div className="bg-white">
+            <div className="bg-[#fff]">
                 <div>
                     {/* Mobile filter dialog */}
                     <MobileScreenFilter handleFilter={handleFilter} setMobileFiltersOpen={setMobileFiltersOpen} mobileFiltersOpen={mobileFiltersOpen} />
@@ -177,10 +186,10 @@ const ProductList = () => {
                             <div className="grid grid-cols-1 gap-x-8 gap-y-10 lg:grid-cols-4">
                                 {/* Filters */}
                                 {/* full screen */}
-                                <DesktopScreenFilter handleFilter={handleFilter} />
+                                <DesktopScreenFilter handleFilter={handleFilter} third={third} thirdparent={thirdparent} />
 
                                 {/* Product grid */}
-                                <ProductGrid newproduct={newproduct} />
+                                <ProductGrid newproduct={newproduct} topCategory={topCategory} location={location} />
                             </div>
                         </section>
 
@@ -303,7 +312,7 @@ function MobileScreenFilter({ handleFilter, mobileFiltersOpen, setMobileFiltersO
                             {/* Filters */}
                             {/* mobile screen */}
                             <form className="mt-4 border-t border-gray-200">
-                                {filters.map((section) => (
+                                {/* {filters.map((section) => (
                                     <Disclosure as="div" key={section.id} className="border-t border-gray-200 px-4 py-6">
                                         {({ open }) => (
                                             <>
@@ -345,7 +354,7 @@ function MobileScreenFilter({ handleFilter, mobileFiltersOpen, setMobileFiltersO
                                             </>
                                         )}
                                     </Disclosure>
-                                ))}
+                                ))} */}
                             </form>
                         </Dialog.Panel>
                     </Transition.Child>
@@ -355,45 +364,45 @@ function MobileScreenFilter({ handleFilter, mobileFiltersOpen, setMobileFiltersO
     </>);
 }
 
-function ProductGrid({ newproduct }) {
+function ProductGrid({ newproduct, topCategory, location }) {
     return (<>
         <div className="lg:col-span-3">
-            <div className="bg-white">
+            <div className="bg-[#fff]">
                 <div className="mx-auto max-w-2xl px-4 py-16 sm:px-0 sm:py-0 lg:max-w-7xl lg:px-8">
                     <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:gap-x-8">
                         {newproduct && Array.from(newproduct)?.map((product) => (
-                        <NavLink to={`/productdetails/${product._id}`}>
-                            <div key={product.id} className="group relative border-solid border-[1px] p-2 border-gray-300 rounded-md">
-                                <div className="aspect-h-1 min-h-60 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-60">
-                                    <img
-                                        src={product.thumbnail}
-                                        alt={product.thumbnail}
-                                        className="h-full w-full object-cover object-center lg:h-full lg:w-full"
-                                    />
-                                </div>
-                                <div className="mt-4 flex justify-between">
-                                    <div className="inline">
-                                        <h3 className="text-sm text-black-900 font-bold">
-                                            <a href={product.href}>
-                                                <span aria-hidden="true" className="absolute inset-0" />
-                                                {product.title}
-                                            </a>
-                                        </h3>
+                            <NavLink to={`/products/${topCategory}/${location.search.split("?category=")[1].split("&")[0]}/${location.search.split("&thirdCategory[0]=")[1] ? location.search.split("&thirdCategory[0]=")[1] : newproduct[0]?.category?.name}/${product._id}`}>
+                                <div key={product.id} className="group relative border-solid border-[1px] p-2 border-gray-300 rounded-md">
+                                    <div className="aspect-h-1 min-h-60 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-60">
+                                        <img
+                                            src={product.thumbnail}
+                                            alt={product.thumbnail}
+                                            className="h-full w-full object-cover object-center lg:h-full lg:w-full"
+                                        />
+                                    </div>
+                                    <div className="mt-4 flex justify-between">
+                                        <div className="inline">
+                                            <h3 className="text-sm text-black-900 font-bold">
+                                                <a href={product.href}>
+                                                    <span aria-hidden="true" className="absolute inset-0" />
+                                                    {product.title}
+                                                </a>
+                                            </h3>
 
-                                        <p className="mt-1 text-sm text-gray-700">
-                                            <MdStarRate className="w-6 h-6  inline" />
-                                            <span className="align-bottom">
-                                                {product.rating}
-                                            </span>
-                                        </p>
-                                    </div>
-                                    <div className="inline">
-                                        <p className="text-sm font-bold  text-gray-900">${Math.round(product.price * (1 - product.discountPercentage / 100))}</p>
-                                        <p className="text-sm font-medium line-through text-gray-400">${product.price}</p>
+                                            <p className="mt-1 text-sm text-gray-700">
+                                                <MdStarRate className="w-6 h-6  inline" />
+                                                <span className="align-bottom">
+                                                    {product.rating}
+                                                </span>
+                                            </p>
+                                        </div>
+                                        <div className="inline">
+                                            <p className="text-sm font-bold  text-gray-900">${Math.round(product.price * (1 - product.discountPercentage / 100))}</p>
+                                            <p className="text-sm font-medium line-through text-gray-400">${product.price}</p>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </NavLink>
+                            </NavLink>
                         ))}
                     </div>
                 </div>
@@ -402,52 +411,60 @@ function ProductGrid({ newproduct }) {
     </>);
 }
 
-function DesktopScreenFilter({ handleFilter }) {
+function DesktopScreenFilter({ handleFilter, third, thirdparent }) {
     return (<>
         <form className="hidden lg:block">
-            {filters.map((section) => (
-                <Disclosure as="div" key={section.id} className="border-b border-gray-200 py-6">
-                    {({ open }) => (
-                        <>
-                            <h3 className="-my-3 flow-root">
-                                <Disclosure.Button className="flex w-full items-center justify-between bg-white py-3 text-sm text-gray-400 hover:text-gray-500">
-                                    <span className="font-medium text-gray-900">{section.name}</span>
-                                    <span className="ml-6 flex items-center">
-                                        {open ? (
-                                            <MinusIcon className="h-5 w-5" aria-hidden="true" />
-                                        ) : (
-                                            <PlusIcon className="h-5 w-5" aria-hidden="true" />
-                                        )}
-                                    </span>
-                                </Disclosure.Button>
-                            </h3>
-                            <Disclosure.Panel className="pt-6">
-                                <div className="space-y-4">
-                                    {section.options.map((option, optionIdx) => (
-                                        <div key={option.value} className="flex items-center">
-                                            <input
-                                                id={`filter-${section.id}-${optionIdx}`}
-                                                name={`${section.id}[]`}
-                                                defaultValue={option.value}
-                                                type="checkbox"
-                                                defaultChecked={option.checked}
-                                                className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                                                onChange={(e) => handleFilter(e, option, section)}
-                                            />
-                                            <label
-                                                htmlFor={`filter-${section.id}-${optionIdx}`}
-                                                className="ml-3 text-sm text-gray-600"
-                                            >
-                                                {option.label}
-                                            </label>
-                                        </div>
-                                    ))}
+
+            {thirdparent && thirdparent.length > 0 &&
+                <Accordion defaultExpanded>
+                    <AccordionSummary
+                        expandIcon={<ExpandMoreIcon />}
+                        aria-controls="panel1-content"
+                        id="panel1-header"
+                    >
+                        <Typography > <spam className='text-xl font-semibold tracking-tight text-gray-600' >Categories</spam> </Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                        <Typography>
+                            {third && third.map((section, id) => (
+                                <div key={section.value} className="flex items-center">
+                                    <input
+                                        id={`filter-${section.id}`}
+                                        name={`${section.id}[]`}
+                                        defaultValue={section.name}
+                                        type="checkbox"
+                                        defaultChecked={section.name.checked}
+                                        className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                                        onChange={(e) => handleFilter(e, section.name, section)}
+                                    />
+                                    <label
+                                        htmlFor={`filter-${section.id}-${id}`}
+                                        className="ml-3 text-lg cursor-pointer text-black-900"
+                                    >
+                                        {section.name.includes("kids_") ? section.name.split("kids_")[1].charAt(0).toUpperCase() + section.name.split("kids_" && "_")[1].slice(1) + " " + (section.name.split("_")[2] ? section.name.split("_")[2].charAt(0).toUpperCase() + section.name.split("_")[2].slice(1) : "") : section.name.split("men_" && "_")[1].charAt(0).toUpperCase() + section.name.split("men_" && "_")[1].slice(1) + " " + (section.name.split("_")[2] ? section.name.split("_")[2].charAt(0).toUpperCase() + section.name.split("_")[2].slice(1) : "")}
+
+                                    </label>
                                 </div>
-                            </Disclosure.Panel>
-                        </>
-                    )}
-                </Disclosure>
-            ))}
+                            ))}
+                        </Typography>
+                    </AccordionDetails>
+                </Accordion>}
+            <Accordion>
+                <AccordionSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    aria-controls="panel2-content"
+                    id="panel2-header"
+                >
+                    <Typography>Header</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    <Typography>
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
+                        malesuada lacus ex, sit amet blandit leo lobortis eget.
+                    </Typography>
+                </AccordionDetails>
+            </Accordion>
+
         </form>
     </>);
 }

@@ -77,3 +77,28 @@ export const getthirdlevelCategoryAction = createAsyncThunk(
     }
   }
 );
+
+export const getthirdlevelCategoryFilterAction = createAsyncThunk(
+  "get/filtered/categories/thirdlevel",
+  async (data, { rejectWithValue }) => {
+    try {
+      const result = await axios.post(
+        `${process.env.REACT_APP_BASE_URL}/categories/thirdlevel/filterd`,
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            // "Authorization": localStorage.getItem('token')
+          },
+        }
+      );
+      return result.data.content;
+    } catch (error) {
+      if (error.response && error.response.data.message) {
+        return rejectWithValue(error.response.data.message);
+      } else {
+        return rejectWithValue(error.message);
+      }
+    }
+  }
+);

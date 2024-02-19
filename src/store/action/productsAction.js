@@ -5,7 +5,6 @@ import { ToastContainer, toast } from 'react-toastify';
 export const getProducts = createAsyncThunk(
   "get/products",
   async (data, { rejectWithValue }) => {
-    console.log(data);
     try {
       const result = await axios.get(
         `${process.env.REACT_APP_BASE_URL}/products/${data}`,

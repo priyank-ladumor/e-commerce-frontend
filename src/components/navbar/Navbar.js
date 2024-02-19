@@ -3,8 +3,10 @@ import React, { useEffect } from 'react'
 import { Fragment, useState } from 'react'
 import { Dialog, Popover, Tab, Transition, Menu } from '@headlessui/react'
 import { Bars3Icon, MagnifyingGlassIcon, ShoppingBagIcon, XMarkIcon } from '@heroicons/react/24/outline'
-import { NavLink, useNavigate } from 'react-router-dom'
+import { NavLink, useNavigate, useParams } from 'react-router-dom'
 import Button from '@mui/material/Button';
+import { useDispatch, useSelector } from "react-redux";
+import { getsecondlevelCategoryAction, getthirdlevelCategoryAction, gettoplevelCategoryAction } from '../../store/action/categoryAction'
 
 
 const navigation = {
@@ -141,11 +143,20 @@ function classNames(...classes) {
 }
 
 export default function Navbar({ children }) {
+    const { topCategory } = useParams()
+
     const [open, setOpen] = useState(false)
+    const { categoryTop, categorySecond, categoryThird } = useSelector((state) => state.category)
     const navigate = useNavigate()
+    const dispatch = useDispatch()
 
     const auth = localStorage.getItem("token")
-    const role = localStorage.getItem("role")
+
+    const [top, settop] = useState("")
+    const [second, setsecond] = useState("")
+    const [third, setthird] = useState("")
+    const [secondParent, setsecondParent] = useState("")
+    const [parentId, setparentId] = React.useState("");
 
 
     const logOutFunc = (name) => {
@@ -154,6 +165,49 @@ export default function Navbar({ children }) {
             localStorage.clear()
         }
     }
+
+    const handleShadow = () => {
+        navigate("/", { replace: true })
+    }
+
+    useEffect(() => {
+        dispatch(gettoplevelCategoryAction())
+    }, [])
+
+    useEffect(() => {
+        dispatch(getthirdlevelCategoryAction())
+    }, [])
+
+    useEffect(() => {
+        const query = `?parentCategory=${parentId}`
+        dispatch(getsecondlevelCategoryAction(query))
+    }, [parentId])
+
+    useEffect(() => {
+        if (categoryTop) {
+            settop(categoryTop)
+        }
+    }, [categoryTop])
+
+    useEffect(() => {
+        if (categorySecond) {
+            setsecond(categorySecond)
+        }
+    }, [categorySecond])
+
+    useEffect(() => {
+        if (categoryThird) {
+            setthird(categoryThird)
+        }
+    }, [categoryThird])
+
+    useEffect(() => {
+        const parent = top && secondParent && top.filter((data) => data.name === secondParent)
+        if (parent) {
+            setparentId(parent[0]._id)
+        }
+    }, [secondParent])
+
     return (
         <div className="bg-white" >
             {/* Mobile menu */}
@@ -301,6 +355,7 @@ export default function Navbar({ children }) {
             </Transition.Root>
 
             {/* tab z-ind-999  */}
+            {/* big screen  */}
             <header className="relative bg-white z-[999]">
 
                 <nav aria-label="Top" className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -317,7 +372,7 @@ export default function Navbar({ children }) {
                             </button>
 
                             {/* Logo */}
-                            <div className="ml-4 flex lg:ml-0">
+                            <div className="ml-4 flex lg:ml-0" onClick={handleShadow} >
                                 <NavLink to="/">
                                     <img
                                         className="h-15 w-12 rounded-xl"
@@ -328,22 +383,24 @@ export default function Navbar({ children }) {
                             </div>
 
                             {/* Flyout menus */}
-                            <Popover.Group className="hidden lg:ml-8 lg:block lg:self-stretch">
-                                <div className="flex h-full space-x-8">
-                                    {navigation.categories.map((category) => (
-                                        <Popover key={category.name} className="flex">
+                            <Popover.Group className="hidden lg:ml-8 lg:block lg:self-stretch rmv-shadow " >
+                                <div className="flex h-full space-x-8  rmv-shadow">
+                                    {top && top.length > 0 && top.map((category) => (
+                                        <Popover key={category.name} className="flex" >
                                             {({ open }) => (
                                                 <>
-                                                    <div className="relative flex">
+                                                    <div className="relative flex rmv-shadow " >
                                                         <Popover.Button
+                                                            onClick={() => setsecondParent(category.name)}
                                                             className={classNames(
                                                                 open
-                                                                    ? 'border-indigo-600 text-indigo-600'
-                                                                    : 'border-transparent text-gray-700 hover:text-gray-800',
-                                                                'relative z-10 -mb-px flex items-center border-b-2 pt-px text-sm font-medium transition-colors duration-200 ease-out'
+                                                                    ? 'border-indigo-600 rmv-shadow shadow-none	'
+                                                                    : 'border-transparent text-gray-700 hover:text-gray-800 ',
+                                                                'relative z-10 -mb-px flex items-center border-b-2 pt-px text-sm font-medium transition-colors duration-200 ease-out '
                                                             )}
+                                                            style={{ color: topCategory === category.name && "blue" }}
                                                         >
-                                                            {category.name}
+                                                            {category.name.charAt(0).toUpperCase()}{category.name.slice(1)}
                                                         </Popover.Button>
                                                     </div>
 
@@ -362,8 +419,8 @@ export default function Navbar({ children }) {
 
                                                             <div className="relative bg-white">
                                                                 <div className="mx-auto max-w-7xl px-8">
-                                                                    <div className="grid grid-cols-2 gap-x-8 gap-y-10 py-16">
-                                                                        <div className="col-start-2 grid grid-cols-2 gap-x-8">
+                                                                    {/* <div className="grid grid-cols-2 gap-x-8 gap-y-10 py-16"> */}
+                                                                    {/* <div className="col-start-2 grid grid-cols-2 gap-x-8">
                                                                             {category.featured.map((item) => (
                                                                                 <div key={item.name} className="group relative text-base sm:text-sm">
                                                                                     <div className="aspect-h-1 aspect-w-1 overflow-hidden rounded-lg bg-gray-100 group-hover:opacity-75">
@@ -382,30 +439,31 @@ export default function Navbar({ children }) {
                                                                                     </p>
                                                                                 </div>
                                                                             ))}
-                                                                        </div>
-                                                                        <div className="row-start-1 grid grid-cols-3 gap-x-8 gap-y-10 text-sm">
-                                                                            {category.sections.map((section) => (
-                                                                                <div key={section.name}>
-                                                                                    <p id={`${section.name}-heading`} className="font-medium text-gray-900">
-                                                                                        {section.name}
-                                                                                    </p>
-                                                                                    <ul
-                                                                                        role="list"
-                                                                                        aria-labelledby={`${section.name}-heading`}
-                                                                                        className="mt-6 space-y-6 sm:mt-4 sm:space-y-4"
-                                                                                    >
-                                                                                        {section.items.map((item) => (
-                                                                                            <li key={item.name} className="flex">
-                                                                                                <a href={item.href} className="hover:text-gray-800">
-                                                                                                    {item.name}
-                                                                                                </a>
-                                                                                            </li>
-                                                                                        ))}
-                                                                                    </ul>
-                                                                                </div>
-                                                                            ))}
-                                                                        </div>
+                                                                        </div> */}
+                                                                    <div className="row-start-1 grid gap-x-8 gap-y-10 py-16 grid-cols-7 text-sm">
+                                                                        {second && second.map((section) =>
+                                                                        (
+                                                                            <div key={section.name}>
+                                                                                <p id={`${section.name}-heading`} className="font-medium text-gray-900">
+                                                                                    {section.name.includes("kids_") ? section.name.split("kids_")[1].charAt(0).toUpperCase() + section.name.split("kids_")[1].slice(1) : section.name.split("men_" && "_")[1].charAt(0).toUpperCase() + section.name.split("men_" && "_")[1].slice(1)}
+                                                                                </p>
+                                                                                <ul
+                                                                                    role="list"
+                                                                                    aria-labelledby={`${section.name}-heading`}
+                                                                                    className="mt-6 space-y-6 sm:mt-4 sm:space-y-4"
+                                                                                >
+                                                                                    {third && third.filter((ele) => (ele.parentCategory?.name === section.name)).map((thirdCat) => (
+                                                                                        <li key={thirdCat.name} className="flex cursor-pointer">
+                                                                                            <NavLink to={`/products/${category.name}/?category=${section.name}&thirdCategory[0]=${thirdCat.name}`} className="hover:text-gray-800">
+                                                                                                {thirdCat.name.includes("kids_") ? thirdCat.name.split("kids_")[1].charAt(0).toUpperCase() + thirdCat.name.split("kids_" && "_")[1].slice(1) + " " + (thirdCat.name.split("_")[2] ? thirdCat.name.split("_")[2].charAt(0).toUpperCase() + thirdCat.name.split("_")[2].slice(1) : "") : thirdCat.name.split("men_" && "_")[1].charAt(0).toUpperCase() + thirdCat.name.split("men_" && "_")[1].slice(1) + " " + (thirdCat.name.split("_")[2] ? thirdCat.name.split("_")[2].charAt(0).toUpperCase() + thirdCat.name.split("_")[2].slice(1) : "")}
+                                                                                            </NavLink>
+                                                                                        </li>
+                                                                                    ))}
+                                                                                </ul>
+                                                                            </div>
+                                                                        ))}
                                                                     </div>
+                                                                    {/* </div> */}
                                                                 </div>
                                                             </div>
                                                         </Popover.Panel>
@@ -432,7 +490,7 @@ export default function Navbar({ children }) {
                             <div className="ml-auto flex items-center">
                                 {auth ?
                                     <>
-                                    {/* {role === "ADMIN" && <Button variant="contained" size='sm'><NavLink to="/dashboard">Admin</NavLink></Button>} */}
+                                        {/* {role === "ADMIN" && <Button variant="contained" size='sm'><NavLink to="/dashboard">Admin</NavLink></Button>} */}
 
                                         <Menu as="div" className="relative ml-3">
                                             <div>

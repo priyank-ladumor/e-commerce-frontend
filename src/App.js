@@ -19,6 +19,7 @@ import CheckOut from "./pages/CheckOut";
 import ProductDetailsPage from "./pages/ProductDetailsPage";
 import LoginVerified from "./pages/LoginVerified";
 import RegLogProtected from "./RegLogProtected";
+import FilterProductList from "./pages/FilterProductList";
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route index element={<Home />} />
+          <Route exact path="/products/:topCategory" element={<FilterProductList />} />
           <Route exact path="/productdetails/:id" element={<ProductDetailsPage />} />
           <Route exact path="/user/verified/:token" element={<LoginVerified />} />
           <Route path='/' element={<Protected />}>

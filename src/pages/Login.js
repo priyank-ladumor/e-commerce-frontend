@@ -59,7 +59,7 @@ const Login = () => {
             reset();
 
         } else {
-            toast.error('Please solve the captcha ', {
+            toast.error('Please solve the captcha', {
                 position: "top-right",
                 autoClose: 3500,
                 hideProgressBar: false,

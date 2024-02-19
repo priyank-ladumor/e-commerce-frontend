@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { userCreate, userLogin, userAccountVerified, findUserRole } from "../action/authAction";
+import { userCreate, userLogin, userAccountVerified } from "../action/authAction";
 
 
 const initialState = {
@@ -11,7 +11,7 @@ const initialState = {
     userLoginError: null,
     userLoginPending: false,
     userAccountVerifiedSuccess: null,
-    LoggedUserRole: null,
+    // LoggedUserRole: null,
 };
 
 const authSlice = createSlice({
@@ -79,17 +79,17 @@ const authSlice = createSlice({
             state.userAccountVerifiedSuccess = null;
         })
 
-        builder.addCase(findUserRole.pending, (state, { payload }) => {
-            state.LoggedUserRole = null;
-        })
+        // builder.addCase(findUserRole.pending, (state, { payload }) => {
+        //     state.LoggedUserRole = null;
+        // })
 
-        builder.addCase(findUserRole.fulfilled, (state, { payload }) => {
-            state.LoggedUserRole = payload;
-        })
+        // builder.addCase(findUserRole.fulfilled, (state, { payload }) => {
+        //     state.LoggedUserRole = payload;
+        // })
 
-        builder.addCase(findUserRole.rejected, (state, { payload }) => {
-            state.LoggedUserRole = null;
-        })
+        // builder.addCase(findUserRole.rejected, (state, { payload }) => {
+        //     state.LoggedUserRole = null;
+        // })
     }
 });
 

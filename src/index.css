@@ -37,3 +37,9 @@
     overflow-y: hidden; 
     overflow-x: hidden;
   } */
+
+  .rmv-shadow{
+    box-shadow: none !important;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+  }

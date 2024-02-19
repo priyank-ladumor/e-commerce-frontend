@@ -1,9 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { getProducts } from "../action/productsAction";
+import { getProducts, getProductsByIDAction } from "../action/productsAction";
 
 
 const initialState = {
     products: [],
+    productsDetails: null,
 };
 
 const productsSlice = createSlice({
@@ -25,8 +26,19 @@ const productsSlice = createSlice({
         builder.addCase(getProducts.rejected, (state, { payload }) => {
             state.products = null;
         })
+
+        builder.addCase(getProductsByIDAction.pending, (state, { payload }) => {
+            state.productsDetails = null;
+        })
+
+        builder.addCase(getProductsByIDAction.fulfilled, (state, { payload }) => {
+            state.productsDetails = payload;
+        })
+
+        builder.addCase(getProductsByIDAction.rejected, (state, { payload }) => {
+            state.productsDetails = null;
+        })
     }
 });
 
 export default productsSlice.reducer;
-export const { Logout } = productsSlice.actions;

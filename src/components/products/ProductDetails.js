@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react'
 import { StarIcon } from '@heroicons/react/20/solid'
 import { RadioGroup } from '@headlessui/react'
 import { useParams } from 'react-router-dom'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
+import { getProductsByIDAction } from '../../store/action/productsAction'
 
 const product = {
   name: 'Basic Tee 6-Pack',
@@ -63,31 +64,33 @@ function classNames(...classes) {
 }
 
 export default function ProductDetails() {
+  const dispatch = useDispatch()
   const [selectedColor, setSelectedColor] = useState(product.colors[0])
   const [selectedSize, setSelectedSize] = useState(product.sizes[2])
 
-  const { products } = useSelector((state) => state.products)
+  const { productsDetails } = useSelector((state) => state.products)
   const { id } = useParams()
   const [pdetails, setPdetails] = useState([])
+
   useEffect(() => {
-    setPdetails(products)
+    dispatch(getProductsByIDAction({ id }))
   }, [])
+
   useEffect(() => {
-    setPdetails(products)
-  }, [products])
-  const singleProduct = pdetails.filter((e, i) =>
-    e.id === +id
-  )
-  console.log(singleProduct);
+    if (productsDetails) {
+      setPdetails(productsDetails)
+    }
+  }, [productsDetails])
+
   return (
     <div className="bg-white">
       <div className="pt-6">
-        <nav aria-label="Breadcrumb">
+        {/* <nav aria-label="Breadcrumb">
           <ol role="list" className="mx-auto flex max-w-2xl items-center space-x-2 px-4 sm:px-6 lg:max-w-7xl lg:px-8">
-            {product.breadcrumbs.map((breadcrumb) => (
-              <li key={breadcrumb.id}>
+            {pdetails.map((imgs) => (
+              <li key={imgs.id}>
                 <div className="flex items-center">
-                  <a href={breadcrumb.href} className="mr-2 text-sm font-medium text-gray-900">
+                  <a href={imgs.} className="mr-2 text-sm font-medium text-gray-900">
                     {breadcrumb.name}
                   </a>
                   <svg
@@ -109,53 +112,49 @@ export default function ProductDetails() {
               </a>
             </li>
           </ol>
-        </nav>
+        </nav> */}
 
         {/* Image gallery */}
-        {singleProduct &&
+        {pdetails?.images  &&
           <div className="mx-auto mt-6 max-w-2xl sm:px-6 lg:grid lg:max-w-7xl lg:grid-cols-3 lg:gap-x-8 lg:px-8">
-            <div className="aspect-h-4 aspect-w-3 hidden overflow-hidden rounded-lg lg:block">
-              <img
-                src={singleProduct[0]?.images[0]}
-                alt={singleProduct[0]?.images[0]}
-                className="h-full w-full object-cover object-center"
-              />
-            </div>
-            <div className="hidden lg:grid lg:grid-cols-1 lg:gap-y-8">
-              <div className="aspect-h-2 aspect-w-3 overflow-hidden rounded-lg">
+            {pdetails.images?.length > 0 && 
+            <><div className="aspect-h-4 aspect-w-3 hidden overflow-hidden rounded-lg lg:block">
                 <img
-                  src={singleProduct[0]?.images[1]}
-                  alt={singleProduct[0]?.images[1]}
-                  className="h-full w-full object-cover object-center"
-                />
-              </div>
-              <div className="aspect-h-2 aspect-w-3 overflow-hidden rounded-lg">
-                <img
-                  src={singleProduct[0]?.images[2]}
-                  alt={singleProduct[0]?.images[2]}
-                  className="h-full w-full object-cover object-center"
-                />
-              </div>
-            </div>
-            <div className="aspect-h-5 aspect-w-4 lg:aspect-h-4 lg:aspect-w-3 sm:overflow-hidden sm:rounded-lg">
-              <img
-                src={singleProduct[0]?.images[3]}
-                alt={singleProduct[0]?.images[3]}
-                className="h-full w-full object-cover object-center"
-              />
-            </div>
-          </div>}
+                  src={pdetails?.images[0]}
+                  alt={pdetails?.images[0]}
+                  className="h-full w-full object-cover object-center" />
+              </div><div className="hidden lg:grid lg:grid-cols-1 lg:gap-y-8">
+                  <div className="aspect-h-2 aspect-w-3 overflow-hidden rounded-lg">
+                    <img
+                      src={pdetails?.images[1]}
+                      alt={pdetails?.images[1]}
+                      className="h-full w-full object-cover object-center" />
+                  </div>
+                  <div className="aspect-h-2 aspect-w-3 overflow-hidden rounded-lg">
+                    <img
+                      src={pdetails?.images[2]}
+                      alt={pdetails?.images[2]}
+                      className="h-full w-full object-cover object-center" />
+                  </div>
+                </div><div className="aspect-h-5 aspect-w-4 lg:aspect-h-4 lg:aspect-w-3 sm:overflow-hidden sm:rounded-lg">
+                  <img
+                    src={pdetails?.images[3]}
+                    alt={pdetails?.images[3]}
+                    className="h-full w-full object-cover object-center" />
+                </div></>}
+          </div>
+        }
 
         {/* Product info */}
         <div className="mx-auto max-w-2xl px-4 pb-16 pt-10 sm:px-6 lg:grid lg:max-w-7xl lg:grid-cols-3 lg:grid-rows-[auto,auto,1fr] lg:gap-x-8 lg:px-8 lg:pb-24 lg:pt-16">
           <div className="lg:col-span-2 lg:border-r lg:border-gray-200 lg:pr-8">
-            <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">{product.name}</h1>
+            <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">{pdetails?.title}</h1>
           </div>
 
           {/* Options */}
           <div className="mt-4 lg:row-span-3 lg:mt-0">
             <h2 className="sr-only">Product information</h2>
-            <p className="text-3xl tracking-tight text-gray-900">{product.price}</p>
+            <p className="text-3xl tracking-tight text-gray-900">{pdetails?.discountPrice}</p>
 
             {/* Reviews */}
             <div className="mt-6">
@@ -294,7 +293,7 @@ export default function ProductDetails() {
               <h3 className="sr-only">Description</h3>
 
               <div className="space-y-6">
-                <p className="text-base text-gray-900">{product.description}</p>
+                <p className="text-base text-gray-900">{pdetails?.description}</p>
               </div>
             </div>
 

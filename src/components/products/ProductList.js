@@ -4,7 +4,7 @@ import { Dialog, Disclosure, Menu, Transition } from '@headlessui/react'
 import { StarIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { ChevronDownIcon, FunnelIcon, MinusIcon, PlusIcon, Squares2X2Icon } from '@heroicons/react/20/solid'
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/20/solid'
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { MdStarRate } from "react-icons/md"
 import { useDispatch, useSelector } from 'react-redux'
 import { getProducts } from '../../store/action/productsAction'
@@ -53,22 +53,18 @@ function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
 }
 const ProductList = () => {
+    const location = useLocation()
     const [newproduct, setnewproduct] = useState()
     const { products } = useSelector((state) => state.products)
-    //     const resp = () => {
-    //         fetch('https://dummyjson.com/products')
-    //             .then(res => res.json())
-    //             .then(res => setnewproduct(res.products))
-    // }
-    // if(newproduct){
-    //     const a = Array.from(newproduct).map((ele) => console.log(ele.brand))
-    // }
+
     const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
 
     const dispatch = useDispatch()
+    
     useEffect(() => {
-        dispatch(getProducts())
-    }, [])
+        dispatch(getProducts(location.search))
+    }, [location.search])
+
     useEffect(() => {
         if (products) {
             setnewproduct(products)
@@ -366,7 +362,7 @@ function ProductGrid({ newproduct }) {
                 <div className="mx-auto max-w-2xl px-4 py-16 sm:px-0 sm:py-0 lg:max-w-7xl lg:px-8">
                     <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:gap-x-8">
                         {newproduct && Array.from(newproduct)?.map((product) => (
-                        <NavLink to={`/productdetails/${product.id}`}>
+                        <NavLink to={`/productdetails/${product._id}`}>
                             <div key={product.id} className="group relative border-solid border-[1px] p-2 border-gray-300 rounded-md">
                                 <div className="aspect-h-1 min-h-60 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-60">
                                     <img

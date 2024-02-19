@@ -62,7 +62,7 @@ export const userLogin = createAsyncThunk(
                 }
             );
             localStorage.setItem("token", result.data.token)
-            localStorage.setItem("role", result.data.role)
+            // localStorage.setItem("role", result.data.role)
             localStorage.removeItem("name")
             return result.data;
         } catch (error) {
@@ -106,27 +106,27 @@ export const userAccountVerified = createAsyncThunk(
     }
 );
 
-export const findUserRole = createAsyncThunk(
-    "user/role",
-    async (auth, { rejectWithValue }) => {
-        try {
-            const result = await axios.get(
-                `${process.env.REACT_APP_BASE_URL}/user/role`,
-                // data,
-                {
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": auth
-                    },
-                }
-            );
-            return result.data;
-        } catch (error) {
-            if (error.response && error.response.data.msg) {
-                return rejectWithValue(error.response.data.msg);
-            } else {
-                return rejectWithValue(error.message);
-            }
-        }
-    }
-);
+// export const findUserRole = createAsyncThunk(
+//     "user/role",
+//     async (auth, { rejectWithValue }) => {
+//         try {
+//             const result = await axios.get(
+//                 `${process.env.REACT_APP_BASE_URL}/user/role`,
+//                 // data,
+//                 {
+//                     headers: {
+//                         "Content-Type": "application/json",
+//                         "Authorization": auth
+//                     },
+//                 }
+//             );
+//             return result.data;
+//         } catch (error) {
+//             if (error.response && error.response.data.msg) {
+//                 return rejectWithValue(error.response.data.msg);
+//             } else {
+//                 return rejectWithValue(error.message);
+//             }
+//         }
+//     }
+// );

@@ -4,7 +4,7 @@ import { Dialog, Disclosure, Menu, Transition } from '@headlessui/react'
 import { StarIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { ChevronDownIcon, FunnelIcon, MinusIcon, PlusIcon, Squares2X2Icon } from '@heroicons/react/20/solid'
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/20/solid'
-import { NavLink, useLocation, useParams } from 'react-router-dom';
+import { NavLink, useLocation, useParams, useSearchParams } from 'react-router-dom';
 import { MdStarRate } from "react-icons/md"
 import { useDispatch, useSelector } from 'react-redux'
 import { getProducts } from '../../store/action/productsAction'
@@ -14,6 +14,7 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import Button from '@mui/material/Button';
 
 const sortOptions = [
     { name: 'Best Rating', sort: 'rating', order: 'desc', current: false },
@@ -26,20 +27,29 @@ function classNames(...classes) {
 }
 
 const ProductList = () => {
-    const { categoryThirdFilter } = useSelector((state) => state.category)
+    const { categoryThirdFilter, categoryThird } = useSelector((state) => state.category)
     const location = useLocation()
+    const [searchparam, setsearchparam] = useSearchParams()
     const { topCategory } = useParams()
     const [newproduct, setnewproduct] = useState()
     const [thirdparent, setthirdparent] = useState()
     const [third, setthird] = useState()
+    const [categoryThirdData, setcategoryThirdData] = useState()
     const { products } = useSelector((state) => state.products)
+    const [filter, setfilter] = useState([])
 
     const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
 
     const dispatch = useDispatch()
 
     useEffect(() => {
-        const parent = third && third.filter((data) => data.parentCategory?.name === location.search.split("category=")[1])
+        if (thirdparent) {
+            dispatch(getthirdlevelCategoryFilterAction({ parentCategory: thirdparent }))
+        }
+    }, [location.search, thirdparent])
+
+    useEffect(() => {
+        const parent = categoryThirdData && categoryThirdData.filter((data) => data.parentCategory?.name === (location.search.split("?category=")[1].split('&')[0] || location.search.split("?category=")[1]))
         if (parent) {
             setthirdparent(parent[0]?.parentCategory?._id)
         }
@@ -52,11 +62,18 @@ const ProductList = () => {
     }, [thirdparent])
 
     useEffect(() => {
-        dispatch(getProducts(location.search))
-    }, [location.search])
+        dispatch(getthirdlevelCategoryAction())
+    }, [])
 
     useEffect(() => {
-        dispatch(getthirdlevelCategoryFilterAction())
+        const parent = categoryThirdData && categoryThirdData.filter((data) => data.parentCategory?.name === (location.search.split("?category=")[1].split('&')[0] || location.search.split("?category=")[1]))
+        if (parent) {
+            setthirdparent(parent[0]?.parentCategory?._id)
+        }
+    }, [categoryThirdData])
+
+    useEffect(() => {
+        dispatch(getProducts(location.search))
     }, [location.search])
 
     useEffect(() => {
@@ -66,16 +83,27 @@ const ProductList = () => {
     }, [categoryThirdFilter])
 
     useEffect(() => {
+        if (categoryThird) {
+            setcategoryThirdData(categoryThird)
+        }
+    }, [categoryThird])
+
+    useEffect(() => {
         if (products) {
             setnewproduct(products)
         }
     }, [products])
 
-    const [filter, setfilter] = useState([])
-    const categoriesSelected = [];
+
+    let thirdCategory = []
+
+
 
     const handleFilter = async (e, option, section) => {
-        // const newFilter = { ...filter }
+        const parent2 = searchparam.get("thirdCategory[0]") && categoryThirdData && categoryThirdData.filter((data) => data.name === searchparam.get("thirdCategory[0]"))
+        console.log(parent2[0]._id,"parent2[0]._id");
+        parent2 && searchparam.get("thirdCategory[0]") && filter[parent2[0]._id].push(searchparam.get("thirdCategory[0]"))
+
         if (e.target.checked) {
             if (filter[section._id]) {
                 filter[section._id].push(option);
@@ -83,28 +111,15 @@ const ProductList = () => {
                 filter[section._id] = option;
             }
         } else {
-
-            // const index = newFilter[section._id].findIndex(
-            //     (el) => console.log(el === section._id)
-            //     );
-                // const index = filter.findIndex(option)
-                // filter[section._id].splice(index, 1);
-                const filtered = filter && filter.filter((ele) => ele)
-                console.log(filtered)
-            // filter.slice(section._id, 1);
+            delete filter[section._id]
         }
-        // setfilter(newFilter)
 
-        // if (e.target.checked) {
-        //     categoriesSelected.push(option)
-        // }
-        console.log(filter);
-    }
+        for (let key in filter) {
+            thirdCategory.push(filter[key])
+        }
+        setsearchparam(thirdCategory.length > 1 ? { category: searchparam.get('category'), thirdCategory: thirdCategory } : { category: searchparam.get('category'), "thirdCategory[0]": thirdCategory })
 
-    const handleSort = (e, option) => {
-        // const newFilter = { ...filter, _sort: option.sort, _order: option.order }
-        // setfilter(newFilter)
-        // // dispatch(getProductsByFilter(newFilter))
+        //    const thirdArr = thirdCategory.map((ele, id) => `&thirdCategory[${id}]=${ele}`)
     }
 
     return (
@@ -146,7 +161,7 @@ const ProductList = () => {
                                                     <Menu.Item key={option.name}>
                                                         {({ active }) => (
                                                             <div
-                                                                onClick={(e) => handleSort(e, option)}
+                                                                // onClick={(e) => handleSort(e, option)}
                                                                 className={classNames(
                                                                     option.current ? 'font-medium text-gray-900' : 'text-gray-500',
                                                                     active ? 'bg-gray-100' : '',
@@ -186,7 +201,7 @@ const ProductList = () => {
                             <div className="grid grid-cols-1 gap-x-8 gap-y-10 lg:grid-cols-4">
                                 {/* Filters */}
                                 {/* full screen */}
-                                <DesktopScreenFilter handleFilter={handleFilter} third={third} thirdparent={thirdparent} />
+                                <DesktopScreenFilter handleFilter={handleFilter} third={third} thirdparent={thirdparent} thirdCategory={thirdCategory} searchparam={searchparam} setsearchparam={setsearchparam} />
 
                                 {/* Product grid */}
                                 <ProductGrid newproduct={newproduct} topCategory={topCategory} location={location} />
@@ -371,7 +386,7 @@ function ProductGrid({ newproduct, topCategory, location }) {
                 <div className="mx-auto max-w-2xl px-4 py-16 sm:px-0 sm:py-0 lg:max-w-7xl lg:px-8">
                     <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:gap-x-8">
                         {newproduct && Array.from(newproduct)?.map((product) => (
-                            <NavLink to={`/products/${topCategory}/${location.search.split("?category=")[1].split("&")[0]}/${location.search.split("&thirdCategory[0]=")[1] ? location.search.split("&thirdCategory[0]=")[1] : newproduct[0]?.category?.name}/${product._id}`}>
+                            <NavLink to={`/products/${topCategory}/${location.search.split("?category=")[1].split("&")[0]}/${location.search.split("&thirdCategory[0]=" || "&thirdCategory=")[1] ? location.search.split("&thirdCategory[0]=" || "&thirdCategory=")[1] : newproduct[0]?.category?.name}/${product._id}`}>
                                 <div key={product.id} className="group relative border-solid border-[1px] p-2 border-gray-300 rounded-md">
                                     <div className="aspect-h-1 min-h-60 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-60">
                                         <img
@@ -411,11 +426,11 @@ function ProductGrid({ newproduct, topCategory, location }) {
     </>);
 }
 
-function DesktopScreenFilter({ handleFilter, third, thirdparent }) {
+function DesktopScreenFilter({ handleFilter, third, thirdparent, thirdCategory, searchparam, setsearchparam }) {
+    console.log(searchparam.get("thirdCategory[0]"), "drftgyhuji");
     return (<>
         <form className="hidden lg:block">
-
-            {thirdparent && thirdparent.length > 0 &&
+            {(thirdparent && thirdparent.length > 0) &&
                 <Accordion defaultExpanded>
                     <AccordionSummary
                         expandIcon={<ExpandMoreIcon />}
@@ -429,11 +444,13 @@ function DesktopScreenFilter({ handleFilter, third, thirdparent }) {
                             {third && third.map((section, id) => (
                                 <div key={section.value} className="flex items-center">
                                     <input
-                                        id={`filter-${section.id}`}
-                                        name={`${section.id}[]`}
-                                        defaultValue={section.name}
+                                        id={`filter-${section.id}-${id}`}
+                                        name={`${section.name}`}
+                                        // name={`${section.name}[]`}
+                                        defaultValue={searchparam.get("thirdCategory[0]") === section.name ? searchparam.get("thirdCategory[0]") === section.name : section.name}
                                         type="checkbox"
-                                        defaultChecked={section.name.checked}
+                                        // value={section.name}
+                                        defaultChecked={searchparam.get("thirdCategory[0]") === section.name ? searchparam.get("thirdCategory[0]") === section.name : section.name.checked}
                                         className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                                         onChange={(e) => handleFilter(e, section.name, section)}
                                     />
@@ -442,13 +459,14 @@ function DesktopScreenFilter({ handleFilter, third, thirdparent }) {
                                         className="ml-3 text-lg cursor-pointer text-black-900"
                                     >
                                         {section.name.includes("kids_") ? section.name.split("kids_")[1].charAt(0).toUpperCase() + section.name.split("kids_" && "_")[1].slice(1) + " " + (section.name.split("_")[2] ? section.name.split("_")[2].charAt(0).toUpperCase() + section.name.split("_")[2].slice(1) : "") : section.name.split("men_" && "_")[1].charAt(0).toUpperCase() + section.name.split("men_" && "_")[1].slice(1) + " " + (section.name.split("_")[2] ? section.name.split("_")[2].charAt(0).toUpperCase() + section.name.split("_")[2].slice(1) : "")}
-
                                     </label>
                                 </div>
                             ))}
+                            <Button variant="outlined" size='sm' onClick={() => [setsearchparam(thirdCategory.length > 1 ? { category: searchparam.get('category'), thirdCategory: thirdCategory } : { category: searchparam.get('category'), "thirdCategory[0]": thirdCategory })]} >clear</Button>
                         </Typography>
                     </AccordionDetails>
-                </Accordion>}
+                </Accordion>
+            }
             <Accordion>
                 <AccordionSummary
                     expandIcon={<ExpandMoreIcon />}
@@ -464,7 +482,6 @@ function DesktopScreenFilter({ handleFilter, third, thirdparent }) {
                     </Typography>
                 </AccordionDetails>
             </Accordion>
-
         </form>
     </>);
 }

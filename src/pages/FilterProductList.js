@@ -4,7 +4,7 @@ import Navbar from '../components/navbar/Navbar'
 
 const FilterProductList = () => {
     return (
-        <div style={{background:"white", minHeight:"100vh"}} >
+        <div style={{background:"#F5F5F5", minHeight:"100vh"}} >
             <Navbar>
                 <ProductList />
             </Navbar>

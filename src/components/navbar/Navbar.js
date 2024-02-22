@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/no-redundant-roles */
 /* eslint-disable no-restricted-globals */
 
 import React, { useEffect } from 'react'
@@ -8,6 +9,7 @@ import { NavLink, Navigate, useLocation, useNavigate, useParams } from 'react-ro
 import Button from '@mui/material/Button';
 import { useDispatch, useSelector } from "react-redux";
 import { getsecondlevelCategoryAction, getthirdlevelCategoryAction, gettoplevelCategoryAction } from '../../store/action/categoryAction'
+import { useSearchParams } from 'react-router-dom';
 
 
 const navigation = {
@@ -145,6 +147,8 @@ function classNames(...classes) {
 
 export default function Navbar({ children }) {
     const location = useLocation()
+    const [searchparam, setsearchparam] = useSearchParams()
+
     const { topCategory, thirdCategory } = useParams()
 
     const [open, setOpen] = useState(false)
@@ -227,7 +231,6 @@ export default function Navbar({ children }) {
             setsecondParent(topCategory)
         }
     }, [])
-
     return (
         <div className="bg-[#F5F5F5]"  >
             {/* Mobile menu */}
@@ -356,7 +359,7 @@ export default function Navbar({ children }) {
 
             {/* tab z-ind-999  */}
             {/* big screen  */}
-            <header className="relative bg-white z-[999]" style={{boxShadow: " rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px"}}>
+            <header className="relative bg-white z-[999]" style={{ boxShadow: " rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px" }}>
                 <nav aria-label="Top" className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div className="border-b border-gray-200">
                         <div className="flex h-16 items-center">
@@ -390,11 +393,11 @@ export default function Navbar({ children }) {
                                                 <>
                                                     <div className="relative flex"  >
                                                         <Popover.Button
-                                                            onClick={() => [setNavOpen(true), setsecondParent(category.name)]}
+                                                            onClick={() => [setNavOpen(true), setsecondParent(category.name), setselectNavOp(category.name)]}
                                                             className={classNames(
                                                                 open
-                                                                    ? 'text-red-950  outline-none focus-visible:outline-none font-medium  rmv-shadow shadow-none	'
-                                                                    : 'border-transparent text-gray-600  outline-none focus-visible:outline-none hover:text-gray-800 ',
+                                                                    ? 'text-black-950 border-b-2 border-gray-600 outline-none focus-visible:outline-none font-medium  rmv-shadow shadow-none	'
+                                                                    : 'border-transparent text-gray-600  outline-none focus-visible:outline-none hover:text-red-800 focus:text-red-800',
                                                                 'relative z-10 -mb-px flex   items-center outline-none focus-visible:outline-none font-medium pt-px text-sm transition-colors duration-200 ease-out '
                                                             )}
                                                             style={{ color: topCategory === category.name && "blue", borderBottom: topCategory === category.name && "3px solid blue", fontWeight: topCategory === category.name && "bold", fontSize: "20px" }}
@@ -412,7 +415,7 @@ export default function Navbar({ children }) {
                                                                 leave="transition ease-in duration-150"
                                                                 leaveFrom="opacity-100"
                                                                 leaveTo="opacity-0"
-                                                                style={{boxShadow: " rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px"}}
+                                                                style={{ boxShadow: " rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px" }}
                                                             >
                                                                 <Popover.Panel className="absolute inset-x-0 top-full text-sm text-gray-500 ">
                                                                     <div className="relative bg-white" >
@@ -430,14 +433,14 @@ export default function Navbar({ children }) {
                                                                                             className="mt-6 space-y-6 sm:mt-4 sm:space-y-4"
                                                                                         >
                                                                                             <li className="flex cursor-pointer" onClick={() => [setAll(section.name)]} style={{ fontSize: "18px" }}  >
-                                                                                                <NavLink to={`/products/${category.name}/?category=${section.name}&thirdCategoryCheckBox=on`} onClick={() => setNavOpen(false)} className="hover:text-gray-800" style={{ color: section.name === (location.search.split("category=")[1]?.split("&thirdCategoryCheckBox=on")[0] || location.search.split("category=")[1]?.split("&thirdCategoryCheckBox=on")[0]?.split('&')[0]) && "blue" }} >
+                                                                                                <NavLink to={`/products/${category.name}/?category=${section.name}&thirdCategoryCheckBox=on`} onClick={() => setNavOpen(false)} className="hover:text-gray-800" style={{ color: section.name === (location.search.split("category=")[1]?.split("&thirdCategoryCheckBox=on")[0] || location.search.split("category=")[1]?.split("&thirdCategoryCheckBox=on")[0]?.split('&')[0]) && "blue" }}  >
                                                                                                     All
                                                                                                 </NavLink>
                                                                                             </li>
                                                                                             {third && third.filter((ele) => (ele.parentCategory?.name === section.name)).map((thirdCat) => (
                                                                                                 <>
                                                                                                     <li key={thirdCat.name} className="flex cursor-pointer" style={{ fontSize: "18px" }}  >
-                                                                                                        <NavLink to={`/products/${category.name}/?category=${section.name}&thirdCategory[0]=${thirdCat.name}`} onClick={() => setNavOpen(false)} style={{ color: (thirdCategory === thirdCat.name || location.search.split("thirdCategory[0]=")[1] === thirdCat.name) && "blue" }} className="hover:text-gray-800">
+                                                                                                        <NavLink to={`/products/${category.name}/?category=${section.name}&thirdCategory[0]=${thirdCat.name}&thirdCategoryCheckBox=off`} onClick={() => setNavOpen(false)} style={{ color: thirdCat.name === searchparam.get("thirdCategory[0]") && searchparam.get("thirdCategoryCheckBox") === "off" && "blue" }} className="hover:text-gray-800">
                                                                                                             {thirdCat.name.includes("kids_") ? thirdCat.name.split("kids_")[1].charAt(0).toUpperCase() + thirdCat.name.split("kids_" && "_")[1].slice(1) + " " + (thirdCat.name.split("_")[2] ? thirdCat.name.split("_")[2].charAt(0).toUpperCase() + thirdCat.name.split("_")[2].slice(1) : "") : thirdCat.name.split("men_" && "_")[1].charAt(0).toUpperCase() + thirdCat.name.split("men_" && "_")[1].slice(1) + " " + (thirdCat.name.split("_")[2] ? thirdCat.name.split("_")[2].charAt(0).toUpperCase() + thirdCat.name.split("_")[2].slice(1) : "")}
                                                                                                         </NavLink>
                                                                                                     </li>
@@ -564,7 +567,7 @@ export default function Navbar({ children }) {
                 </nav>
             </header>
             <main>
-                <div className="mx-auto max-w-7xl  pb-16 sm:px-6 lg:px-8">
+                <div className="mx-auto max-w-7xl pt-3 pb-16 sm:px-6 lg:px-8">
                     {children}
                 </div>
             </main>

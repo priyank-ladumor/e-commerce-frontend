@@ -15,22 +15,30 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Button from '@mui/material/Button';
+import {
+    MenuItem,
+    Select,
+} from "@mui/material";
+import FormControl from '@mui/material/FormControl';
 
-const sortOptions = [
-    { name: 'Best Rating', sort: 'rating', order: 'desc', current: false },
-    { name: 'Price: Low to High', sort: 'price', order: 'ase', current: false },
-    { name: 'Price: High to Low', sort: 'price', order: 'desc', current: false },
-]
+// const sortOptions = [
+//     { name: 'Best Rating', sort: 'rating', order: 'desc', current: false },
+//     { name: 'Price: Low to High', sort: 'price', order: 'ase', current: false },
+//     { name: 'Price: High to Low', sort: 'price', order: 'desc', current: false },
+// ]
 
-function classNames(...classes) {
-    return classes.filter(Boolean).join(' ')
-}
+// function classNames(...classes) {
+//     return classes.filter(Boolean).join(' ')
+// }
 
 const ProductList = () => {
-    const { categoryThirdFilter, categoryThird } = useSelector((state) => state.category)
-    const location = useLocation()
+
     const [searchparam, setsearchparam] = useSearchParams()
+    const location = useLocation()
+
+    const { categoryThirdFilter, categoryThird } = useSelector((state) => state.category)
     const { topCategory } = useParams()
+    const [FilterOpne, setFilterOpne] = useState(false)
     const [newproduct, setnewproduct] = useState()
     const [thirdparent, setthirdparent] = useState()
     const [third, setthird] = useState()
@@ -42,6 +50,50 @@ const ProductList = () => {
     const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
 
     const dispatch = useDispatch()
+
+    const locationSort = searchparam.get("sort") === null ? "" : searchparam.get("sort")
+    const locationPageSize = +searchparam.get("pageSize") === 0 ? 12 : +searchparam.get("pageSize")
+
+
+    const [sort, setsort] = useState(locationSort);
+    const [pageSize, setpageSize] = useState(locationPageSize);
+
+    useEffect(() => {
+        if (FilterOpne) {
+            for (let key in filter) {
+                thirdCategory.push(filter[key])
+            }
+            setsearchparam(
+                searchparam.get('thirdCategoryCheckBox') === "on"
+                    ?
+                    (thirdCategory.length > 1 ?
+                        //multiple select category filter
+                        {
+                            category: searchparam.get('category'), "thirdCategoryCheckBox": "on", thirdCategory, "resetThird": (searchparam.get('thirdCategory[0]') || searchparam.get('thirdCategory')) ? "false" : "true"
+                            , sort, pageSize
+                        }
+                        :
+                        // one selected category filter 
+                        {
+                            category: searchparam.get('category'), "thirdCategoryCheckBox": "on", 'thirdCategory[0]': thirdCategory, "resetThird": (searchparam.get('thirdCategory[0]') || searchparam.get('thirdCategory')) ? "false" : "true"
+                            , sort, pageSize
+                        })
+                    :
+                    //one category select from navbar
+                    {
+                        category: searchparam.get('category'), "thirdCategoryCheckBox": "off", 'thirdCategory[0]': searchparam.get('thirdCategory[0]'), "resetThird": (searchparam.get('thirdCategory[0]') || searchparam.get('thirdCategory')) ? "false" : "true"
+                        , sort, pageSize
+                    }
+            )
+        } else {
+            setsearchparam(location.search)
+        }
+    }, [sort, pageSize, location.search, filter])
+
+
+    useEffect(() => {
+        dispatch(getProducts(location.search))
+    }, [location.search])
 
     useEffect(() => {
         if (thirdparent) {
@@ -74,10 +126,6 @@ const ProductList = () => {
     }, [categoryThirdData])
 
     useEffect(() => {
-        dispatch(getProducts(location.search))
-    }, [location.search])
-
-    useEffect(() => {
         if (categoryThirdFilter) {
             setthird(categoryThirdFilter)
         }
@@ -106,18 +154,35 @@ const ProductList = () => {
         } else {
             delete filter[section._id]
         }
-        console.log(filter, "filter");
 
         for (let key in filter) {
             thirdCategory.push(filter[key])
         }
 
-        setsearchparam(thirdCategory.length > 1 ? { category: searchparam.get('category'), "thirdCategoryCheckBox": "on", thirdCategory: thirdCategory, "resetThird": "false" } : { category: searchparam.get('category'), "thirdCategoryCheckBox": "on", "thirdCategory[0]": thirdCategory, "resetThird": "false" })
+        setsearchparam(thirdCategory.length > 1 ? { category: searchparam.get('category'), "thirdCategoryCheckBox": "on", thirdCategory: thirdCategory, "resetThird": "false", sort, pageSize } : { category: searchparam.get('category'), "thirdCategoryCheckBox": "on", "thirdCategory[0]": thirdCategory, "resetThird": "false", sort, pageSize })
     }
+
     useEffect(() => {
         setfilter([])
     }, [thirdparent]);
 
+    // useEffect(() => {
+    //     if(searchparam.get('resetThird') === "true" && !searchparam.get('thirdCategory[0]')){
+    //         setsearchparam({ category: searchparam.get('category'), "thirdCategoryCheckBox": "on", "resetThird": "true", sort, pageSize })
+    //         setsort("")
+    //         setfilter([])
+    //         setpageSize(12)
+    //     }
+    // }, [])
+
+    const handleChangeSort = (event) => {
+        setsort(event.target.value)
+        setFilterOpne(true)
+    }
+    const handleChangePageSize = (event, value) => {
+        setpageSize(event.target.value)
+        setFilterOpne(true)
+    }
     return (
         <div>
             <div className="bg-[#fff] mt-10">
@@ -125,59 +190,68 @@ const ProductList = () => {
                     {/* Mobile filter dialog */}
                     <MobileScreenFilter handleFilter={handleFilter} setMobileFiltersOpen={setMobileFiltersOpen} mobileFiltersOpen={mobileFiltersOpen} />
 
+                    {/* desktop screen filter sort and pagesize  */}
                     <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                         <div className="flex items-baseline justify-between border-b border-gray-200 pb-6 pt-12">
                             <h1 className="md:text-4xl text-xl font-semibold tracking-tight text-gray-700">Products</h1>
 
                             <div className="flex items-center">
-                                <Menu as="div" className="relative inline-block text-left">
-                                    <div>
-                                        <Menu.Button className="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
-                                            Sort
-                                            <ChevronDownIcon
-                                                className="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
-                                                aria-hidden="true"
-                                            />
-                                        </Menu.Button>
-                                    </div>
+                                {/* page size set  */}
+                                <span className='hide2 font-semibold flex items-center'>Products per page:
+                                    <FormControl variant="standard" sx={{ m: 0 }}>
+                                        <Select
+                                            id="demo-simple-select-standard"
+                                            value={pageSize}
+                                            onChange={handleChangePageSize}
+                                            displayEmpty
+                                            style={{ padding: "0px", width: "45px" }}
+                                            inputProps={{ 'aria-label': 'Without label' }}
+                                            className='ms-2'
+                                        >
+                                            <MenuItem value="8">
+                                                <em>8</em>
+                                            </MenuItem>
+                                            <MenuItem value="12">
+                                                <em>12</em>
+                                            </MenuItem>
+                                            <MenuItem value="16">
+                                                <em>16</em>
+                                            </MenuItem>
+                                            <MenuItem value="20">
+                                                <em>20</em>
+                                            </MenuItem>
+                                            <MenuItem value="24">
+                                                <em>24</em>
+                                            </MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                </span>
 
-                                    <Transition
-                                        as={Fragment}
-                                        enter="transition ease-out duration-100"
-                                        enterFrom="transform opacity-0 scale-95"
-                                        enterTo="transform opacity-100 scale-100"
-                                        leave="transition ease-in duration-75"
-                                        leaveFrom="transform opacity-100 scale-100"
-                                        leaveTo="transform opacity-0 scale-95"
-                                    >
-                                        {/* sort search */}
-                                        <Menu.Items className="absolute right-0 z-10 mt-2 w-40 origin-top-right rounded-md bg-white shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none">
-                                            <div className="py-1">
-                                                {sortOptions.map((option) => (
-                                                    <Menu.Item key={option.name}>
-                                                        {({ active }) => (
-                                                            <div
-                                                                // onClick={(e) => handleSort(e, option)}
-                                                                className={classNames(
-                                                                    option.current ? 'font-medium text-gray-900' : 'text-gray-500',
-                                                                    active ? 'bg-gray-100' : '',
-                                                                    'block px-4 py-2 text-sm'
-                                                                )}
-                                                            >
-                                                                {option.name}
-                                                            </div>
-                                                        )}
-                                                    </Menu.Item>
-                                                ))}
-                                            </div>
-                                        </Menu.Items>
-                                    </Transition>
-                                </Menu>
+                                {/* sort search */}
+                                <span className=' font-semibold mx-3 flex items-center'>Sort By:
+                                    <FormControl variant="standard" sx={{ m: 0 }}>
+                                        <Select
+                                            id="demo-simple-select-standard"
+                                            value={sort}
+                                            onChange={handleChangeSort}
+                                            displayEmpty
+                                            style={{ padding: "0px", width: sort.length > 0 ? "145px" : "61px" }}
+                                            inputProps={{ 'aria-label': 'Without label' }}
+                                            className='ms-2'
+                                        >
+                                            <MenuItem value="">
+                                                <em>none</em>
+                                            </MenuItem>
+                                            <MenuItem value="high_to_low">
+                                                <em>Price: High-Low</em>
+                                            </MenuItem>
+                                            <MenuItem value="low_to_high">
+                                                <em>Price: Low-High</em>
+                                            </MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                </span>
 
-                                <button type="button" className="-m-2 ml-5 p-2 text-gray-400 hover:text-gray-500 sm:ml-7">
-                                    <span className="sr-only">View grid</span>
-                                    <Squares2X2Icon className="h-5 w-5" aria-hidden="true" />
-                                </button>
                                 <button
                                     type="button"
                                     className="-m-2 ml-4 p-2 text-gray-400 hover:text-gray-500 sm:ml-6 lg:hidden"
@@ -198,7 +272,7 @@ const ProductList = () => {
                                 {/* Filters */}
                                 {/* full screen */}
                                 <DesktopScreenFilter handleFilter={handleFilter} third={third} thirdparent={thirdparent}
-                                    searchparam={searchparam} setfilter={setfilter} filter={filter} setsearchparam={setsearchparam} />
+                                    searchparam={searchparam} setfilter={setfilter} filter={filter} setsearchparam={setsearchparam} pageSize={pageSize} sort={sort} />
 
                                 {/* Product grid */}
                                 <ProductGrid newproduct={newproduct} topCategory={topCategory} location={location} />
@@ -423,10 +497,10 @@ function ProductGrid({ newproduct, topCategory, location }) {
     </>);
 }
 
-function DesktopScreenFilter({ handleFilter, third, thirdparent, searchparam, setfilter, filter, setsearchparam }) {
+function DesktopScreenFilter({ handleFilter, third, thirdparent, searchparam, setfilter, filter, setsearchparam, pageSize, sort }) {
     return (<>
         <form className="hidden lg:block">
-            {(thirdparent && thirdparent.length > 0 && searchparam.get('thirdCategoryCheckBox')) &&
+            {(thirdparent && thirdparent.length > 0 && searchparam.get('thirdCategoryCheckBox') === "on") &&
                 <Accordion defaultExpanded>
                     <AccordionSummary
                         expandIcon={<ExpandMoreIcon />}
@@ -445,7 +519,7 @@ function DesktopScreenFilter({ handleFilter, third, thirdparent, searchparam, se
                                         name={`${section.name}`}
                                         value={section.name}
                                         // checked={section.name ? section.name.checked : false}
-                                        checked={searchparam.get('resetThird') === "false" ? section.name ? section.name.checked : false : false}
+                                        checked={searchparam.get('thirdCategory') ? searchparam.get('thirdCategory').checked : searchparam.get('thirdCategory[0]') ? searchparam.get('thirdCategory[0]').checked : searchparam.get('resetThird') === "false" ? section.name ? section.name.checked : false : false}
                                         type="checkbox"
                                         className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                                         onChange={(e) => handleFilter(e, section.name, section)}
@@ -460,7 +534,7 @@ function DesktopScreenFilter({ handleFilter, third, thirdparent, searchparam, se
                             ))}
                             {
                                 searchparam.get('resetThird') === "false" &&
-                                <Button variant="outlined" style={{ minWidth: "100%", marginTop: "20px", borderColor: "gray" }} color='error' onClick={() => [setfilter([]), setsearchparam({ category: searchparam.get('category'), "thirdCategoryCheckBox": "on", "resetThird": "true" })]} >clear</Button>
+                                <Button variant="outlined" style={{ minWidth: "100%", marginTop: "20px", borderColor: "gray" }} color='error' onClick={() => [setfilter([]), setsearchparam({ category: searchparam.get('category'), "thirdCategoryCheckBox": "on", "resetThird": "true", sort, pageSize })]} >clear</Button>
                             }
                         </Typography>
                     </AccordionDetails>

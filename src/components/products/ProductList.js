@@ -39,6 +39,7 @@ const ProductList = () => {
     const { categoryThirdFilter, categoryThird } = useSelector((state) => state.category)
     const { topCategory } = useParams()
     const [FilterOpne, setFilterOpne] = useState(false)
+    const [pageRefresh, setpageRefresh] = useState(false)
     const [newproduct, setnewproduct] = useState()
     const [thirdparent, setthirdparent] = useState()
     const [third, setthird] = useState()
@@ -166,14 +167,14 @@ const ProductList = () => {
         setfilter([])
     }, [thirdparent]);
 
-    // useEffect(() => {
-    //     if(searchparam.get('resetThird') === "true" && !searchparam.get('thirdCategory[0]')){
-    //         setsearchparam({ category: searchparam.get('category'), "thirdCategoryCheckBox": "on", "resetThird": "true", sort, pageSize })
-    //         setsort("")
-    //         setfilter([])
-    //         setpageSize(12)
-    //     }
-    // }, [])
+    useEffect(() => {
+        if(searchparam.get('resetThird') === "false"){
+            setsearchparam({ category: searchparam.get('category'), "thirdCategoryCheckBox": "on", "resetThird": "true", sort, pageSize })
+            setsort("")
+            setfilter([])
+            setpageSize(12)
+        }
+    }, [])
 
     const handleChangeSort = (event) => {
         setsort(event.target.value)
@@ -183,6 +184,12 @@ const ProductList = () => {
         setpageSize(event.target.value)
         setFilterOpne(true)
     }
+
+    const [reloadSet, setreloadSet] = useState()
+    useEffect(() => {
+        const thirdURLData = (searchparam.get('thirdCategory') || searchparam.get('thirdCategory[0]'))
+        setreloadSet(thirdURLData)
+    }, [])
     return (
         <div>
             <div className="bg-[#fff] mt-10">
@@ -272,7 +279,7 @@ const ProductList = () => {
                                 {/* Filters */}
                                 {/* full screen */}
                                 <DesktopScreenFilter handleFilter={handleFilter} third={third} thirdparent={thirdparent}
-                                    searchparam={searchparam} setfilter={setfilter} filter={filter} setsearchparam={setsearchparam} pageSize={pageSize} sort={sort} />
+                                    searchparam={searchparam} setfilter={setfilter} filter={filter} setsearchparam={setsearchparam} pageSize={pageSize} reloadSet={reloadSet} sort={sort} />
 
                                 {/* Product grid */}
                                 <ProductGrid newproduct={newproduct} topCategory={topCategory} location={location} />
@@ -519,7 +526,7 @@ function DesktopScreenFilter({ handleFilter, third, thirdparent, searchparam, se
                                         name={`${section.name}`}
                                         value={section.name}
                                         // checked={section.name ? section.name.checked : false}
-                                        checked={searchparam.get('thirdCategory') ? searchparam.get('thirdCategory').checked : searchparam.get('thirdCategory[0]') ? searchparam.get('thirdCategory[0]').checked : searchparam.get('resetThird') === "false" ? section.name ? section.name.checked : false : false}
+                                        checked={ searchparam.get('thirdCategory') ? searchparam.get('thirdCategory').checked : searchparam.get('thirdCategory[0]') ? searchparam.get('thirdCategory[0]').checked : searchparam.get('resetThird') === "false" ? section.name ? section.name.checked : false : false}
                                         type="checkbox"
                                         className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                                         onChange={(e) => handleFilter(e, section.name, section)}

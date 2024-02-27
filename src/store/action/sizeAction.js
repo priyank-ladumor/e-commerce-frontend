@@ -6,7 +6,7 @@ export const getSizesAction = createAsyncThunk(
     async (data, { rejectWithValue }) => {
         try {
             const result = await axios.get(
-                `${import.meta.env.VITE_APP_BASE_URL}/size`,
+                `${process.env.REACT_APP_BASE_URL}/size`,
                 // data,
                 {
                     headers: {

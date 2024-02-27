@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-expressions */
 import React, { useEffect } from 'react'
 import { Fragment, useState } from 'react'
 import { Dialog, Disclosure, Menu, Transition } from '@headlessui/react'
@@ -20,6 +21,14 @@ import {
     Select,
 } from "@mui/material";
 import FormControl from '@mui/material/FormControl';
+import { CompactPicker } from 'react-color'
+import Box from '@mui/material/Box';
+import Stack from '@mui/material/Stack';
+import Slider from '@mui/material/Slider';
+import TextField from '@mui/material/TextField';
+import FormLabel from '@mui/material/FormLabel';
+import { IoFilter  } from "react-icons/io5";
+
 
 // const sortOptions = [
 //     { name: 'Best Rating', sort: 'rating', order: 'desc', current: false },
@@ -39,7 +48,6 @@ const ProductList = () => {
     const { categoryThirdFilter, categoryThird } = useSelector((state) => state.category)
     const { topCategory } = useParams()
     const [FilterOpne, setFilterOpne] = useState(false)
-    const [pageRefresh, setpageRefresh] = useState(false)
     const [newproduct, setnewproduct] = useState()
     const [thirdparent, setthirdparent] = useState()
     const [third, setthird] = useState()
@@ -53,11 +61,19 @@ const ProductList = () => {
     const dispatch = useDispatch()
 
     const locationSort = searchparam.get("sort") === null ? "" : searchparam.get("sort")
+    const locationColor = searchparam.get("color") === null ? "" : searchparam.get("color")
     const locationPageSize = +searchparam.get("pageSize") === 0 ? 12 : +searchparam.get("pageSize")
+    const locationPageNumber = +searchparam.get("pageNumber") === 0 ? 1 : +searchparam.get("pageNumber")
+    const locationMaxPrice = +searchparam.get("maxPrice") === 0 ? "" : searchparam.get("maxPrice")
+    const locationMinPrice = +searchparam.get("minPrice") === 0 ? "" : searchparam.get("minPrice")
 
 
     const [sort, setsort] = useState(locationSort);
     const [pageSize, setpageSize] = useState(locationPageSize);
+    const [color, setcolor] = useState(locationColor);
+    const [minPrice, setminPrice] = React.useState(locationMinPrice)
+    const [maxPrice, setmaxPrice] = React.useState(locationMaxPrice)
+    const [pageNumber, setpageNumber] = React.useState(locationPageNumber)
 
     useEffect(() => {
         if (FilterOpne) {
@@ -71,25 +87,54 @@ const ProductList = () => {
                         //multiple select category filter
                         {
                             category: searchparam.get('category'), "thirdCategoryCheckBox": "on", thirdCategory, "resetThird": (searchparam.get('thirdCategory[0]') || searchparam.get('thirdCategory')) ? "false" : "true"
-                            , sort, pageSize
+                            , sort, pageSize, color, minPrice, maxPrice, pageNumber
                         }
                         :
                         // one selected category filter 
                         {
                             category: searchparam.get('category'), "thirdCategoryCheckBox": "on", 'thirdCategory[0]': thirdCategory, "resetThird": (searchparam.get('thirdCategory[0]') || searchparam.get('thirdCategory')) ? "false" : "true"
-                            , sort, pageSize
+                            , sort, pageSize, color, minPrice, maxPrice, pageNumber
                         })
                     :
                     //one category select from navbar
                     {
                         category: searchparam.get('category'), "thirdCategoryCheckBox": "off", 'thirdCategory[0]': searchparam.get('thirdCategory[0]'), "resetThird": (searchparam.get('thirdCategory[0]') || searchparam.get('thirdCategory')) ? "false" : "true"
-                        , sort, pageSize
+                        , sort, pageSize, color, minPrice, maxPrice, pageNumber
                     }
             )
         } else {
             setsearchparam(location.search)
         }
-    }, [sort, pageSize, location.search, filter])
+    }, [sort, pageSize, color, minPrice, maxPrice, pageNumber, location.search, filter])
+
+    useEffect(() => {
+        // setsearchparam({color})
+        for (let key in filter) {
+            thirdCategory.push(filter[key])
+        }
+        setsearchparam(
+            searchparam.get('thirdCategoryCheckBox') === "on"
+                ?
+                (thirdCategory.length > 1 ?
+                    //multiple select category filter
+                    {
+                        category: searchparam.get('category'), "thirdCategoryCheckBox": "on", thirdCategory, "resetThird": (searchparam.get('thirdCategory[0]') || searchparam.get('thirdCategory')) ? "false" : "true"
+                        , sort, pageSize, color, minPrice, maxPrice, pageNumber
+                    }
+                    :
+                    // one selected category filter 
+                    {
+                        category: searchparam.get('category'), "thirdCategoryCheckBox": "on", 'thirdCategory[0]': thirdCategory, "resetThird": (searchparam.get('thirdCategory[0]') || searchparam.get('thirdCategory')) ? "false" : "true"
+                        , sort, pageSize, color, minPrice, maxPrice, pageNumber
+                    })
+                :
+                //one category select from navbar
+                {
+                    category: searchparam.get('category'), "thirdCategoryCheckBox": "off", 'thirdCategory[0]': searchparam.get('thirdCategory[0]'), "resetThird": (searchparam.get('thirdCategory[0]') || searchparam.get('thirdCategory')) ? "false" : "true"
+                    , sort, pageSize, color, minPrice, maxPrice, pageNumber
+                }
+        )
+    }, [color, minPrice, maxPrice, pageNumber])
 
 
     useEffect(() => {
@@ -117,6 +162,7 @@ const ProductList = () => {
 
     useEffect(() => {
         dispatch(getthirdlevelCategoryAction())
+        dispatch()
     }, [])
 
     useEffect(() => {
@@ -160,7 +206,7 @@ const ProductList = () => {
             thirdCategory.push(filter[key])
         }
 
-        setsearchparam(thirdCategory.length > 1 ? { category: searchparam.get('category'), "thirdCategoryCheckBox": "on", thirdCategory: thirdCategory, "resetThird": "false", sort, pageSize } : { category: searchparam.get('category'), "thirdCategoryCheckBox": "on", "thirdCategory[0]": thirdCategory, "resetThird": "false", sort, pageSize })
+        setsearchparam(thirdCategory.length > 1 ? { category: searchparam.get('category'), "thirdCategoryCheckBox": "on", thirdCategory: thirdCategory, "resetThird": "false", sort, pageSize, color, minPrice, maxPrice, pageNumber } : { category: searchparam.get('category'), "thirdCategoryCheckBox": "on", "thirdCategory[0]": thirdCategory, "resetThird": "false", sort, pageSize, color, minPrice, maxPrice, pageNumber })
     }
 
     useEffect(() => {
@@ -168,7 +214,7 @@ const ProductList = () => {
     }, [thirdparent]);
 
     useEffect(() => {
-        if(searchparam.get('resetThird') === "false"){
+        if (searchparam.get('resetThird') === "false") {
             setsearchparam({ category: searchparam.get('category'), "thirdCategoryCheckBox": "on", "resetThird": "true", sort, pageSize })
             setsort("")
             setfilter([])
@@ -279,7 +325,8 @@ const ProductList = () => {
                                 {/* Filters */}
                                 {/* full screen */}
                                 <DesktopScreenFilter handleFilter={handleFilter} third={third} thirdparent={thirdparent}
-                                    searchparam={searchparam} setfilter={setfilter} filter={filter} setsearchparam={setsearchparam} pageSize={pageSize} reloadSet={reloadSet} sort={sort} />
+                                    searchparam={searchparam} setfilter={setfilter} filter={filter} setsearchparam={setsearchparam} pageSize={pageSize} reloadSet={reloadSet}
+                                    sort={sort} setcolor={setcolor} color={color} setmaxPrice={setmaxPrice} setminPrice={setminPrice} setpageNumber={setpageNumber} minPrice={minPrice} maxPrice={maxPrice} pageNumber={pageNumber} />
 
                                 {/* Product grid */}
                                 <ProductGrid newproduct={newproduct} topCategory={topCategory} location={location} />
@@ -504,11 +551,104 @@ function ProductGrid({ newproduct, topCategory, location }) {
     </>);
 }
 
-function DesktopScreenFilter({ handleFilter, third, thirdparent, searchparam, setfilter, filter, setsearchparam, pageSize, sort }) {
+function DesktopScreenFilter({ handleFilter, third, thirdparent, searchparam, setfilter, filter, setsearchparam, pageSize, sort, setcolor, color, setmaxPrice, setminPrice, setpageNumber, minPrice, maxPrice, pageNumber }) {
+    const [MIN, SetMIN] = React.useState(0)
+
+    const [MAX, SetMAX] = React.useState(10000)
+    const [price, setprice] = React.useState([MIN, MAX])
+    const marks = [
+        {
+            value: MIN,
+            label: '',
+        },
+        {
+            value: MAX,
+            label: '',
+        },
+    ];
+
+    const handleChange = (_, newValue) => {
+        setprice(newValue);
+        SetMIN(newValue[0]);
+        SetMAX(newValue[1]);
+        setminPrice(newValue[0])
+        setmaxPrice(newValue[1])
+        // setpageNumber(1)
+    };
+
+    React.useEffect(() => {
+        setprice([MIN, MAX])
+    }, [MIN, MAX])
+
+    const handlecngMIN = (e) => {
+        setminPrice(e.target.value.trim())
+        SetMIN(e.target.value.trim())
+        setprice([MIN, MAX])
+    }
+
+    const handlecngMAX = (e) => {
+        setmaxPrice(e.target.value.trim())
+        SetMAX(e.target.value.trim())
+        setprice([MIN, MAX])
+    }
+
+    const renderPrice = (
+        <Stack spacing={1}>
+            {/* <FormLabel id="demo-radio-buttons-group-label">Price:</FormLabel> */}
+            <Box sx={{ width: 240 }}>
+                <Slider
+                    marks={marks}
+                    step={10}
+                    value={price}
+                    valueLabelDisplay="auto"
+                    min={0}
+                    max={MAX > 10000 ? MAX : 10000}
+                    onChange={handleChange}
+                    style={{ boxShadow: "none" }}
+                />
+                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <div className='flex items-center'>
+                        <input className=' rmv-shadow  ' inputProps={{ min: 0 }}
+                            type='number' onChange={e => [handlecngMIN(e), setpageNumber(1)]} label="Min" value={MIN} style={{ width: "75px", borderBottom: "1px solid black", display: "flex", justifyContent: "center", textAlign: "center" }} id="standard-basic" variant="standard" />
+                    </div>
+                    <div className='flex items-center'>
+                        <input className=' rmv-shadow '
+                            inputProps={{
+                                min: 10,
+                            }}
+                            type='number'
+                            inputmode="numeric" onChange={e => [handlecngMAX(e), setpageNumber(1)]} value={MAX} style={{ width: "75px", borderBottom: "1px solid black", display: "flex", justifyContent: "center", textAlign: "center" }} id="standard-basic" label="Max" variant="standard" />
+                    </div>
+                </Box>
+            </Box>
+        </Stack>
+    );
+    const renderSizes = (
+        <Stack spacing={1}>
+          <FormLabel id="demo-radio-buttons-group-label">Size:</FormLabel>
+          <div className=" grid grid-cols-4 ">
+            {getsizedata && getsizedata.map((name) => (
+              name.options.map((opt) => (
+                <div onClick={() => [setsizes(opt),setpageNumber(1)]}
+                  className='flex m-2 cursor-pointer font-semibold rounded-full justify-center items-center p-[10px]'
+                  style={{ width: "50px", fontSize: "16px", border: sizes === opt ? "2px black solid" : "2px gray solid", }} >
+                  {opt.split("_")[0]}
+                </div>
+              ))
+            ))}
+          </div>
+        </Stack>
+      );
     return (<>
         <form className="hidden lg:block">
+            <div className='flex justify-between items-center border-b-4 pb-4' >
+                <span className='text-2xl font-semibold ms-1' >Filter</span>
+                <div >
+                    <IoFilter  className='text-2xl font-bold ms-1' />
+                </div>
+            </div>
             {(thirdparent && thirdparent.length > 0 && searchparam.get('thirdCategoryCheckBox') === "on") &&
-                <Accordion defaultExpanded>
+                <Accordion defaultExpanded style={{ minWidth: "278px" }} >
                     <AccordionSummary
                         expandIcon={<ExpandMoreIcon />}
                         aria-controls="panel1-content"
@@ -526,7 +666,7 @@ function DesktopScreenFilter({ handleFilter, third, thirdparent, searchparam, se
                                         name={`${section.name}`}
                                         value={section.name}
                                         // checked={section.name ? section.name.checked : false}
-                                        checked={ searchparam.get('thirdCategory') ? searchparam.get('thirdCategory').checked : searchparam.get('thirdCategory[0]') ? searchparam.get('thirdCategory[0]').checked : searchparam.get('resetThird') === "false" ? section.name ? section.name.checked : false : false}
+                                        checked={searchparam.get('thirdCategory') ? searchparam.get('thirdCategory').checked : searchparam.get('thirdCategory[0]') ? searchparam.get('thirdCategory[0]').checked : searchparam.get('resetThird') === "false" ? section.name ? section.name.checked : false : false}
                                         type="checkbox"
                                         className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                                         onChange={(e) => handleFilter(e, section.name, section)}
@@ -541,24 +681,51 @@ function DesktopScreenFilter({ handleFilter, third, thirdparent, searchparam, se
                             ))}
                             {
                                 searchparam.get('resetThird') === "false" &&
-                                <Button variant="outlined" style={{ minWidth: "100%", marginTop: "20px", borderColor: "gray" }} color='error' onClick={() => [setfilter([]), setsearchparam({ category: searchparam.get('category'), "thirdCategoryCheckBox": "on", "resetThird": "true", sort, pageSize })]} >clear</Button>
+                                <Button variant="outlined" style={{ minWidth: "100%", marginTop: "20px", borderColor: "gray" }} color='error' onClick={() => [setfilter([]), setsearchparam({ category: searchparam.get('category'), "thirdCategoryCheckBox": "on", "resetThird": "true", sort, pageSize, color, minPrice, maxPrice, pageNumber })]} >clear</Button>
                             }
                         </Typography>
                     </AccordionDetails>
                 </Accordion>
             }
-            <Accordion>
+            <Accordion defaultExpanded style={{ minWidth: "278px" }} >
                 <AccordionSummary
                     expandIcon={<ExpandMoreIcon />}
                     aria-controls="panel2-content"
                     id="panel2-header"
                 >
-                    <Typography>Header</Typography>
+                    <Typography > <spam className='text-xl font-semibold tracking-tight text-gray-600' >Colors</spam> </Typography>
                 </AccordionSummary>
                 <AccordionDetails>
                     <Typography>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-                        malesuada lacus ex, sit amet blandit leo lobortis eget.
+                        <CompactPicker color={color} onChange={(clr) => setcolor(clr.hex)} />
+                    </Typography>
+                </AccordionDetails>
+            </Accordion>
+            <Accordion defaultExpanded style={{ minWidth: "278px" }} >
+                <AccordionSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    aria-controls="panel2-content"
+                    id="panel2-header"
+                >
+                    <Typography > <spam className='text-xl font-semibold tracking-tight text-gray-600' >Price Range</spam> </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    <Typography>
+                        {renderPrice}
+                    </Typography>
+                </AccordionDetails>
+            </Accordion>
+            <Accordion defaultExpanded style={{ minWidth: "278px" }} >
+                <AccordionSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    aria-controls="panel2-content"
+                    id="panel2-header"
+                >
+                    <Typography > <spam className='text-xl font-semibold tracking-tight text-gray-600' >Sizes:</spam> </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    <Typography>
+                        {renderSizes}
                     </Typography>
                 </AccordionDetails>
             </Accordion>

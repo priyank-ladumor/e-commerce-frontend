@@ -42,4 +42,36 @@
     box-shadow: none !important;
     -webkit-box-shadow: none;
     -moz-box-shadow: none;
+    border: none;
+    outline: none;
   }
+
+  .rmv-shadow:focus{
+    box-shadow: none !important;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    border: none;
+    outline: none;
+  }
+
+  .rmv-shadow:focus-visible{
+    box-shadow: none !important;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    border: none;
+    outline: none;
+  }
+
+  .rmv-shadow:focus-within{
+    box-shadow: none !important;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    border: none;
+    outline: none;
+  }
+
+  input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}

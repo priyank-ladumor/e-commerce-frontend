@@ -4,6 +4,17 @@ import { RadioGroup } from '@headlessui/react'
 import { useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { getProductsByIDAction } from '../../store/action/productsAction'
+import { FaRupeeSign } from "react-icons/fa";
+import AliceCarousel from 'react-alice-carousel';
+import 'react-alice-carousel/lib/alice-carousel.css';
+
+const responsive = {
+  0: { items: 1 },
+  376: { items: 1 },
+  520: { items: 1 },
+  770: { items: 2 },
+  1024: { items: 2 },
+};
 
 const product = {
   name: 'Basic Tee 6-Pack',
@@ -82,40 +93,36 @@ export default function ProductDetails() {
     }
   }, [productsDetails])
 
+  const items =
+    pdetails.images?.map((ele) => {
+      return (
+        <div className='p-2' >
+          <img className="imgRes rounded-xl h-[650px] w-[100%]" src={ele} alt={ele} />
+        </div>
+      )
+    })
+
+  const rmvSameColor = pdetails?.sizesAndColor?.map((ele) => ele.color)
+
+  const availableColor = [...new Set(rmvSameColor)];
+
   return (
-    <div className="bg-white">
-      <div className="pt-6">
+    <div className="bg-white  mt-10">
+      <div className="p-1 rounded-2xl">
 
         {/* Image gallery */}
-        {pdetails?.images  &&
-          <div className="mx-auto mt-6 max-w-2xl sm:px-6 lg:grid lg:max-w-7xl lg:grid-cols-3 lg:gap-x-8 lg:px-8">
-            {pdetails.images?.length > 0 && 
-            <><div className="aspect-h-4 aspect-w-3 hidden overflow-hidden rounded-lg lg:block">
-                <img
-                  src={pdetails?.images[0]}
-                  alt={pdetails?.images[0]}
-                  className="h-full w-full object-cover object-center" />
-              </div><div className="hidden lg:grid lg:grid-cols-1 lg:gap-y-8">
-                  <div className="aspect-h-2 aspect-w-3 overflow-hidden rounded-lg">
-                    <img
-                      src={pdetails?.images[1]}
-                      alt={pdetails?.images[1]}
-                      className="h-full w-full object-cover object-center" />
-                  </div>
-                  <div className="aspect-h-2 aspect-w-3 overflow-hidden rounded-lg">
-                    <img
-                      src={pdetails?.images[2]}
-                      alt={pdetails?.images[2]}
-                      className="h-full w-full object-cover object-center" />
-                  </div>
-                </div><div className="aspect-h-5 aspect-w-4 lg:aspect-h-4 lg:aspect-w-3 sm:overflow-hidden sm:rounded-lg">
-                  <img
-                    src={pdetails?.images[3]}
-                    alt={pdetails?.images[3]}
-                    className="h-full w-full object-cover object-center" />
-                </div></>}
-          </div>
-        }
+        <div className=''>
+          <AliceCarousel
+            mouseTracking
+            items={items}
+            disableButtonsControls={false}
+            disableDotsControls={true}
+            autoPlay
+            infinite
+            responsive={responsive}
+            autoPlayInterval={2500}
+          />
+        </div>
 
         {/* Product info */}
         <div className="mx-auto max-w-2xl px-4 pb-16 pt-10 sm:px-6 lg:grid lg:max-w-7xl lg:grid-cols-3 lg:grid-rows-[auto,auto,1fr] lg:gap-x-8 lg:px-8 lg:pb-24 lg:pt-16">
@@ -126,7 +133,11 @@ export default function ProductDetails() {
           {/* Options */}
           <div className="mt-4 lg:row-span-3 lg:mt-0">
             <h2 className="sr-only">Product information</h2>
-            <p className="text-3xl tracking-tight text-gray-900">{pdetails?.discountPrice}</p>
+            <div className='flex  items-center' >
+              Price:
+              <FaRupeeSign className='ms-1 text-2xl' />
+              <p className="text-3xl tracking-tight font-bold text-gray-900">{pdetails?.discountPrice}</p>
+            </div>
 
             {/* Reviews */}
             <div className="mt-6">
@@ -154,38 +165,18 @@ export default function ProductDetails() {
             <form className="mt-10">
               {/* Colors */}
               <div>
-                <h3 className="text-sm font-medium text-gray-900">Color</h3>
-
-                <RadioGroup value={selectedColor} onChange={setSelectedColor} className="mt-4">
-                  <RadioGroup.Label className="sr-only">Choose a color</RadioGroup.Label>
-                  <div className="flex items-center space-x-3">
-                    {product.colors.map((color) => (
-                      <RadioGroup.Option
-                        key={color.name}
-                        value={color}
-                        className={({ active, checked }) =>
-                          classNames(
-                            color.selectedClass,
-                            active && checked ? 'ring ring-offset-1' : '',
-                            !active && checked ? 'ring-2' : '',
-                            'relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 focus:outline-none'
-                          )
-                        }
-                      >
-                        <RadioGroup.Label as="span" className="sr-only">
-                          {color.name}
-                        </RadioGroup.Label>
-                        <span
-                          aria-hidden="true"
-                          className={classNames(
-                            color.class,
-                            'h-8 w-8 rounded-full border border-black border-opacity-10'
-                          )}
-                        />
-                      </RadioGroup.Option>
-                    ))}
-                  </div>
-                </RadioGroup>
+                <h3 className="text-sm font-medium text-gray-900">Color: </h3>
+                  <div className="mt-3 flex">
+                    {
+                      availableColor && availableColor.map((color) => {
+                        return (
+                          <>
+                            <p className='p-5 me-2 rounded-full w-10 border-black border-2' style={{ background: color, cursor: "pointer" }} >{""}</p>
+                          </>
+                        )
+                      })
+                    }
+                </div>
               </div>
 
               {/* Sizes */}
@@ -261,38 +252,37 @@ export default function ProductDetails() {
 
           <div className="py-10 lg:col-span-2 lg:col-start-1 lg:border-r lg:border-gray-200 lg:pb-16 lg:pr-8 lg:pt-6">
             {/* Description and details */}
-            <div>
+            {/* <div>
               <h3 className="sr-only">Description</h3>
 
               <div className="space-y-6">
                 <p className="text-base text-gray-900">{pdetails?.description}</p>
               </div>
-            </div>
+            </div> */}
 
             <div className="mt-10">
               <h3 className="text-sm font-medium text-gray-900">Highlights</h3>
 
               <div className="mt-4">
                 <ul role="list" className="list-disc space-y-2 pl-4 text-sm">
-                  {product.highlights.map((highlight) => (
-                    <li key={highlight} className="text-gray-400">
-                      <span className="text-gray-600">{highlight}</span>
-                    </li>
-                  ))}
+                  {pdetails?.brand?.length > 0 && <li className="text-gray-400"> <span className="text-gray-600">Brand: {pdetails?.brand}</span>  </li>}
+                  {pdetails?.fabric?.length > 0 && <li className="text-gray-400"> <span className="text-gray-600">Fabric: {pdetails?.fabric}</span>  </li>}
+                  {pdetails?.material?.length > 0 && <li className="text-gray-400"> <span className="text-gray-600">Material: {pdetails?.material}</span>  </li>}
+                  {pdetails?.quantity && <li className="text-gray-400"> <span className="text-gray-600">Quantity: {pdetails?.quantity} left</span>  </li>}
                 </ul>
               </div>
             </div>
 
             <div className="mt-10">
-              <h2 className="text-sm font-medium text-gray-900">Details</h2>
+              <h2 className="text-sm font-medium text-gray-900">Description</h2>
 
               <div className="mt-4 space-y-6">
-                <p className="text-sm text-gray-600">{product.details}</p>
+                <p className="text-sm text-gray-600">{pdetails?.description}</p>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      </div >
+    </div >
   )
 }

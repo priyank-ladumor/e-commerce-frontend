@@ -299,7 +299,11 @@ const ProductList = () => {
     const handleChangePageNumber = (event, value) => {
         setpageNumber(value)
     }
-    console.log(products && products, "products");
+
+    useEffect(() => {
+        window.scrollTo(0, 0)
+    }, [getFilterProductPENDING])
+
     return (
         <div>
             <div className="bg-[#fff] mt-10">
@@ -398,7 +402,7 @@ const ProductList = () => {
                                 {/* Product grid */}
                                 {
                                     getFilterProductPENDING ?
-                                        <div className='flex justify-center items-center  h-80 w-[100%]'>
+                                        <div className='flex justify-center items-center  h-[600px] w-[820px]'>
                                             <Bars
                                                 visible={true}
                                                 height="80"
@@ -411,7 +415,12 @@ const ProductList = () => {
                                             />
                                         </div>
                                         :
-                                        <ProductGrid newproduct={newproduct} topCategory={topCategory} location={location} />
+                                        newproduct?.length > 0 ?
+                                            <ProductGrid newproduct={newproduct} topCategory={topCategory} location={location} />
+                                            :
+                                            <div className='flex justify-center items-center bg-red-100 h-[300px] w-[820px]'>
+                                                <span className='font-bold' style={{ fontSize: "35px" }} >No filtered product found</span>
+                                            </div>
                                 }
                             </div>
                         </section>

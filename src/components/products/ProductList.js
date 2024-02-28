@@ -35,16 +35,15 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Radio from '@mui/material/Radio';
 import { MdClearAll } from "react-icons/md";
 import Pagination from '@mui/material/Pagination';
+import Link from '@mui/material/Link';
+import Card from '@mui/material/Card';
+// import Label from 'src/components/label';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { FaRupeeSign } from "react-icons/fa";
+import { alpha } from '@mui/material/styles';
+import { Bars } from 'react-loader-spinner'
 
-// const sortOptions = [
-//     { name: 'Best Rating', sort: 'rating', order: 'desc', current: false },
-//     { name: 'Price: Low to High', sort: 'price', order: 'ase', current: false },
-//     { name: 'Price: High to Low', sort: 'price', order: 'desc', current: false },
-// ]
 
-// function classNames(...classes) {
-//     return classes.filter(Boolean).join(' ')
-// }
 
 const ProductList = () => {
 
@@ -60,10 +59,11 @@ const ProductList = () => {
     const [thirdparent, setthirdparent] = useState()
     const [third, setthird] = useState()
     const [categoryThirdData, setcategoryThirdData] = useState()
-    const { products } = useSelector((state) => state.products)
+    const { products, getFilterProductPENDING } = useSelector((state) => state.products)
     const [filter, setfilter] = useState([])
     const [getsizedata, setgetsizedata] = useState("")
-
+    const [MIN, SetMIN] = React.useState(0)
+    const [MAX, SetMAX] = React.useState(10000)
     let thirdCategory = []
 
     const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
@@ -236,6 +236,27 @@ const ProductList = () => {
         setsearchparam(thirdCategory.length > 1 ? { category: searchparam.get('category'), "thirdCategoryCheckBox": "on", thirdCategory: thirdCategory, "resetThird": "false", sort, pageSize, color, minPrice, maxPrice, pageNumber, sizes, minDiscount, available } : { category: searchparam.get('category'), "thirdCategoryCheckBox": "on", "thirdCategory[0]": thirdCategory, "resetThird": "false", sort, pageSize, color, minPrice, maxPrice, pageNumber, sizes, minDiscount, available })
     }
 
+    const thirdCategoryCngViaNavBar = searchparam.get('NewProduct')
+
+    useEffect(() => {
+        if (thirdCategoryCngViaNavBar === "true") {
+            setminPrice(0)
+            setmaxPrice(10000)
+            setcolor("")
+            SetMAX(10000)
+            SetMIN(0)
+            setavailable("")
+            setsizes("")
+            setpageSize(12)
+            setpageNumber(1)
+            setminDiscount("")
+            setsort("")
+            setsort("")
+            setfilter([])
+            setpageSize(12)
+        }
+    }, [thirdCategoryCngViaNavBar])
+
     useEffect(() => {
         setfilter([])
     }, [thirdparent]);
@@ -243,7 +264,17 @@ const ProductList = () => {
     useEffect(() => {
         //refresh page
         if (searchparam.get('resetThird') === "false") {
-            setsearchparam({ category: searchparam.get('category'), "thirdCategoryCheckBox": "on", "resetThird": "true", sort, pageSize, pageNumber: 1 })
+            setminPrice(0)
+            setmaxPrice(10000)
+            setcolor("")
+            SetMAX(10000)
+            SetMIN(0)
+            setavailable("")
+            setsizes("")
+            setpageSize(12)
+            setpageNumber(1)
+            setminDiscount("")
+            setsort("")
             setsort("")
             setfilter([])
             setpageSize(12)
@@ -294,20 +325,20 @@ const ProductList = () => {
                                             inputProps={{ 'aria-label': 'Without label' }}
                                             className='ms-2'
                                         >
-                                            <MenuItem value="8">
-                                                <em>8</em>
+                                            <MenuItem value="9">
+                                                <em>9</em>
                                             </MenuItem>
                                             <MenuItem value="12">
                                                 <em>12</em>
                                             </MenuItem>
-                                            <MenuItem value="16">
-                                                <em>16</em>
+                                            <MenuItem value="15">
+                                                <em>15</em>
                                             </MenuItem>
-                                            <MenuItem value="20">
-                                                <em>20</em>
+                                            <MenuItem value="18">
+                                                <em>18</em>
                                             </MenuItem>
-                                            <MenuItem value="24">
-                                                <em>24</em>
+                                            <MenuItem value="21">
+                                                <em>21</em>
                                             </MenuItem>
                                         </Select>
                                     </FormControl>
@@ -361,18 +392,30 @@ const ProductList = () => {
                                     searchparam={searchparam} setfilter={setfilter} filter={filter} setsearchparam={setsearchparam} pageSize={pageSize} reloadSet={reloadSet}
                                     sort={sort} setcolor={setcolor} color={color} setmaxPrice={setmaxPrice} setminPrice={setminPrice} setpageNumber={setpageNumber} minPrice={minPrice} maxPrice={maxPrice}
                                     pageNumber={pageNumber} setsizes={setsizes} sizes={sizes} getsizedata={getsizedata} minDiscount={minDiscount} setminDiscount={setminDiscount}
-                                    available={available} setavailable={setavailable} setsort={setsort} setpageSize={setpageSize}
+                                    available={available} setavailable={setavailable} setsort={setsort} setpageSize={setpageSize} MIN={MIN} MAX={MAX} SetMIN={SetMIN} SetMAX={SetMAX}
                                 />
 
                                 {/* Product grid */}
-                                <ProductGrid newproduct={newproduct} topCategory={topCategory} location={location} />
+                                {
+                                    getFilterProductPENDING ?
+                                        <div className='flex justify-center items-center  h-80 w-[100%]'>
+                                            <Bars
+                                                visible={true}
+                                                height="80"
+                                                width="80"
+                                                ariaLabel="magnifying-glass-loading"
+                                                wrapperStyle={{}}
+                                                wrapperClass="magnifying-glass-wrapper"
+                                                glassColor="#c0efff"
+                                                color="blue"
+                                            />
+                                        </div>
+                                        :
+                                        <ProductGrid newproduct={newproduct} topCategory={topCategory} location={location} />
+                                }
                             </div>
                         </section>
 
-                        {/* pagination */}
-                        {/* <Stack spacing={2} className='flex items-center justify-center pb-12' >
-                            <Pagination count={products && products?.totalPages} page={pageNumber} onChange={handleChangePageNumber} showFirstButton showLastButton />
-                        </Stack> */}
                         <PaginationFun handleChangePageNumber={handleChangePageNumber} pageNumber={pageNumber} products={products} />
                     </main>
                 </div>
@@ -488,44 +531,105 @@ function MobileScreenFilter({ handleFilter, mobileFiltersOpen, setMobileFiltersO
 }
 
 function ProductGrid({ newproduct, topCategory, location }) {
+
+    function ColorPreview({ product, limit = 3, sx }) {
+        const Pcolors = product && product.sizesAndColor.map((clr) => clr.color)
+        const rmvSameClr = [...new Set(Pcolors)];
+        const renderColors = rmvSameClr && rmvSameClr.slice(0, limit);
+        const remainingColor = rmvSameClr && rmvSameClr.length - limit;
+        return (
+            <Stack component="span" direction="row" alignItems="center" justifyContent="flex-end" sx={sx}>
+                {renderColors && renderColors.map((color, index) => (
+                    <Box
+                        key={color + index}
+                        sx={{
+                            ml: -0.75,
+                            width: 16,
+                            height: 16,
+                            bgcolor: color,
+                            borderRadius: '50%',
+                            border: (theme) => `solid 2px ${theme.palette.background.paper}`,
+                            boxShadow: (theme) => `inset -1px 1px 2px ${alpha(theme.palette.common.black, 0.24)}`,
+                        }}
+                    />
+                ))}
+
+                {rmvSameClr && rmvSameClr.length > limit && (
+                    <Box component="span" sx={{ typography: 'subtitle2' }}>{`+${remainingColor}`}</Box>
+                )}
+            </Stack>
+        );
+    }
+
     return (<>
         <div className="lg:col-span-3">
             <div className="bg-[#fff] ">
                 <div className="mx-auto max-w-2xl px-4 py-16 sm:px-0 sm:py-0 lg:max-w-7xl lg:px-8">
                     <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:gap-x-8">
-                        {newproduct && Array.from(newproduct)?.map((product) => (
-                            <NavLink to={`/products/${topCategory}/${location.search && location.search.split("?category=")[1].split("&")[0]}/${location.search?.split("&thirdCategory[0]=" || "&thirdCategory=")[1] ? location.search?.split("&thirdCategory[0]=" || "&thirdCategory=")[1] : newproduct[0]?.category?.name}/${product._id}`}>
-                                <div key={product.id} className="group relative border-solid border-[1px] p-2 border-gray-300 rounded-md">
-                                    <div className="aspect-h-1 min-h-60 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-60">
-                                        <img
-                                            src={product.thumbnail}
-                                            alt={product.thumbnail}
-                                            className="h-full w-full object-cover object-center lg:h-full lg:w-full"
-                                        />
-                                    </div>
-                                    <div className="mt-4 flex justify-between">
-                                        <div className="inline">
-                                            <h3 className="text-sm text-black-900 font-bold">
-                                                <a href={product.href}>
-                                                    <span aria-hidden="true" className="absolute inset-0" />
-                                                    {product.title}
-                                                </a>
-                                            </h3>
+                        {newproduct && Array.from(newproduct)?.map((product) =>
+                        (
+                            <>
+                                <NavLink to={`/products/${topCategory}/${location.search && location.search.split("?category=")[1].split("&")[0]}/${location.search?.split("&thirdCategory[0]=" || "&thirdCategory=")[1] ? location.search?.split("&thirdCategory[0]=" || "&thirdCategory=")[1] : newproduct[0]?.category?.name}/${product._id}`}>
+                                    <Card>
+                                        <Box sx={{ pt: '100%', position: 'relative' }}>
+                                            {/* {product && product.createdAt.split("T")[0] === new Date().toISOString().split("T")[0] &&
+                                <Label
+                                    variant="filled"
+                                    color='info'
+                                    sx={{
+                                        zIndex: 9,
+                                        top: 16,
+                                        right: 16,
+                                        position: 'absolute',
+                                        textTransform: 'uppercase',
+                                    }}
+                                >
+                                    new
+                                </Label>} */}
+                                            {product &&
+                                                <Box
+                                                    component="img"
+                                                    alt={product?.title}
+                                                    src={product?.thumbnail[0]}
+                                                    sx={{
+                                                        top: 0,
+                                                        width: 1,
+                                                        height: 1,
+                                                        objectFit: 'cover',
+                                                        position: 'absolute',
+                                                    }}
+                                                />}
+                                        </Box>
+                                        <Stack spacing={2} sx={{ p: 3 }}>
+                                            <Link color="inherit" underline="hover" variant="subtitle2" noWrap>
+                                                {product.title}
+                                            </Link>
 
-                                            <p className="mt-1 text-sm text-gray-700">
-                                                <MdStarRate className="w-6 h-6  inline" />
-                                                <span className="align-bottom">
-                                                    {product.rating}
-                                                </span>
-                                            </p>
-                                        </div>
-                                        <div className="inline">
-                                            <p className="text-sm font-bold  text-gray-900">${Math.round(product.price * (1 - product.discountPercentage / 100))}</p>
-                                            <p className="text-sm font-medium line-through text-gray-400">${product.price}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </NavLink>
+                                            <Stack direction="row" alignItems="center" justifyContent="space-between">
+                                                <ColorPreview product={product} />
+                                                <Typography variant="subtitle1 flex justify-center items-center">
+                                                    <Typography
+                                                        component="span"
+                                                        variant="body1"
+                                                        sx={{
+                                                            color: 'text.disabled',
+                                                            textDecoration: 'line-through',
+                                                        }}
+                                                    >
+                                                        <div className='flex items-center justify-center'>
+                                                            <FaRupeeSign style={{ fontSize: "16px" }} />{product?.price}
+                                                        </div>
+                                                    </Typography>
+                                                    &nbsp;
+                                                    <div className='flex  items-center justify-center'>
+                                                        <FaRupeeSign style={{ fontSize: "16px" }} />{product?.discountPrice}
+                                                    </div>
+                                                </Typography>
+                                            </Stack>
+                                        </Stack>
+                                    </Card>
+                                </NavLink>
+                            </>
                         ))}
                     </div>
                 </div>
@@ -535,11 +639,9 @@ function ProductGrid({ newproduct, topCategory, location }) {
 }
 
 function DesktopScreenFilter({ handleFilter, third, thirdparent, searchparam, setfilter, filter, setsearchparam, pageSize, sort, setcolor, color,
-    setmaxPrice, setminPrice, setpageNumber, minPrice, maxPrice, pageNumber, setsizes, sizes, getsizedata, minDiscount, setminDiscount, available, setavailable, setsort, setpageSize }) {
+    setmaxPrice, setminPrice, setpageNumber, minPrice, maxPrice, pageNumber, setsizes, sizes, getsizedata, minDiscount, setminDiscount, available, setavailable,
+    setsort, setpageSize, MIN, MAX, SetMIN, SetMAX }) {
 
-    const [MIN, SetMIN] = React.useState(0)
-
-    const [MAX, SetMAX] = React.useState(10000)
     const [price, setprice] = React.useState([MIN, MAX])
     const marks = [
         {
@@ -680,10 +782,10 @@ function DesktopScreenFilter({ handleFilter, third, thirdparent, searchparam, se
     )
     return (<>
         <form className="hidden lg:block">
-            <div className='flex justify-between items-center border-b-4 pb-4' >
+            <div className='flex justify-between items-center w-[280px] border-b-4 pb-4' >
                 <span className='text-2xl font-semibold ms-1' >Filter</span>
-                <div >
-                    <IoFilter className='text-2xl font-bold ms-1' />
+                <div className='' >
+                    <IoFilter className='text-2xl font-bold' />
                 </div>
             </div>
             {(thirdparent && thirdparent.length > 0 && searchparam.get('thirdCategoryCheckBox') === "on") &&
@@ -803,7 +905,7 @@ function DesktopScreenFilter({ handleFilter, third, thirdparent, searchparam, se
                     // type="button"
                     color="inherit"
                     variant="outlined"
-                    onClick={() => [setfilter([]), setminPrice(0), setmaxPrice(10000), setcolor(""), setavailable(""), setpageSize(12), setpageNumber(1), setminDiscount(""), setsort(""), setsearchparam({ category: searchparam.get('category'), "thirdCategoryCheckBox": "on", "resetThird": "true", sort, pageSize, color, minPrice, maxPrice, pageNumber, sizes, minDiscount, available })]}
+                    onClick={() => [setfilter([]), setminPrice(0), setmaxPrice(10000), setcolor(""), SetMAX(10000), SetMIN(0), setavailable(""), setsizes(""), setpageSize(12), setpageNumber(1), setminDiscount(""), setsort(""), setsearchparam({ category: searchparam.get('category'), "thirdCategoryCheckBox": "on", "resetThird": "true", sort, pageSize, color, minPrice, maxPrice, pageNumber, sizes, minDiscount, available })]}
                     startIcon={<MdClearAll icon="ic:round-clear-all" />}
                 >
                     Clear All

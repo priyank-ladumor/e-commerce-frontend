@@ -7,11 +7,12 @@ import { getProductsByIDAction } from '../../store/action/productsAction'
 import { FaRupeeSign } from "react-icons/fa";
 import AliceCarousel from 'react-alice-carousel';
 import 'react-alice-carousel/lib/alice-carousel.css';
-import { Bars } from 'react-loader-spinner'
+import { Bars, ThreeDots } from 'react-loader-spinner'
 import Swal from 'sweetalert2'
 import React from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { addToCartAction } from '../../store/action/cartAction'
 
 const responsive = {
   0: { items: 1 },
@@ -81,14 +82,17 @@ function classNames(...classes) {
 
 export default function ProductDetails() {
   const dispatch = useDispatch()
+  const navigate = useNavigate()
+
   const [selectedColor, setSelectedColor] = useState("")
   const [selectedSize, setSelectedSize] = useState("")
 
   const { productsDetails, productsDetailsPENDING } = useSelector((state) => state.products)
+  const { addToCartMSG, addToCartERROR, addToCartPENDING } = useSelector((state) => state.cart)
   const { id } = useParams()
   const [pdetails, setPdetails] = useState([])
-  const navigate = useNavigate()
-  const location = useLocation()
+
+  const [addtocartpopup, setaddtocartpopup] = useState(false)
 
   useEffect(() => {
     dispatch(getProductsByIDAction({ id }))
@@ -118,12 +122,17 @@ export default function ProductDetails() {
   const selectedrmvSameSize = pdetails?.sizesAndColor?.filter((ele) => ele.color === selectedColor)
   const availableSize = [...new Set(selectedrmvSameSize)];
 
-  console.log(location, "yghuji");
-  const handleAddToCart = () => {
+  const handleAddToCart = (pdetails) => {
     const auth = localStorage.getItem('token');
     if (auth) {
       if (selectedColor && selectedSize) {
-
+        const item = {
+          productId: pdetails._id,
+          size: selectedSize,
+          color: selectedColor
+        }
+        dispatch(addToCartAction(item))
+        setaddtocartpopup(true)
       } else {
         toast.error('please select color and size', {
           position: "top-right",
@@ -149,17 +158,51 @@ export default function ProductDetails() {
         }).then((result) => {
           if (result.isConfirmed) {
             navigate("/login")
-          } else {
-
           }
         })
     }
   }
 
+  //msg add to cart success
+  useEffect(() => {
+    if (addToCartMSG && addtocartpopup) {
+      <div className='swal2-container'>
+        {Swal.fire({
+          position: "top-end",
+          icon: "success",
+          title: addToCartMSG,
+          showConfirmButton: false,
+          timer: 2500
+        })}
+      </div>
+      setaddtocartpopup(false)
+      setSelectedColor("")
+      setSelectedSize("")
+    }
+  }, [addToCartMSG])
+
+  //error msg add to cart success
+  useEffect(() => {
+    if (addToCartERROR && addtocartpopup) {
+      <div className='swal2-container'>
+        {Swal.fire({
+          position: "top-end",
+          icon: "error",
+          title: "Item already added to cart",
+          showConfirmButton: false,
+          timer: 2500
+        })}
+      </div>
+      setaddtocartpopup(false)
+      setSelectedColor("")
+      setSelectedSize("")
+    }
+  }, [addToCartERROR])
+
   return (
     <>
       {productsDetailsPENDING ?
-        <div className='flex justify-center items-center  h-[600px] w-[820px]'>
+        <div className='flex justify-center items-center  h-[800px] w-[100%]'>
           <Bars
             visible={true}
             height="80"
@@ -279,10 +322,24 @@ export default function ProductDetails() {
 
                   <button
                     type="button"
-                    onClick={handleAddToCart}
+                    onClick={() => handleAddToCart(pdetails)}
                     className="mt-10 flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                   >
-                    Add to Cart
+                    {
+                      addToCartPENDING ?
+                        <ThreeDots
+                          visible={true}
+                          height="22"
+                          width="60"
+                          color="white"
+                          radius="9"
+                          ariaLabel="three-dots-loading"
+                          wrapperStyle={{}}
+                          wrapperClass=""
+                        />
+                        :
+                        "Add to Cart"
+                    }
                   </button>
                 </form>
               </div>

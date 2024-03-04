@@ -97,3 +97,8 @@ input::-webkit-inner-spin-button {
     height: 450px;
   }
 }
+@media screen and (max-width: 560px) {
+  .displayBlock {
+    display: block;
+  }
+}

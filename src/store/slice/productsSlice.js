@@ -5,6 +5,7 @@ import { getProducts, getProductsByIDAction } from "../action/productsAction";
 const initialState = {
     products: [],
     getFilterProductPENDING: false,
+    productsDetailsPENDING: false,
     productsDetails: null,
 };
 
@@ -33,14 +34,17 @@ const productsSlice = createSlice({
 
         builder.addCase(getProductsByIDAction.pending, (state, { payload }) => {
             state.productsDetails = null;
+            state.productsDetailsPENDING = true;
         })
 
         builder.addCase(getProductsByIDAction.fulfilled, (state, { payload }) => {
             state.productsDetails = payload;
+            state.productsDetailsPENDING = false;
         })
 
         builder.addCase(getProductsByIDAction.rejected, (state, { payload }) => {
             state.productsDetails = null;
+            state.productsDetailsPENDING = false;
         })
     }
 });

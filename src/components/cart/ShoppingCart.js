@@ -5,7 +5,7 @@ import { XMarkIcon } from '@heroicons/react/24/outline'
 import { FaPlus, FaMinus } from "react-icons/fa6";
 import { NavLink } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { cartitemRemoveAction, getCartItemsAction } from '../../store/action/cartAction';
+import { cartitemRemoveAction, getCartItemsAction, updateCartItemsAction } from '../../store/action/cartAction';
 import { FaRupeeSign } from "react-icons/fa";
 import { TbTrashXFilled } from "react-icons/tb";
 import { ThreeDots } from "react-loader-spinner"
@@ -15,7 +15,7 @@ const ShoppingCart = () => {
     const [open, setOpen] = useState(true)
     const [deleteCartItemPopUp, setdeleteCartItemPopUp] = useState(false)
 
-    const { getCartItemsPENDING, getCartItemsData, addToCartMSG, removeCartItemsMSG } = useSelector((state) => state.cart)
+    const { getCartItemsPENDING, getCartItemsData, addToCartMSG, removeCartItemsMSG, updateCartItemsMSG } = useSelector((state) => state.cart)
 
     const dispatch = useDispatch()
 
@@ -23,7 +23,7 @@ const ShoppingCart = () => {
 
     useEffect(() => {
         dispatch(getCartItemsAction())
-    }, [addToCartMSG, removeCartItemsMSG])
+    }, [addToCartMSG, removeCartItemsMSG, updateCartItemsMSG])
 
     useEffect(() => {
         if (getCartItemsData) {
@@ -45,18 +45,40 @@ const ShoppingCart = () => {
     useEffect(() => {
         if (deleteCartItemPopUp && removeCartItemsMSG) {
             console.log("efrgth");
-          <div className='swal2-container'>
-            {Swal.fire({
-              position: "top-end",
-              icon: "success",
-              title:  "Remove Cart Item Successfully",
-              showConfirmButton: false,
-              timer: 2500
-            })}
-          </div>
-          setdeleteCartItemPopUp(false)
+            <div className='swal2-container'>
+                {Swal.fire({
+                    position: "top-end",
+                    icon: "success",
+                    title: "Remove Cart Item Successfully",
+                    showConfirmButton: false,
+                    timer: 2500
+                })}
+            </div>
+            setdeleteCartItemPopUp(false)
         }
-      }, [removeCartItemsMSG])
+    }, [removeCartItemsMSG])
+
+    const handleQuantityPlusUpdate = (product) => {
+        const item = {
+            size: product.size,
+            id: product._id,
+            quantity: product.quantity + 1,
+            order: "plus",
+            color: product.color
+        }
+        dispatch(updateCartItemsAction(item))
+    }
+
+    const handleQuantityMinusUpdate = (product) => {
+        const item = {
+            size: product.size,
+            id: product._id,
+            quantity: product.quantity - 1,
+            order: "minus",
+            color: product.color
+        }
+        dispatch(updateCartItemsAction(item))
+    }
 
     return (
         <div>
@@ -78,68 +100,88 @@ const ShoppingCart = () => {
                         getCartItemsData && getCartItemsData[0]?.totalItem > 0 ?
                             <div className="flow-root">
                                 <ul role="list" className="-my-6 divide-y divide-gray-200">
-                                    {cartItemData && cartItemData[0]?.map((product) => (
-                                        <li key={product.id} className="flex py-6">
-                                            <div className="h-36 w-36 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
-                                                {
-                                                    product && product?.product.map((ele) =>
-                                                        <img
-                                                            src={ele.thumbnail[0]}
-                                                            alt={ele.thumbnail[0]}
-                                                            className="h-full w-full object-cover object-center"
-                                                        />
-                                                    )
-                                                }
-                                            </div>
-
-                                            <div className="ml-4 flex flex-1 flex-col">
-                                                <div>
-                                                    <div className="displayBlock flex justify-between text-base font-medium text-gray-900 mb-1 ">
-                                                        <h3>
-                                                            <span className='text-lg font-semibold me-2' >Title:</span>
-                                                            {
-                                                                product && product?.product.map((ele) =>
-                                                                    <a href={ele.href}>{ele.title}</a>
-                                                                )
-                                                            }
-                                                        </h3>
-                                                        <div className='flex mt-1 items-center ' >
-                                                            <FaRupeeSign />
-                                                            <p className="">{product.price}</p>
-                                                        </div>
-                                                    </div>
-                                                    <div className='flex items-center mb-1' >
-                                                        <span className='text-lg font-semibold me-2' >Size:</span>
-                                                        <p className="rounded-full mt-[2px] text-lg text-gray-800">{product.size}</p>
-                                                    </div>
-                                                    <div className='flex items-center' >
-                                                        <span className=' text-lg font-semibold me-2' >Color:</span>
-                                                        <p className=" p-4 w-8 rounded-full mt-[2px] text-sm text-gray-500 border-[1px] border-black " style={{ background: product.color }} >{""}</p>
-                                                    </div>
-                                                </div>
-                                                <div className=" flex flex-1 items-end justify-between text-sm mb-2 ">
-                                                    <div className="text-gray-500 flex items-center justify-center gap-[5px]">Qty:
-                                                        <div className="hover:text-blue-900 hover:border-blue-900 cursor-pointer border-2 border-gray-400 p-[1px]">
-                                                            <FaMinus />
-                                                        </div>
-                                                        <span className="font-medium text-black text-[20px]">{product.quantity}</span>
-                                                        <div className="hover:text-blue-900  hover:border-blue-900 cursor-pointer border-2 border-gray-400 p-[1px]">
-                                                            <FaPlus />
-                                                        </div>
+                                    {cartItemData && cartItemData[0]?.map((product) => {
+                                        const limitQuantity = product && product?.product.map((ele) =>
+                                            ele?.sizesAndColor?.filter((item) =>
+                                                item.color === product.color && item.size === product.size
+                                            ))
+                                        return (
+                                            <>
+                                                <li key={product.id} className="flex py-6">
+                                                    <div className="h-36 w-36 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
+                                                        {
+                                                            product && product?.product.map((ele) =>
+                                                                <img
+                                                                    src={ele.thumbnail[0]}
+                                                                    alt={ele.thumbnail[0]}
+                                                                    className="h-full w-full object-cover object-center"
+                                                                />
+                                                            )
+                                                        }
                                                     </div>
 
-                                                    <div className="flex text-2xl ">
-                                                        <button
-                                                            type="button"
-                                                            className="font-medium text-indigo-600 hover:text-indigo-500"
-                                                        >
-                                                            <TbTrashXFilled color='red' onClick={() => handleRemoveCartItem(product.size, product.color, product._id)} />
-                                                        </button>
+                                                    <div className="ml-4 flex flex-1 flex-col">
+                                                        <div>
+                                                            <div className="displayBlock flex justify-between text-base font-medium text-gray-900 mb-1 ">
+                                                                <h3>
+                                                                    <span className='text-lg font-semibold me-2' >Title:</span>
+                                                                    {
+                                                                        product && product?.product.map((ele) =>
+                                                                            <a href={ele.href}>{ele.title}</a>
+                                                                        )
+                                                                    }
+                                                                </h3>
+                                                                <div className='flex mt-1 items-center ' >
+                                                                    <FaRupeeSign />
+                                                                    <p className="">{product.price}</p>
+                                                                </div>
+                                                            </div>
+                                                            <div className='flex items-center mb-1' >
+                                                                <span className='text-lg font-semibold me-2' >Size:</span>
+                                                                <p className="rounded-full mt-[2px] text-lg text-gray-800">{product.size}</p>
+                                                            </div>
+                                                            <div className='flex items-center' >
+                                                                <span className=' text-lg font-semibold me-2' >Color:</span>
+                                                                <p className=" p-4 w-8 rounded-full mt-[2px] text-sm text-gray-500 border-[1px] border-black " style={{ background: product.color }} >{""}</p>
+                                                            </div>
+                                                        </div>
+                                                        <div className=" flex flex-1 items-end justify-between text-sm mb-2 ">
+                                                            <div className="text-gray-500 flex items-center justify-center gap-[5px]">Qty:
+                                                                {product.quantity === 1
+                                                                    ?
+                                                                    <div className="cursor-no-drop border-2 border-gray-400 p-[1px]">
+                                                                        <FaMinus />
+                                                                    </div>
+                                                                    :
+                                                                    <div className="hover:text-blue-900 hover:border-blue-900 cursor-pointer border-2 border-gray-400 p-[1px]">
+                                                                        <FaMinus onClick={() => handleQuantityMinusUpdate(product)} />
+                                                                    </div>
+                                                                }
+                                                                <span className="font-medium text-black text-[20px]">{product.quantity}</span>
+                                                                {limitQuantity && product.quantity < limitQuantity[0][0]?.quantity ?
+                                                                    <div className="hover:text-blue-900  hover:border-blue-900 cursor-pointer border-2 border-gray-400 p-[1px]">
+                                                                        <FaPlus onClick={() => handleQuantityPlusUpdate(product)} />
+                                                                    </div>
+                                                                    :
+                                                                    <div className="cursor-no-drop border-2 border-gray-400 p-[1px]">
+                                                                        <FaPlus />
+                                                                    </div>
+                                                                }
+                                                            </div>
+                                                            <div className="flex text-2xl ">
+                                                                <button
+                                                                    type="button"
+                                                                    className="font-medium text-indigo-600 hover:text-indigo-500"
+                                                                >
+                                                                    <TbTrashXFilled color='red' onClick={() => handleRemoveCartItem(product.size, product.color, product._id)} />
+                                                                </button>
+                                                            </div>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            </div>
-                                        </li>
-                                    ))}
+                                                </li>
+                                            </>
+                                        )
+                                    })}
                                 </ul>
                             </div>
                             :

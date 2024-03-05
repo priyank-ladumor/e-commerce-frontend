@@ -540,7 +540,6 @@ function MobileScreenFilter({ handleFilter, mobileFiltersOpen, setMobileFiltersO
 }
 
 function ProductGrid({ newproduct, topCategory, location }) {
-
     function ColorPreview({ product, limit = 3, sx }) {
         const Pcolors = product && product.sizesAndColor.map((clr) => clr.color)
         const rmvSameClr = [...new Set(Pcolors)];

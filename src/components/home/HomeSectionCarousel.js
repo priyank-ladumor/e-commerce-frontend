@@ -1,9 +1,67 @@
-import React, { useState } from 'react'
+// import React, { useEffect, useState } from 'react'
+// import AliceCarousel from 'react-alice-carousel';
+// import 'react-alice-carousel/lib/alice-carousel.css';
+// import HomeSection from './HomeSection';
+// import { Button } from '@mui/material';
+// import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
+// import { useDispatch, useSelector } from 'react-redux';
+// import { getProducts } from '../../store/action/productsAction';
+
+
+// const HomeSectionCarousel = () => {
+//     const responsive = {
+//         0: { items: 1 },
+//         376: { items: 1.5 },
+//         520: { items: 2 },
+//         770: { items: 3 },
+//         1024: { items: 4 },
+//     };
+
+//     // const items = <HomeSection newproduct={products && products} />
+//     const items = products && products?.slice(0,10).map((ele) => <HomeSection newproduct={ele && ele} />)
+//     console.log(items && items,"itemsitems");
+//     return (
+//         <div className="relative lg:px-8 px-4">
+//             <div className="relative p-5">
+//                 <AliceCarousel
+//                 mouseTracking
+//                 items={items}
+//                 disableButtonsControls={false}
+//                 disableDotsControls={true}
+//                 autoPlay
+//                 infinite
+//                 responsive={responsive}
+//                 autoPlayInterval={2500}
+//                 />
+//             </div>
+//         </div>
+//     )
+// }
+
+// export default HomeSectionCarousel
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import React, { useEffect, useState } from 'react'
 import AliceCarousel from 'react-alice-carousel';
 import 'react-alice-carousel/lib/alice-carousel.css';
 import HomeSection from './HomeSection';
 import { Button } from '@mui/material';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
+import { useDispatch, useSelector } from 'react-redux';
+import { getProducts } from '../../store/action/productsAction';
 
 const images = [
     "https://pbs.twimg.com/media/Ec20SmEX0AUTXCo?format=png&name=medium",
@@ -328,11 +386,17 @@ const HomeSectionCarousel = () => {
         770: { items: 3 },
         1024: { items: 4 },
     };
-    const [activeIndex, setActiveIndex] = useState(0)
-    const SyncActiveIndex = ({items}) => setActiveIndex(items)
-    const items = mens_kurta.slice(0,10).map((ele) => <HomeSection product={ele} />)
-    
-    console.log(activeIndex);
+
+    const dispatch = useDispatch()
+    const { products, getFilterProductPENDING } = useSelector((state) => state.products)
+    useEffect(() => {
+        dispatch(getProducts())
+    }, [])
+
+    // const [activeIndex, setActiveIndex] = useState(0)
+    // const SyncActiveIndex = ({ items }) => setActiveIndex(items)
+    const items = products && Array.from(products)?.slice(0, 10).map((ele) => <HomeSection product={ele} />)
+    console.log(products && products,"products");
     return (
         <div className="relative lg:px-8 px-4">
             <div className="relative p-5">

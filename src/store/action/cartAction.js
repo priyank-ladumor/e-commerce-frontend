@@ -77,3 +77,28 @@ export const cartitemRemoveAction = createAsyncThunk(
     }
   }
 );
+
+export const updateCartItemsAction = createAsyncThunk(
+  "update/cartItems",
+  async (data, { rejectWithValue }) => {
+    try {
+      const result = await axios.put(
+        `${process.env.REACT_APP_BASE_URL}/cartitem/${data.id}`,
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": localStorage.getItem('token')
+          },
+        }
+      );
+      return result.data;
+    } catch (error) {
+      if (error.response && error.response.data.message) {
+        return rejectWithValue(error.response.data.message);
+      } else {
+        return rejectWithValue(error.message);
+      }
+    }
+  }
+);

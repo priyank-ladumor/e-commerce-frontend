@@ -169,13 +169,11 @@ export default function Navbar({ children }) {
     const [secondParent, setsecondParent] = useState("")
     const [parentId, setparentId] = React.useState("");
 
-    const { getCartItemsPENDING, getCartItemsData } = useSelector((state) => state.cart)
+    const { getCartItemsPENDING, getCartItemsData, removeCartItemsMSG, addToCartMSG } = useSelector((state) => state.cart)
 
     useEffect(() => {
         dispatch(getCartItemsAction())
-    }, [])
-
-
+    }, [addToCartMSG, removeCartItemsMSG])
 
     const logOutFunc = (name) => {
         if (name === "Sign out") {
@@ -565,7 +563,7 @@ export default function Navbar({ children }) {
                                             className="h-6 w-6 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
                                             aria-hidden="true"
                                         />
-                                        <span className="ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-800">{getCartItemsData ? getCartItemsData[0].totalItem : 0}</span>
+                                        <span className="ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-800">{getCartItemsData ? getCartItemsData[0]?.totalItem : 0}</span>
                                         <span className="sr-only">items in cart, view bag</span>
                                     </NavLink>
                                 </div>

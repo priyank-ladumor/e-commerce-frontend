@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { addToCartAction, getCartItemsAction } from "../action/cartAction";
+import { addToCartAction, cartitemRemoveAction, getCartItemsAction } from "../action/cartAction";
 
 
 const initialState = {
@@ -8,6 +8,7 @@ const initialState = {
     addToCartERROR: null,
     getCartItemsPENDING: false,
     getCartItemsData: null,
+    removeCartItemsMSG: null
 };
 
 const cartSlice = createSlice({
@@ -48,6 +49,18 @@ const cartSlice = createSlice({
         builder.addCase(getCartItemsAction.rejected, (state, { payload }) => {
             state.getCartItemsPENDING = false;
             state.getCartItemsData = null;
+        })
+
+        builder.addCase(cartitemRemoveAction.pending, (state, { payload }) => {
+            state.removeCartItemsMSG = null;
+        })
+
+        builder.addCase(cartitemRemoveAction.fulfilled, (state, { payload }) => {
+            state.removeCartItemsMSG = payload;
+        })
+
+        builder.addCase(cartitemRemoveAction.rejected, (state, { payload }) => {
+            state.removeCartItemsMSG = null;
         })
     }
 });

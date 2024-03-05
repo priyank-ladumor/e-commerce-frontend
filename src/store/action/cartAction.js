@@ -51,3 +51,29 @@ export const getCartItemsAction = createAsyncThunk(
     }
   }
 );
+
+export const cartitemRemoveAction = createAsyncThunk(
+  "delete/cartItems",
+  async (item, { rejectWithValue }) => {
+    const token = localStorage.getItem('token');
+    console.log(`${item.color.split("#")[1]}`)
+    try {
+      const result = await axios.delete(
+        `${process.env.REACT_APP_BASE_URL}/cartitem/${item.size}/${item.color.split('#')[1]}/${item.id}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": token
+          },
+        }
+      );
+      return result.data;
+    } catch (error) {
+      if (error.response && error.response.data.message) {
+        return rejectWithValue(error.response.data.message);
+      } else {
+        return rejectWithValue(error.message);
+      }
+    }
+  }
+);

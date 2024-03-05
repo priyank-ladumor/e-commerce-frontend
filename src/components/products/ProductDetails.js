@@ -298,7 +298,7 @@ export default function ProductDetails() {
                             return (
                               <>
                                 <div class="col-span-6">
-                                  <p className='p-2 flex rounded-full justify-center w-40 ' style={{ cursor: "pointer", fontSize: "24px", border: selectedSize === ele.size ? "3px solid blue" : "2px solid black" }} onClick={() => setSelectedSize(ele.size)} >{ele.size}</p>
+                                  <p className='p-2 flex rounded-full justify-center w-36 ' style={{ cursor: "pointer", fontSize: "24px", border: selectedSize === ele.size ? "3px solid blue" : "2px solid black" }} onClick={() => setSelectedSize(ele.size)} >{ele.size}</p>
                                 </div>
                               </>
                             )
@@ -309,7 +309,7 @@ export default function ProductDetails() {
                               return (
                                 <>
                                   <div class="col-span-6">
-                                    <p className='p-2 me-2 flex rounded-full justify-center w-40 border-black border-2' style={{ cursor: "no-drop", fontSize: "24px" }} > {size}</p>
+                                    <p className='p-2 me-2 flex rounded-full justify-center w-36 border-black border-2' style={{ cursor: "no-drop", fontSize: "24px" }} > {size}</p>
                                   </div>
                                 </>
                               )

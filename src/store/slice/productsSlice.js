@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { getProducts, getProductsByIDAction } from "../action/productsAction";
+import { getKidsProductAction, getMensProductAction, getProducts, getProductsByIDAction, getWomensProductAction } from "../action/productsAction";
 
 
 const initialState = {
@@ -7,6 +7,9 @@ const initialState = {
     getFilterProductPENDING: false,
     productsDetailsPENDING: false,
     productsDetails: null,
+    menProducts: [],
+    womenProducts: [],
+    kidsProducts: [],
 };
 
 const productsSlice = createSlice({
@@ -45,6 +48,42 @@ const productsSlice = createSlice({
         builder.addCase(getProductsByIDAction.rejected, (state, { payload }) => {
             state.productsDetails = null;
             state.productsDetailsPENDING = false;
+        })
+    
+        builder.addCase(getMensProductAction.pending, (state, { payload }) => {
+            state.menProducts = null;
+        })
+
+        builder.addCase(getMensProductAction.fulfilled, (state, { payload }) => {
+            state.menProducts = payload;
+        })
+
+        builder.addCase(getMensProductAction.rejected, (state, { payload }) => {
+            state.menProducts = null;
+        })
+       
+        builder.addCase(getWomensProductAction.pending, (state, { payload }) => {
+            state.womenProducts = null;
+        })
+
+        builder.addCase(getWomensProductAction.fulfilled, (state, { payload }) => {
+            state.womenProducts = payload;
+        })
+
+        builder.addCase(getWomensProductAction.rejected, (state, { payload }) => {
+            state.womenProducts = null;
+        })
+      
+        builder.addCase(getKidsProductAction.pending, (state, { payload }) => {
+            state.kidsProducts = null;
+        })
+
+        builder.addCase(getKidsProductAction.fulfilled, (state, { payload }) => {
+            state.kidsProducts = payload;
+        })
+
+        builder.addCase(getKidsProductAction.rejected, (state, { payload }) => {
+            state.kidsProducts = null;
         })
     }
 });

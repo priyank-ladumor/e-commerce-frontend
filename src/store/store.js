@@ -4,6 +4,7 @@ import authSlice from "./slice/authSlice";
 import categorySlice from "./slice/categorySlice";
 import sizeSlice from "./slice/sizeSlice";
 import cartSlice from "./slice/cartSlice";
+import userSlice from "./slice/userSlice";
 
 
 
@@ -14,6 +15,7 @@ const store = configureStore({
     category: categorySlice,
     size: sizeSlice,
     cart: cartSlice,
+    user: userSlice,
   },
 });
 

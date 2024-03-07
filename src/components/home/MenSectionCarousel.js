@@ -7,6 +7,8 @@ import { Button } from '@mui/material';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import { useDispatch, useSelector } from 'react-redux';
 import { getMensProductAction, getProducts } from '../../store/action/productsAction';
+import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css'
 
 
 const HomeSectionCarousel = () => {
@@ -19,20 +21,28 @@ const HomeSectionCarousel = () => {
 
     const dispatch = useDispatch()
     const { menProducts } = useSelector((state) => state.products)
+
     useEffect(() => {
         dispatch(getMensProductAction())
     }, [])
 
     const items = menProducts && menProducts?.slice(0, 10).map((ele) => <HomeSection product={ele} />)
-
-
     return (
         <>
-            <p className='flex justify-center text-2xl font-bold  ' > <span className='bg-[white] p-3 w-[25%] flex justify-center rounded-full '  style={{boxShadow: "rgba(14, 30, 37, 0.12) 0px 2px 4px 0px, rgba(14, 30, 37, 0.32) 0px 2px 16px 0px"}}  >Men's Products</span></p>
+            <p className='flex justify-center text-3xl font-bold  ' > Men's Products</p>
             <div className="relative lg:px-8 px-4">
-                {menProducts && menProducts?.length > 0 && <div className="relative p-5">
+                <div className="relative p-5">
                     <AliceCarousel
-                        items={items && items}
+                        items={items?.length > 0 ? items : [1, 2, 3, 4].map((ele) =>
+                            <div className='grid grid-cols-4 w-[25%] p-2 ' >
+                                <SkeletonTheme baseColor="white" highlightColor="#f0f0f0">
+                                    <p className='p-2' >
+                                        <Skeleton count={1} style={{ height: "180px", width: "220px" }} />
+                                        <Skeleton count={2} className='mt-3' style={{ width: "220px" }} />
+                                    </p>
+                                </SkeletonTheme>
+                            </div>
+                        )}
                         disableDotsControls
                         infinite
                         autoPlay
@@ -49,7 +59,7 @@ const HomeSectionCarousel = () => {
                             </Button></p>
                         }}
                     />
-                </div>}
+                </div>
             </div>
         </>
     )

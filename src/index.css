@@ -37,7 +37,12 @@
     overflow-y: hidden; 
     overflow-x: hidden;
   } */
-
+#exampleFormControlInput1{
+  box-shadow: none !important;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  outline: none;
+}
   .rmv-shadow{
     box-shadow: none !important;
     -webkit-box-shadow: none;

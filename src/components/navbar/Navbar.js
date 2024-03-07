@@ -137,9 +137,9 @@ const navigation = {
 }
 
 const userNavigation = [
-    { name: 'Your Profile', navPath: '' },
-    { name: 'My orders', navPath: '#' },
-    { name: 'Sign out', navPath: '#' },
+    { name: 'Your Profile', navPath: '/myprofile' },
+    { name: 'My orders', navPath: '/myorder' },
+    { name: 'Sign out', navPath: '/' },
 ]
 
 function classNames(...classes) {
@@ -173,7 +173,7 @@ export default function Navbar({ children }) {
 
     useEffect(() => {
         dispatch(getCartItemsAction())
-    }, [addToCartMSG, removeCartItemsMSG])
+    }, [addToCartMSG, removeCartItemsMSG, localStorage.getItem('token')])
 
     const logOutFunc = (name) => {
         if (name === "Sign out") {
@@ -195,7 +195,9 @@ export default function Navbar({ children }) {
 
     useEffect(() => {
         const query = `?parentCategory=${parentId}`
-        dispatch(getsecondlevelCategoryAction(query))
+        if(query){
+            dispatch(getsecondlevelCategoryAction(query))
+        }
     }, [parentId])
 
     useEffect(() => {
@@ -509,7 +511,7 @@ export default function Navbar({ children }) {
                                                         <Menu.Item key={item.name} onClick={() => logOutFunc(item.name)}>
                                                             {({ active }) => (
                                                                 <NavLink
-                                                                    to="/"
+                                                                    to={`${item.navPath}`}
                                                                     className={classNames(
                                                                         active ? 'bg-gray-100' : '',
                                                                         'block px-4 py-2 text-sm text-gray-700'

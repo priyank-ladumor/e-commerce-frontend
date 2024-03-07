@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
@@ -7,9 +7,12 @@ import Card from '@mui/material/Card';
 import { FaRupeeSign } from "react-icons/fa";
 import { alpha } from '@mui/material/styles';
 import { NavLink } from 'react-router-dom';
-
+import 'react-loading-skeleton/dist/skeleton.css'
+import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
+import { useSelector } from 'react-redux';
 
 const HomeSection = ({ product }) => {
+
     function ColorPreview({ product, limit = 3, sx }) {
         const Pcolors = product && product.sizesAndColor.map((clr) => clr.color)
         const rmvSameClr = [...new Set(Pcolors)];
@@ -38,8 +41,10 @@ const HomeSection = ({ product }) => {
             </Stack>
         );
     }
+
     return (
-        <Card className='mx-4'   >
+        <Card className='mx-4'>
+
             <NavLink to={`/products/men/${product.category.name}/${product.category.parentCategory.name}/${product._id}`} >
                 <Box sx={{ pt: '100%', position: 'relative' }}>
                     {product &&
@@ -54,7 +59,8 @@ const HomeSection = ({ product }) => {
                                 objectFit: 'cover',
                                 position: 'absolute',
                             }}
-                        />}
+                        />
+                    }
                 </Box>
                 <Stack spacing={2} sx={{ p: 3 }}>
                     <Link color="inherit" underline="hover" variant="subtitle2" noWrap>

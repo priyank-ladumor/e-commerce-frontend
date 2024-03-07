@@ -8,6 +8,7 @@ const initialState = {
     productsDetailsPENDING: false,
     productsDetails: null,
     menProducts: [],
+    menProductsPENDING: false,
     womenProducts: [],
     kidsProducts: [],
 };
@@ -52,14 +53,17 @@ const productsSlice = createSlice({
     
         builder.addCase(getMensProductAction.pending, (state, { payload }) => {
             state.menProducts = null;
+            state.menProductsPENDING = true;
         })
 
         builder.addCase(getMensProductAction.fulfilled, (state, { payload }) => {
             state.menProducts = payload;
+            state.menProductsPENDING = false;
         })
 
         builder.addCase(getMensProductAction.rejected, (state, { payload }) => {
             state.menProducts = null;
+            state.menProductsPENDING = false;
         })
        
         builder.addCase(getWomensProductAction.pending, (state, { payload }) => {

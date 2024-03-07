@@ -3,7 +3,7 @@ import { Fragment, useState } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import { FaPlus, FaMinus } from "react-icons/fa6";
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { cartitemRemoveAction, getCartItemsAction, updateCartItemsAction } from '../../store/action/cartAction';
 import { FaRupeeSign } from "react-icons/fa";
@@ -18,7 +18,7 @@ const ShoppingCart = () => {
     const { getCartItemsPENDING, getCartItemsData, addToCartMSG, removeCartItemsMSG, updateCartItemsMSG } = useSelector((state) => state.cart)
 
     const dispatch = useDispatch()
-
+    const location = useLocation()
     const [cartItemData, setcartItemData] = useState()
 
     useEffect(() => {
@@ -79,7 +79,6 @@ const ShoppingCart = () => {
         }
         dispatch(updateCartItemsAction(item))
     }
-
     return (
         <div>
             {/* <div className="mx-auto mt-12 bg-white max-w-7xl px-0 sm:px-0 lg:px-0"> */}
@@ -200,23 +199,26 @@ const ShoppingCart = () => {
                     </div>
                     <p className="mt-0.5 text-sm text-gray-500">Shipping and taxes calculated at checkout.</p>
                     <div className="mt-6">
-                        {/* <NavLink
-                            to={"/checkout"}
-                            className="flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700"
-                        >
-                            Checkout
-                        </NavLink> */}
-                        {getCartItemsData && getCartItemsData[0]?.totalItem > 0 ?
-                            <NavLink
-                                to={"/checkout"}
-                                className="flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700"
-                            >
-                                Checkout
-                            </NavLink>
-                            :
-                            <p className="flex items-center justify-center rounded-md border border-transparent bg-indigo-300 px-6 py-3 text-base font-medium text-white shadow-sm">
-                                Checkout
-                            </p>
+                        {
+                            location.pathname.split("/")[1] === "checkout" ?
+                                <NavLink
+                                    to={"/pay"}
+                                    className="flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700"
+                                >
+                                    Pay and Order
+                                </NavLink>
+                                :
+                                getCartItemsData && getCartItemsData[0]?.totalItem > 0 ?
+                                    <NavLink
+                                        to={"/checkout"}
+                                        className="flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700"
+                                    >
+                                        Checkout
+                                    </NavLink>
+                                    :
+                                    <p className="flex items-center justify-center rounded-md border border-transparent bg-indigo-300 px-6 py-3 text-base font-medium text-white shadow-sm">
+                                        Checkout
+                                    </p>
                         }
                     </div>
                     <div className="mt-6 flex justify-center text-center text-sm text-gray-500">

@@ -27,3 +27,30 @@ export const getUserProfileAction = createAsyncThunk(
         }
     }
 );
+
+export const updateUserProfileAction = createAsyncThunk(
+    "update/Profile",
+    async (item, { rejectWithValue }) => {
+        try {
+            const result = await axios.put(
+                `${process.env.REACT_APP_BASE_URL}/user/update`,
+                item,
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": localStorage.getItem("token")
+                    },
+                }
+            );
+            return result.data;
+        } catch (error) {
+            if (error.response && error.response.data.error) {
+                return rejectWithValue(error.response.data.error);
+            } else if (error.message) {
+                return rejectWithValue(error.message);
+            } else {
+                return rejectWithValue(error.response.data.msg)
+            }
+        }
+    }
+);

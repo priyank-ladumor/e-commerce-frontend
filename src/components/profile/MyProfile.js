@@ -1,32 +1,151 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { getUserProfileAction } from '../../store/action/userAction'
+import { getUserProfileAction, updateUserProfileAction } from '../../store/action/userAction'
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import { CForm, CFormInput, CFormLabel } from '@coreui/react'
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css'
 import { Button, FormControl, colors } from '@mui/material';
+import { useForm } from "react-hook-form";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+import Swal from 'sweetalert2';
+
+const schema = yup.object({
+    firstName: yup
+        .string()
+        .min(2, "First Name must be above 2 characters")
+        .max(20, "First Name must be with in 20 characters")
+        // .matches(/^\S*$/, "No whitespaces allowed")
+        .required("please enter First Name"),
+    lastName: yup
+        .string()
+        .min(2, "Last Name must be above 2 characters")
+        .max(20, "Last Name must be with in 20 characters")
+        // .matches(/^\S*$/, "No whitespaces allowed")
+        .required("please enter Last Name"),
+    mobile: yup
+        .string()
+        .required("please enter your contact number")
+        .matches(/^[0-9]+$/, "Must be only digits")
+        .min(10, "Must be exactly 10 digits")
+        .max(10, "Must be exactly 10 digits"),
+    email: yup.string().email().required("Please enter your email"),
+});
 
 const MyProfile = () => {
+
+    const {
+        register,
+        handleSubmit,
+        clearErrors,
+        formState: { errors },
+        reset,
+        setValue,
+    } = useForm({
+        resolver: yupResolver(schema),
+    });
+
     const dispatch = useDispatch()
-    const { getUserProfileDATA } = useSelector((state) => state.user)
+    const { getUserProfileDATA, updateUserProfileMSG, updateUserProfilePENDING, updatedSuccess } = useSelector((state) => state.user)
     const [userProfile, setUserProfile] = useState("")
+    const [profileImg, setprofileImg] = useState([])
+    const [updateProfilePopUp, setupdateProfilePopUp] = useState(false)
+
     useEffect(() => {
         dispatch(getUserProfileAction())
-    }, [])
+    }, [updateUserProfileMSG])
 
     useEffect(() => {
         setUserProfile(getUserProfileDATA)
     }, [getUserProfileDATA])
+
+    useEffect(() => {
+        if (userProfile) {
+            setprofileImg(userProfile.profileImg && userProfile.profileImg)
+            setValue("firstName", userProfile?.firstName);
+            setValue("lastName", userProfile?.lastName);
+            setValue("mobile", userProfile?.mobile);
+            setValue("email", userProfile?.email);
+        }
+    }, [userProfile])
+
+    const uploadprofileImg = (e) => {
+        const files = e.target.files;
+
+        const imagePromises = [];
+
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            if (file) {
+                const reader = new FileReader();
+                imagePromises.push(
+                    new Promise((resolve) => {
+                        reader.onload = (e) => {
+                            resolve(e.target.result);
+                        };
+                        reader.readAsDataURL(file);
+                    })
+                );
+            }
+        }
+
+
+        Promise.all(imagePromises).then((results) => {
+            setprofileImg(results);
+        });
+    }
+    // console.log(userProfile?.profileImg,"userProfile?.profileImg[0]");
+    // console.log(profileImg ,"profileImg[0] ");
+    const onSubmit = (data) => {
+        if (profileImg && profileImg[0]?.includes("data")) {
+            const item = {
+                firstName: data.firstName,
+                mobile: data.mobile,
+                lastName: data.lastName,
+                email: data.email,
+                profileImg: profileImg
+            }
+            dispatch(updateUserProfileAction(item))
+            setupdateProfilePopUp(true)
+            setprofileImg([])
+        } else {
+            const item = {
+                firstName: data.firstName,
+                mobile: data.mobile,
+                lastName: data.lastName,
+                email: data.email
+            }
+            dispatch(updateUserProfileAction(item))
+            setupdateProfilePopUp(true)
+            setprofileImg([])
+        }
+    }
+    useEffect(() => {
+        if (updateProfilePopUp && updateUserProfileMSG) {
+            <div className='swal2-container'>
+                {Swal.fire({
+                    position: "top-end",
+                    icon: "success",
+                    title: updateUserProfileMSG?.msg,
+                    showConfirmButton: false,
+                    timer: 2500
+                })}
+            </div>
+            setupdateProfilePopUp(false)
+            setprofileImg([])
+        }
+    }, [updateUserProfileMSG])
+
     return (
         <div>
             <div className='w-100 bg-white mt-10 rounded-lg p-6' >
-                <h2 className="text-3xl text-gray-900 font-bold tracking-tighter pb-4">My Profile</h2>
-                <div className='block' style={{ boxShadow: "rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px" }} >
-                    <div className='grid grid-cols-12 gap-4 p-6 '  >
-                        <div className='lg:col-span-6 lg:order-1 order-2 col-span-12 ' >
-                            <CForm>
+                <form onSubmit={handleSubmit(onSubmit)}>
+                    <h2 className="text-3xl text-gray-900 font-bold tracking-tighter pb-4">My Profile</h2>
+                    <div className='block' style={{ boxShadow: "rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px" }} >
+                        <div className='grid grid-cols-12 gap-4 p-6 '  >
+                            <div className='lg:col-span-6 lg:order-1 order-2 col-span-12 ' >
                                 <div className='mt-4' >
                                     <CFormLabel className='text-xl font-medium' >First Name</CFormLabel>
                                     <CFormInput
@@ -34,7 +153,8 @@ const MyProfile = () => {
                                         type="text"
                                         id="exampleFormControlInput1"
                                         placeholder="Enter your first name"
-                                        // text="Must be 8-20 characters long."
+                                        text={errors && <p style={{ color: "red" }} >{errors.firstName?.message}</p>}
+                                        {...register("firstName")}
                                         aria-describedby="exampleFormControlInputHelpInline"
                                         defaultValue={userProfile && userProfile.firstName}
                                         size="sm"
@@ -47,7 +167,8 @@ const MyProfile = () => {
                                         type="text"
                                         id="exampleFormControlInput1"
                                         placeholder="Enter your last name"
-                                        // text="Must be 8-20 characters long."
+                                        text={errors && <p style={{ color: "red" }} >{errors.lastName?.message}</p>}
+                                        {...register("lastName")}
                                         aria-describedby="exampleFormControlInputHelpInline"
                                         defaultValue={userProfile && userProfile.lastName}
                                         size="sm"
@@ -60,8 +181,9 @@ const MyProfile = () => {
                                         type="email"
                                         id="exampleFormControlInput1"
                                         placeholder="Enter your email address"
-                                        // text="Must be 8-20 characters long."
+                                        text={errors && <p style={{ color: "red" }} >{errors.email?.message}</p>}
                                         aria-describedby="exampleFormControlInputHelpInline"
+                                        {...register("email")}
                                         defaultValue={userProfile && userProfile.email}
                                         size="sm"
                                     />
@@ -73,36 +195,80 @@ const MyProfile = () => {
                                         type="number"
                                         id="exampleFormControlInput1"
                                         placeholder="Enter your Mobile No."
-                                        // text="Must be 8-20 characters long."
+                                        text={errors && <p style={{ color: "red" }} >{errors.mobile?.message}</p>}
+                                        {...register("mobile")}
                                         aria-describedby="exampleFormControlInputHelpInline"
-                                        defaultValue={userProfile && userProfile.mobileNo}
+                                        defaultValue={userProfile && userProfile.mobile}
                                         size="sm"
                                     />
                                 </div>
-                            </CForm>
-                        </div>
-                        <div className='lg:col-span-6 lg:order-2 order-1 col-span-12 flex justify-center items-center' >
-                            <div className=' block' >
-                                <img src='https://res.cloudinary.com/dstojqsjz/image/upload/v1709815064/fg5svjtn56sido4zqt7f.png' width={300} alt='' className='rounded-full border-2 border-black' />
-                                <div className="sm:col-span-6">
-                                    <label htmlFor="uploadimg" style={{ minHeight: "42px", cursor: "pointer", display: "flex", border: "1px solid black", justifyContent: "center", marginTop: "10px", alignItems: "center", fontWeight: "bold", color: "black", }} className=" btn-img d-flex-align-items-center rounded-md hover:bg-slate-300 text-black hover:text-white justify-content-center btn btn-outline-secondary col-12">Upload Profile</label>
-                                    <FormControl fullWidth sx={{ m: 0 }} size="large" >
-                                        <input
-                                            id="uploadimg"
-                                            accept="image/png, image/gif, image/jpeg, image/webp"
-                                            type="file"
-                                            name="photoo"
-                                            // onChange={(e) => [uploadthumbnail(e)]}
-                                            style={{ display: "none" }}
-                                            className="form-control"
-                                        />
-                                    </FormControl>
+                            </div>
+                            <div className='lg:col-span-6 lg:order-2 order-1 col-span-12 flex justify-center items-center' >
+                                <div className=' block' >
+                                    {
+                                        profileImg && profileImg[0] ?
+                                            <img src={profileImg && profileImg[0]} width="300px" style={{ height: "300px" }} alt='' className='rounded-full border-2 border-black' />
+                                            :
+                                            <img src='https://res.cloudinary.com/dstojqsjz/image/upload/v1709815064/fg5svjtn56sido4zqt7f.png' width="300px" style={{ height: "300px" }} alt='' className='rounded-full border-2 border-black' />
+                                    }
+                                    <div className="sm:col-span-6">
+                                        <label htmlFor="uploadimg" style={{ minHeight: "42px", cursor: "pointer", display: "flex", border: "1px solid black", justifyContent: "center", marginTop: "10px", alignItems: "center", fontWeight: "bold", color: "black", }} className=" btn-img d-flex-align-items-center rounded-md hover:bg-slate-300 text-black hover:text-white justify-content-center btn btn-outline-secondary col-12">Upload Profile</label>
+                                        <FormControl fullWidth sx={{ m: 0 }} size="large" >
+                                            <input
+                                                id="uploadimg"
+                                                accept="image/png, image/gif, image/jpeg, image/webp"
+                                                type="file"
+                                                name="photoo"
+                                                onChange={(e) => [uploadprofileImg(e)]}
+                                                style={{ display: "none" }}
+                                                className="form-control"
+                                            />
+                                        </FormControl>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+                        <div className='p-6 flex justify-between' >
+                            <div className='' >
+                                <Button type='submit' color='success' variant="contained">Save</Button>
+                            </div>
+                        </div>
                     </div>
-                    {/* address  */}
+                </form>
+
+
+                {/* address  */}
+                <div className='block mt-6' style={{ boxShadow: "rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px" }} >
                     <div className='grid grid-cols-12 gap-4 p-6 '  >
+                        <div className=' col-span-12 ' >
+                            <h2 className="text-3xl text-gray-900 font-semibold tracking-tighter pb-4">Address</h2>
+                        </div>
+                        <div className=' col-span-6 ' >
+                            <CFormLabel className='text-xl font-medium' >First Name</CFormLabel>
+                            <CFormInput
+                                className=' w-[100%] mt-2 rounded-md'
+                                type="text"
+                                id="exampleFormControlInput1"
+                                placeholder="Enter your first name"
+                                // text="Must be 8-20 characters long."
+                                aria-describedby="exampleFormControlInputHelpInline"
+                                defaultValue={userProfile && userProfile.address}
+                                size="sm"
+                            />
+                        </div>
+                        <div className=' col-span-6 ' >
+                            <CFormLabel className='text-xl font-medium' >Last Name</CFormLabel>
+                            <CFormInput
+                                className=' w-[100%] mt-2 rounded-md'
+                                type="text"
+                                id="exampleFormControlInput1"
+                                placeholder="Enter your last name"
+                                // text="Must be 8-20 characters long."
+                                aria-describedby="exampleFormControlInputHelpInline"
+                                defaultValue={userProfile && userProfile.address}
+                                size="sm"
+                            />
+                        </div>
                         <div className='order-3 col-span-12 ' >
                             <CFormLabel className='text-xl font-medium' >Street Address</CFormLabel>
                             <CFormInput
@@ -116,7 +282,20 @@ const MyProfile = () => {
                                 size="sm"
                             />
                         </div>
-                        <div className='md:col-span-4 order-3 col-span-12 ' >
+                        <div className='md:col-span-6 order-3 col-span-12 ' >
+                            <CFormLabel className='text-xl font-medium' >Mobile No</CFormLabel>
+                            <CFormInput
+                                className=' w-[100%] mt-2 rounded-md'
+                                type="text"
+                                id="exampleFormControlInput1"
+                                placeholder="Enter your mobile no."
+                                // text="Must be 8-20 characters long."
+                                aria-describedby="exampleFormControlInputHelpInline"
+                                defaultValue={userProfile && userProfile.address}
+                                size="sm"
+                            />
+                        </div>
+                        <div className='md:col-span-6 order-3 col-span-12 ' >
                             <CFormLabel className='text-xl font-medium' >City</CFormLabel>
                             <CFormInput
                                 className=' w-[100%] mt-2 rounded-md'
@@ -129,7 +308,7 @@ const MyProfile = () => {
                                 size="sm"
                             />
                         </div>
-                        <div className='md:col-span-4 order-3 col-span-12 ' >
+                        <div className='md:col-span-6 order-3 col-span-12 ' >
                             <CFormLabel className='text-xl font-medium' >State</CFormLabel>
                             <CFormInput
                                 className=' w-[100%] mt-2 rounded-md'
@@ -142,7 +321,7 @@ const MyProfile = () => {
                                 size="sm"
                             />
                         </div>
-                        <div className='md:col-span-4 order-3 col-span-12 ' >
+                        <div className='md:col-span-6 order-3 col-span-12 ' >
                             <CFormLabel className='text-xl font-medium' >Pin Code</CFormLabel>
                             <CFormInput
                                 className=' w-[100%] mt-2 rounded-md'
@@ -157,16 +336,53 @@ const MyProfile = () => {
                         </div>
                     </div>
                     <div className='p-6 flex justify-between' >
-                        <div className='w-[10%]' >
-                            <Button fullWidth className='' color='error' variant="contained">Reset</Button>
+                        <div className='' >
+                            <Button fullWidth className='' color='success' variant="contained">Add Address</Button>
                         </div>
-                        <div className='w-[10%]' >
+                    </div>
+                </div>
+
+                {/* reset password  */}
+                <div className='block mt-6' style={{ boxShadow: "rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px" }} >
+                    <div className='grid grid-cols-12 gap-4 p-6 '  >
+                        <div className=' col-span-12 ' >
+                            <h2 className="text-3xl text-gray-900 font-semibold pb-4">Reset Password</h2>
+                        </div>
+                        <div className=' col-span-6 ' >
+                            <CFormLabel className='text-xl font-medium' >Old Password</CFormLabel>
+                            <CFormInput
+                                className=' w-[100%] mt-2 rounded-md'
+                                type="text"
+                                id="exampleFormControlInput1"
+                                placeholder="Enter your old password"
+                                // text="Must be 8-20 characters long."
+                                aria-describedby="exampleFormControlInputHelpInline"
+                                defaultValue={userProfile && userProfile.address}
+                                size="sm"
+                            />
+                        </div>
+                        <div className=' order-3 col-span-6 ' >
+                            <CFormLabel className='text-xl font-medium' >New  Password</CFormLabel>
+                            <CFormInput
+                                className=' w-[100%] mt-2 rounded-md'
+                                type="text"
+                                id="exampleFormControlInput1"
+                                placeholder="Enter your new password"
+                                // text="Must be 8-20 characters long."
+                                aria-describedby="exampleFormControlInputHelpInline"
+                                defaultValue={userProfile && userProfile.address}
+                                size="sm"
+                            />
+                        </div>
+                    </div>
+                    <div className='p-6 flex justify-between' >
+                        <div className='' >
                             <Button fullWidth className='' color='success' variant="contained">Save</Button>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     )
 }
 

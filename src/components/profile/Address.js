@@ -5,11 +5,12 @@ import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useDispatch, useSelector } from 'react-redux';
-import { createAddressAction, getUserAddressAction } from '../../store/action/addressAction';
+import { createAddressAction, deleteAddressAction, getUserAddressAction } from '../../store/action/addressAction';
 import { ThreeDots } from 'react-loader-spinner';
 import Swal from 'sweetalert2';
 import { FaPlus } from "react-icons/fa6";
-import { MdOutlineClose } from 'react-icons/md';
+import { MdLocationOn, MdOutlineClose, MdOutlineLocalPhone, MdOutlineRemoveCircleOutline } from 'react-icons/md';
+import { IoRemoveCircle } from 'react-icons/io5';
 
 const schema = yup.object({
     firstName: yup
@@ -27,7 +28,7 @@ const schema = yup.object({
     streetAddress: yup
         .string()
         .min(4, "street address must be above 4 characters")
-        .max(20, "street address must be with in 20 characters")
+        .max(25, "street address must be with in 25 characters")
         .required("please enter street address"),
     city: yup
         .string()
@@ -55,7 +56,7 @@ const Address = ({ userProfile }) => {
     const [createAddressPopUp, setcreateAddressPopUp] = useState(false)
     const [showForm, setshowForm] = useState(false)
     const [address, setaddress] = useState()
-    const { createAddressPENDING, createAddressMSG, UserAddressPENDING, UserAddress } = useSelector((state) => state.address)
+    const { createAddressPENDING, createAddressMSG, UserAddressPENDING, UserAddress, deleteAddressMSG } = useSelector((state) => state.address)
     const {
         register,
         handleSubmit,
@@ -71,6 +72,7 @@ const Address = ({ userProfile }) => {
         dispatch(createAddressAction(data))
         reset();
         setcreateAddressPopUp(true)
+        setshowForm(!showForm)
     }
 
     useEffect(() => {
@@ -92,13 +94,18 @@ const Address = ({ userProfile }) => {
         if (userProfile) {
             dispatch(getUserAddressAction(userProfile))
         }
-    }, [userProfile])
+    }, [userProfile, createAddressMSG, deleteAddressMSG])
 
     useEffect(() => {
         if (UserAddress) {
             setaddress(UserAddress);
         }
     }, [UserAddress])
+
+    const handleAddressDelete = (id) => {
+        dispatch(deleteAddressAction(id))
+    }
+
     return (
         <div>
             <form onSubmit={handleSubmit(onSubmit)} >
@@ -107,9 +114,9 @@ const Address = ({ userProfile }) => {
                         <div className='flex justify-between items-center col-span-12 ' >
                             <h2 className="text-3xl text-gray-900 font-semibold tracking-tighter pb-4">Address</h2>
                             {showForm ?
-                                <h2 onClick={() => setshowForm(!showForm)} className=' flex justify-center items-center border-2 border-black p-2 rounded-lg cursor-pointer hover:bg-gray-500 hover:text-white ' ><MdOutlineClose className='size-[22px]' /><span className='ms-2 text-xl font-semibold' >Close</span></h2>
+                                <h2 onClick={() => setshowForm(!showForm)} className=' flex justify-center items-center border-[1px] border-gray-400 p-2 rounded-md cursor-pointer hover:bg-gray-500 hover:text-white ' ><MdOutlineClose className='size-[22px]' /></h2>
                                 :
-                                <h2 onClick={() => setshowForm(!showForm)} className=' flex justify-center items-center border-2 border-black p-2 rounded-lg cursor-pointer hover:bg-gray-500 hover:text-white ' ><FaPlus className='size-[22px]' /><span className='ms-2 text-xl font-semibold' >Add Address</span></h2>
+                                <h2 onClick={() => setshowForm(!showForm)} className=' flex justify-center items-center border-[1px] border-gray-400 p-2 rounded-md cursor-pointer hover:bg-gray-500 hover:text-white ' ><FaPlus className='size-[22px]' /></h2>
                             }
                         </div>
                     </div>
@@ -233,16 +240,42 @@ const Address = ({ userProfile }) => {
                             </div>
                         </div>
                     }
+
                     {
-                        address && address?.map((ele) => {
-                            return (
-                                <>
-                                    <div>
-                                        {ele.firstName}
-                                    </div>
-                                </>
-                            )
-                        })
+                        UserAddressPENDING === false && address && address?.length > 0 ?
+                            <div className='grid grid-cols-12 gap-4 p-6 '  >
+                                {
+                                    address && address?.map((ele) => {
+                                        return (
+                                            <>
+                                                <div className=' col-span-12 p-3 sm:col-span-6 lg:col-span-4  rounded-md border-[1px] border-gray-400 relative' >
+                                                    <p className='capitalize font-semibold mb-4'><span style={{ fontSize: "18px" }} >{ele.firstName}</span>{" "}<span style={{ fontSize: "18px" }} >{ele.lastName}</span></p>
+                                                    <p className='capitalize flex items-center mb-2'><span className='border-[1px] border-black rounded-full p-1 mr-2' ><MdOutlineLocalPhone /></span><span>+91</span>{" "}<span>{ele.phone}</span></p>
+                                                    <div className='flex mb-2' >
+                                                        <div className='' >
+                                                          <span className='border-[1px] border-black rounded-full flex justify-center items-center p-1' ><MdLocationOn /></span>
+                                                        </div>
+                                                        <div className='ml-2' >
+                                                            <div className='flex items-center '>
+                                                                <span className='capitalize'>{ele.streetAddress}</span>{", "}
+                                                            </div>
+                                                            <span className='capitalize'>{ele.city}</span>{", "}<span className='capitalize'>{ele.state}{", "}<span className='capitalize'>{ele.zipCode}</span></span>
+                                                        </div>
+                                                    </div>
+                                                    <span className='absolute inset-y-0 cursor-pointer right-3 top-3' ><MdOutlineRemoveCircleOutline onClick={() => handleAddressDelete(ele._id)} style={{ fontSize: "20px", color: "red" }} /> </span>
+                                                </div>
+                                            </>
+                                        )
+                                    })
+                                }
+                            </div>
+                            :
+                            address && address?.length === 0 && UserAddressPENDING === false &&
+                            <div className='grid grid-cols-12 gap-4 p-6 ' >
+                                <div className='flex justify-center items-center bg-red-100 h-[100px] col-span-12'>
+                                    <span className='font-bold' style={{ fontSize: "35px" }} >No Available Address</span>
+                                </div>
+                            </div>
                     }
                 </div>
             </form>

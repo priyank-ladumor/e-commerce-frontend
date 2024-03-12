@@ -13,6 +13,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import Swal from 'sweetalert2';
 import { ThreeDots } from "react-loader-spinner"
 import Address from './Address';
+import ResetPassword from './ResetPassword';
 
 
 const schema = yup.object({
@@ -261,46 +262,9 @@ const MyProfile = () => {
                 <Address userProfile={userProfile} />
 
                 {/* reset password  */}
-                <div className='block mt-6' style={{ boxShadow: "rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px" }} >
-                    <div className='grid grid-cols-12 gap-4 p-6 '  >
-                        <div className=' col-span-12 ' >
-                            <h2 className="text-3xl text-gray-900 font-semibold pb-4">Reset Password</h2>
-                        </div>
-                        <div className=' col-span-6 ' >
-                            <CFormLabel className='text-xl font-medium' >Old Password</CFormLabel>
-                            <CFormInput
-                                className=' w-[100%] mt-2 rounded-md'
-                                type="text"
-                                id="exampleFormControlInput1"
-                                placeholder="Enter your old password"
-                                // text="Must be 8-20 characters long."
-                                aria-describedby="exampleFormControlInputHelpInline"
-                                defaultValue={userProfile && userProfile.address}
-                                size="sm"
-                            />
-                        </div>
-                        <div className=' order-3 col-span-6 ' >
-                            <CFormLabel className='text-xl font-medium' >New  Password</CFormLabel>
-                            <CFormInput
-                                className=' w-[100%] mt-2 rounded-md'
-                                type="text"
-                                id="exampleFormControlInput1"
-                                placeholder="Enter your new password"
-                                // text="Must be 8-20 characters long."
-                                aria-describedby="exampleFormControlInputHelpInline"
-                                defaultValue={userProfile && userProfile.address}
-                                size="sm"
-                            />
-                        </div>
-                    </div>
-                    <div className='p-6 flex justify-between' >
-                        <div className='' >
-                            <Button fullWidth className='' color='success' variant="contained">Save</Button>
-                        </div>
-                    </div>
-                </div>
+                <ResetPassword userProfile={userProfile} />
             </div>
-        </div >
+        </div>
     )
 }
 

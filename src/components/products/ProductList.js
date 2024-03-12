@@ -418,6 +418,7 @@ const ProductList = () => {
                                         newproduct?.length > 0 ?
                                             <ProductGrid newproduct={newproduct} topCategory={topCategory} location={location} />
                                             :
+                                            getFilterProductPENDING === false &&
                                             <div className='flex justify-center items-center bg-red-100 h-[300px] w-[820px]'>
                                                 <span className='font-bold' style={{ fontSize: "35px" }} >No filtered product found</span>
                                             </div>

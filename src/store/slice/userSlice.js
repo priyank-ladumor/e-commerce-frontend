@@ -1,6 +1,6 @@
 
 import { createSlice } from "@reduxjs/toolkit";
-import { getUserProfileAction, updateUserProfileAction } from "../action/userAction";
+import { getUserProfileAction, resetPasswordAction, updateUserProfileAction } from "../action/userAction";
 
 
 const initialState = {
@@ -8,6 +8,9 @@ const initialState = {
     getUserProfilePENDING: false,
     updateUserProfileMSG: null,
     updateUserProfilePENDING: false,
+    resetPasswordMSG: null,
+    resetPasswordERROR: null,
+    resetPasswordPENDING: false,
 };
 
 const userSlice = createSlice({
@@ -46,6 +49,24 @@ const userSlice = createSlice({
         builder.addCase(updateUserProfileAction.rejected, (state, { payload }) => {
             state.updateUserProfileMSG = null;
             state.updateUserProfilePENDING = false;
+        })
+
+        builder.addCase(resetPasswordAction.pending, (state, { payload }) => {
+            state.resetPasswordMSG = null;
+            state.resetPasswordPENDING = true;
+            state.resetPasswordERROR = null;
+        })
+
+        builder.addCase(resetPasswordAction.fulfilled, (state, { payload }) => {
+            state.resetPasswordMSG = payload;
+            state.resetPasswordPENDING = false;
+            state.resetPasswordERROR = null;
+        })
+
+        builder.addCase(resetPasswordAction.rejected, (state, { payload }) => {
+            state.resetPasswordMSG = null;
+            state.resetPasswordPENDING = false;
+            state.resetPasswordERROR = payload;
         })
     }
 });

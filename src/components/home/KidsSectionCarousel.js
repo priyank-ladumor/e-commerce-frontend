@@ -21,11 +21,14 @@ const HomeKidsSectionCarousel = () => {
 
     const dispatch = useDispatch()
     const { kidsProducts } = useSelector((state) => state.products)
+
     useEffect(() => {
         dispatch(getKidsProductAction())
     }, [])
 
-    const items = kidsProducts && kidsProducts?.slice(0, 10).map((ele) => <HomeKidsSection product={ele} />)
+    const reversedkidsProducts = kidsProducts && [...kidsProducts].reverse()
+
+    const items = reversedkidsProducts && reversedkidsProducts?.slice(0, 10).map((ele) => <HomeKidsSection product={ele} />)
 
     return (
         <>
@@ -46,7 +49,7 @@ const HomeKidsSectionCarousel = () => {
                         disableDotsControls
                         infinite
                         autoPlay
-                        autoPlayInterval={2000}
+                        autoPlayInterval={4000}
                         responsive={responsive}
                         renderPrevButton={() => {
                             return <p className="p-4 absolute left-[-40px] top-0"><Button variant="contained" className="z-50 bg-white" sx={{ position: "absolute", top: "8rem", left: "0rem", transform: "translateX(-50%) rotate(90deg)", bgcolor: "white" }} aria-label='prv'>

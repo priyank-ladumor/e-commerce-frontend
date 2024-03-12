@@ -17,6 +17,7 @@ const schema = yup.object({
     password: yup
         .string()
         .min(6)
+        .matches(/^\S*$/, "No whitespaces allowed")
         .required("Please enter your password"),
     confirmPassword: yup
         .string()

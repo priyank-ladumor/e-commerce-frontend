@@ -26,7 +26,8 @@ const HomeSectionCarousel = () => {
         dispatch(getMensProductAction())
     }, [])
 
-    const items = menProducts && menProducts?.slice(0, 10).map((ele) => <HomeSection product={ele} />)
+    const reversedmenProducts = menProducts && [...menProducts].reverse()
+    const items = reversedmenProducts && reversedmenProducts.slice(0, 10).map((ele) => <HomeSection product={ele} />)
     return (
         <>
             <p className='flex justify-center text-3xl font-bold  ' > Men's Products</p>
@@ -46,7 +47,7 @@ const HomeSectionCarousel = () => {
                         disableDotsControls
                         infinite
                         autoPlay
-                        autoPlayInterval={2000}
+                        autoPlayInterval={4000}
                         responsive={responsive}
                         renderPrevButton={() => {
                             return <p className="p-4 absolute left-[-40px] top-0"><Button variant="contained" className="z-50 bg-white" sx={{ position: "absolute", top: "8rem", left: "0rem", transform: "translateX(-50%) rotate(90deg)", bgcolor: "white" }} aria-label='prv'>

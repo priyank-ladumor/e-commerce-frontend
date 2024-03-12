@@ -1,13 +1,15 @@
 
 import { createSlice } from "@reduxjs/toolkit";
-import { createAddressAction, getUserAddressAction } from "../action/addressAction";
+import { createAddressAction, deleteAddressAction, getUserAddressAction } from "../action/addressAction";
 
 
 const initialState = {
     createAddressMSG: null,
     createAddressPENDING: false,
     UserAddress: [],
+    UserAddressSuccess: false,
     UserAddressPENDING: false,
+    deleteAddressMSG: null,
 };
 
 const addressSlice = createSlice({
@@ -36,16 +38,31 @@ const addressSlice = createSlice({
         builder.addCase(getUserAddressAction.pending, (state, { payload }) => {
             state.UserAddress = null;
             state.UserAddressPENDING = true;
+            state.UserAddressSuccess = false;
         })
 
         builder.addCase(getUserAddressAction.fulfilled, (state, { payload }) => {
             state.UserAddress = payload;
             state.UserAddressPENDING = false;
+            state.UserAddressSuccess = true;
         })
 
         builder.addCase(getUserAddressAction.rejected, (state, { payload }) => {
             state.UserAddress = null;
             state.UserAddressPENDING = false;
+            state.UserAddressSuccess = false;
+        })
+
+        builder.addCase(deleteAddressAction.pending, (state, { payload }) => {
+            state.deleteAddressMSG = null;
+        })
+
+        builder.addCase(deleteAddressAction.fulfilled, (state, { payload }) => {
+            state.deleteAddressMSG = payload;
+        })
+
+        builder.addCase(deleteAddressAction.rejected, (state, { payload }) => {
+            state.deleteAddressMSG = null;
         })
 
     }

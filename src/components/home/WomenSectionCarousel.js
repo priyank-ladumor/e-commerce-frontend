@@ -23,8 +23,8 @@ const HomeWomenSectionCarousel = () => {
     useEffect(() => {
         dispatch(getWomensProductAction())
     }, [])
-
-    const items = womenProducts && womenProducts?.slice(0, 10).map((ele) => <HomeWomenSection product={ele} />)
+    const reversedwomenProducts = womenProducts && [...womenProducts].reverse()
+    const items = reversedwomenProducts && reversedwomenProducts?.slice(0, 10).map((ele) => <HomeWomenSection product={ele} />)
 
     return (
         <>
@@ -45,7 +45,7 @@ const HomeWomenSectionCarousel = () => {
                         disableDotsControls
                         infinite
                         autoPlay
-                        autoPlayInterval={2000}
+                        autoPlayInterval={4000}
                         responsive={responsive}
                         renderPrevButton={() => {
                             return <p className="p-4 absolute left-[-40px] top-0"><Button variant="contained" className="z-50 bg-white" sx={{ position: "absolute", top: "8rem", left: "0rem", transform: "translateX(-50%) rotate(90deg)", bgcolor: "white" }} aria-label='prv'>

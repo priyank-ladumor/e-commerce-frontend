@@ -11,6 +11,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { getsecondlevelCategoryAction, getthirdlevelCategoryAction, gettoplevelCategoryAction } from '../../store/action/categoryAction'
 import { useSearchParams } from 'react-router-dom';
 import { getCartItemsAction } from '../../store/action/cartAction'
+import { getUserAddressAction } from '../../store/action/addressAction'
+import { getUserProfileAction } from '../../store/action/userAction'
 
 
 const navigation = {
@@ -154,6 +156,8 @@ export default function Navbar({ children }) {
 
     const [open, setOpen] = useState(false)
     const { categoryTop, categorySecond, categoryThird } = useSelector((state) => state.category)
+    const { getUserProfileDATA, updateUserProfileMSG, updateUserProfilePENDING } = useSelector((state) => state.user)
+
     const navigate = useNavigate()
     const dispatch = useDispatch()
 
@@ -161,6 +165,7 @@ export default function Navbar({ children }) {
 
     const [navOpen, setNavOpen] = useState(true)
     const [selectNavOp, setselectNavOp] = useState(false)
+    const [userProfile, setUserProfile] = useState()
 
     const [top, settop] = useState("")
     const [second, setsecond] = useState("")
@@ -170,6 +175,14 @@ export default function Navbar({ children }) {
     const [parentId, setparentId] = React.useState("");
 
     const { getCartItemsPENDING, getCartItemsData, removeCartItemsMSG, addToCartMSG } = useSelector((state) => state.cart)
+
+    useEffect(() => {
+        dispatch(getUserProfileAction())
+    }, [updateUserProfileMSG])
+
+    useEffect(() => {
+        setUserProfile(getUserProfileDATA)
+    }, [getUserProfileDATA])
 
     useEffect(() => {
         dispatch(getCartItemsAction())

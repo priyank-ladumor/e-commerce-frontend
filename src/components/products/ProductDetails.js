@@ -269,6 +269,7 @@ export default function ProductDetails() {
                     </a>
                   </div>
                 </div>
+                
 
                 <form className="mt-10">
                   {/* Colors */}

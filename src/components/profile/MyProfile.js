@@ -11,6 +11,9 @@ import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import Swal from 'sweetalert2';
+import { ThreeDots } from "react-loader-spinner"
+import Address from './Address';
+
 
 const schema = yup.object({
     firstName: yup
@@ -48,7 +51,7 @@ const MyProfile = () => {
     });
 
     const dispatch = useDispatch()
-    const { getUserProfileDATA, updateUserProfileMSG, updateUserProfilePENDING, updatedSuccess } = useSelector((state) => state.user)
+    const { getUserProfileDATA, updateUserProfileMSG, updateUserProfilePENDING } = useSelector((state) => state.user)
     const [userProfile, setUserProfile] = useState("")
     const [profileImg, setprofileImg] = useState([])
     const [updateProfilePopUp, setupdateProfilePopUp] = useState(false)
@@ -96,8 +99,7 @@ const MyProfile = () => {
             setprofileImg(results);
         });
     }
-    // console.log(userProfile?.profileImg,"userProfile?.profileImg[0]");
-    // console.log(profileImg ,"profileImg[0] ");
+
     const onSubmit = (data) => {
         if (profileImg && profileImg[0]?.includes("data")) {
             const item = {
@@ -230,7 +232,25 @@ const MyProfile = () => {
                         </div>
                         <div className='p-6 flex justify-between' >
                             <div className='' >
-                                <Button type='submit' color='success' variant="contained">Save</Button>
+                                <Button type='submit' color='success' variant="contained">
+                                    {
+                                        updateUserProfilePENDING ?
+                                            <div className='flex justify-center items-center' >
+                                                <ThreeDots
+                                                    visible={true}
+                                                    height="20"
+                                                    width="40"
+                                                    color="#fff"
+                                                    radius="9"
+                                                    ariaLabel="three-dots-loading"
+                                                    wrapperStyle={{}}
+                                                    wrapperClass=""
+                                                />
+                                            </div>
+                                            :
+                                            "Save"
+                                    }
+                                </Button>
                             </div>
                         </div>
                     </div>
@@ -238,109 +258,7 @@ const MyProfile = () => {
 
 
                 {/* address  */}
-                <div className='block mt-6' style={{ boxShadow: "rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px" }} >
-                    <div className='grid grid-cols-12 gap-4 p-6 '  >
-                        <div className=' col-span-12 ' >
-                            <h2 className="text-3xl text-gray-900 font-semibold tracking-tighter pb-4">Address</h2>
-                        </div>
-                        <div className=' col-span-6 ' >
-                            <CFormLabel className='text-xl font-medium' >First Name</CFormLabel>
-                            <CFormInput
-                                className=' w-[100%] mt-2 rounded-md'
-                                type="text"
-                                id="exampleFormControlInput1"
-                                placeholder="Enter your first name"
-                                // text="Must be 8-20 characters long."
-                                aria-describedby="exampleFormControlInputHelpInline"
-                                defaultValue={userProfile && userProfile.address}
-                                size="sm"
-                            />
-                        </div>
-                        <div className=' col-span-6 ' >
-                            <CFormLabel className='text-xl font-medium' >Last Name</CFormLabel>
-                            <CFormInput
-                                className=' w-[100%] mt-2 rounded-md'
-                                type="text"
-                                id="exampleFormControlInput1"
-                                placeholder="Enter your last name"
-                                // text="Must be 8-20 characters long."
-                                aria-describedby="exampleFormControlInputHelpInline"
-                                defaultValue={userProfile && userProfile.address}
-                                size="sm"
-                            />
-                        </div>
-                        <div className='order-3 col-span-12 ' >
-                            <CFormLabel className='text-xl font-medium' >Street Address</CFormLabel>
-                            <CFormInput
-                                className=' w-[100%] mt-2 rounded-md'
-                                type="text"
-                                id="exampleFormControlInput1"
-                                placeholder="Enter your street address"
-                                // text="Must be 8-20 characters long."
-                                aria-describedby="exampleFormControlInputHelpInline"
-                                defaultValue={userProfile && userProfile.address}
-                                size="sm"
-                            />
-                        </div>
-                        <div className='md:col-span-6 order-3 col-span-12 ' >
-                            <CFormLabel className='text-xl font-medium' >Mobile No</CFormLabel>
-                            <CFormInput
-                                className=' w-[100%] mt-2 rounded-md'
-                                type="text"
-                                id="exampleFormControlInput1"
-                                placeholder="Enter your mobile no."
-                                // text="Must be 8-20 characters long."
-                                aria-describedby="exampleFormControlInputHelpInline"
-                                defaultValue={userProfile && userProfile.address}
-                                size="sm"
-                            />
-                        </div>
-                        <div className='md:col-span-6 order-3 col-span-12 ' >
-                            <CFormLabel className='text-xl font-medium' >City</CFormLabel>
-                            <CFormInput
-                                className=' w-[100%] mt-2 rounded-md'
-                                type="text"
-                                id="exampleFormControlInput1"
-                                placeholder="Enter your city name"
-                                // text="Must be 8-20 characters long."
-                                aria-describedby="exampleFormControlInputHelpInline"
-                                defaultValue={userProfile && userProfile.address}
-                                size="sm"
-                            />
-                        </div>
-                        <div className='md:col-span-6 order-3 col-span-12 ' >
-                            <CFormLabel className='text-xl font-medium' >State</CFormLabel>
-                            <CFormInput
-                                className=' w-[100%] mt-2 rounded-md'
-                                type="text"
-                                id="exampleFormControlInput1"
-                                placeholder="Enter your state name"
-                                // text="Must be 8-20 characters long."
-                                aria-describedby="exampleFormControlInputHelpInline"
-                                defaultValue={userProfile && userProfile.address}
-                                size="sm"
-                            />
-                        </div>
-                        <div className='md:col-span-6 order-3 col-span-12 ' >
-                            <CFormLabel className='text-xl font-medium' >Pin Code</CFormLabel>
-                            <CFormInput
-                                className=' w-[100%] mt-2 rounded-md'
-                                type="number"
-                                id="exampleFormControlInput1"
-                                placeholder="Enter your pin code"
-                                // text="Must be 8-20 characters long."
-                                aria-describedby="exampleFormControlInputHelpInline"
-                                defaultValue={userProfile && userProfile.address}
-                                size="sm"
-                            />
-                        </div>
-                    </div>
-                    <div className='p-6 flex justify-between' >
-                        <div className='' >
-                            <Button fullWidth className='' color='success' variant="contained">Add Address</Button>
-                        </div>
-                    </div>
-                </div>
+                <Address userProfile={userProfile} />
 
                 {/* reset password  */}
                 <div className='block mt-6' style={{ boxShadow: "rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px" }} >

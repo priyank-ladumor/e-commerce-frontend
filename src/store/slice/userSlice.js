@@ -7,7 +7,6 @@ const initialState = {
     getUserProfileDATA: null,
     getUserProfilePENDING: false,
     updateUserProfileMSG: null,
-    updatedSuccess: false,
     updateUserProfilePENDING: false,
 };
 
@@ -37,19 +36,16 @@ const userSlice = createSlice({
         builder.addCase(updateUserProfileAction.pending, (state, { payload }) => {
             state.updateUserProfileMSG = null;
             state.updateUserProfilePENDING = true;
-            state.updatedSuccess = false;
         })
 
         builder.addCase(updateUserProfileAction.fulfilled, (state, { payload }) => {
             state.updateUserProfileMSG = payload;
             state.updateUserProfilePENDING = false;
-            state.updatedSuccess = true;
         })
 
         builder.addCase(updateUserProfileAction.rejected, (state, { payload }) => {
             state.updateUserProfileMSG = null;
             state.updateUserProfilePENDING = false;
-            state.updatedSuccess = false;
         })
     }
 });

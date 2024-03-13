@@ -309,14 +309,18 @@ const ProductList = () => {
             <div className="bg-[#fff] mt-10">
                 <div>
                     {/* Mobile filter dialog */}
-                    <MobileScreenFilter handleFilter={handleFilter} setMobileFiltersOpen={setMobileFiltersOpen} mobileFiltersOpen={mobileFiltersOpen} />
+                    <MobileScreenFilter handleFilter={handleFilter} setMobileFiltersOpen={setMobileFiltersOpen} mobileFiltersOpen={mobileFiltersOpen} third={third} thirdparent={thirdparent}
+                        searchparam={searchparam} setfilter={setfilter} filter={filter} setsearchparam={setsearchparam} pageSize={pageSize} reloadSet={reloadSet}
+                        sort={sort} setcolor={setcolor} color={color} setmaxPrice={setmaxPrice} setminPrice={setminPrice} setpageNumber={setpageNumber} minPrice={minPrice} maxPrice={maxPrice}
+                        pageNumber={pageNumber} setsizes={setsizes} sizes={sizes} getsizedata={getsizedata} minDiscount={minDiscount} setminDiscount={setminDiscount}
+                        available={available} setavailable={setavailable} setsort={setsort} setpageSize={setpageSize} MIN={MIN} MAX={MAX} SetMIN={SetMIN} SetMAX={SetMAX} />
 
                     {/* desktop screen filter sort and pagesize  */}
                     <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                         <div className="flex items-baseline justify-between border-b border-gray-200 pb-6 pt-12">
                             <h1 className="md:text-4xl text-xl font-semibold tracking-tight text-gray-700">Products</h1>
 
-                            <div className="flex items-center">
+                            <div className="flex justify-center items-center">
                                 {/* page size set  */}
                                 <span className='hide2 font-semibold flex items-center'>Products per page:
                                     <FormControl variant="standard" sx={{ m: 0 }}>
@@ -349,34 +353,44 @@ const ProductList = () => {
                                 </span>
 
                                 {/* sort search */}
-                                <span className=' font-semibold mx-3 flex items-center'>Sort By:
-                                    <FormControl variant="standard" sx={{ m: 0 }}>
-                                        <Select
-                                            id="demo-simple-select-standard"
-                                            value={sort}
-                                            onChange={handleChangeSort}
-                                            displayEmpty
-                                            style={{ padding: "0px", width: sort.length > 0 ? "145px" : "61px" }}
-                                            inputProps={{ 'aria-label': 'Without label' }}
-                                            className='ms-2'
-                                        >
-                                            <MenuItem value="">
-                                                <em>none</em>
-                                            </MenuItem>
-                                            <MenuItem value="high_to_low">
-                                                <em>Price: High-Low</em>
-                                            </MenuItem>
-                                            <MenuItem value="low_to_high">
-                                                <em>Price: Low-High</em>
-                                            </MenuItem>
-                                        </Select>
-                                    </FormControl>
-                                </span>
+                                <div className='hidesort p-0 font-semibold mx-3 flex items-center '>
+                                    <span className='p-0' >Sort By:</span>
+                                    <span>
+                                        <FormControl variant="standard" sx={{ m: 0 }}>
+                                            <Select
+                                                id="demo-simple-select-standard"
+                                                value={sort}
+                                                onChange={handleChangeSort}
+                                                displayEmpty
+                                                style={{ padding: "0px", width: sort.length > 0 ? "145px" : "61px" }}
+                                                inputProps={{ 'aria-label': 'Without label' }}
+                                                className='ms-2'
+                                            >
+                                                <MenuItem value="">
+                                                    <em>none</em>
+                                                </MenuItem>
+                                                <MenuItem value="high_to_low">
+                                                    <em>Price: High-Low</em>
+                                                </MenuItem>
+                                                <MenuItem value="low_to_high">
+                                                    <em>Price: Low-High</em>
+                                                </MenuItem>
+                                            </Select>
+                                        </FormControl>
+                                    </span>
+                                </div>
 
                                 <button
                                     type="button"
                                     className="-m-2 ml-4 p-2 text-gray-400 hover:text-gray-500 sm:ml-6 lg:hidden"
-                                    onClick={() => setMobileFiltersOpen(true)}
+                                    onClick={() => searchparam.get('thirdCategoryCheckBox') === "on" ?
+                                        [setMobileFiltersOpen(true), setfilter([]), setminPrice(0), setmaxPrice(10000), setsearchparam({
+                                            category: searchparam.get('category'), "thirdCategoryCheckBox": "on", thirdCategory, "resetThird": "true",
+                                            sort, pageSize, color, minPrice, maxPrice, pageNumber, sizes, minDiscount, available
+                                        })
+                                        ]
+                                        : setMobileFiltersOpen(true)
+                                        }
                                 >
                                     <span className="sr-only">Filters</span>
                                     <FunnelIcon className="h-5 w-5" aria-hidden="true" />
@@ -402,7 +416,7 @@ const ProductList = () => {
                                 {/* Product grid */}
                                 {
                                     getFilterProductPENDING ?
-                                        <div className='flex justify-center items-center  h-[600px] w-[820px]'>
+                                        <div className='flex justify-center items-center  m-[50px]  h-[600px] col-span-3'>
                                             <Bars
                                                 visible={true}
                                                 height="80"
@@ -419,7 +433,7 @@ const ProductList = () => {
                                             <ProductGrid newproduct={newproduct} topCategory={topCategory} location={location} />
                                             :
                                             getFilterProductPENDING === false &&
-                                            <div className='flex justify-center items-center bg-red-100 h-[300px] w-[820px]'>
+                                            <div className='flex m-[50px] justify-center items-center bg-red-100 h-[200px] col-span-3'>
                                                 <span className='font-bold' style={{ fontSize: "35px" }} >No filtered product found</span>
                                             </div>
                                 }
@@ -446,9 +460,149 @@ function PaginationFun({ handleChangePageNumber, pageNumber, products }) {
     );
 }
 
-function MobileScreenFilter({ handleFilter, mobileFiltersOpen, setMobileFiltersOpen }) {
+function MobileScreenFilter({ handleFilter, mobileFiltersOpen, setMobileFiltersOpen, third, thirdparent, searchparam, setfilter, filter, setsearchparam, pageSize, sort, setcolor, color,
+    setmaxPrice, setminPrice, setpageNumber, minPrice, maxPrice, pageNumber, setsizes, sizes, getsizedata, minDiscount, setminDiscount, available, setavailable,
+    setsort, setpageSize, MIN, MAX, SetMIN, SetMAX }) {
+    const [price, setprice] = React.useState([MIN, MAX])
+    const marks = [
+        {
+            value: MIN,
+            label: '',
+        },
+        {
+            value: MAX,
+            label: '',
+        },
+    ];
+
+    const handleChange = (_, newValue) => {
+        setprice(newValue);
+        SetMIN(newValue[0]);
+        SetMAX(newValue[1]);
+        setminPrice(newValue[0])
+        setmaxPrice(newValue[1])
+        setpageNumber(1)
+    };
+
+    React.useEffect(() => {
+        setprice([MIN, MAX])
+    }, [MIN, MAX])
+
+    const handlecngMIN = (e) => {
+        setminPrice(e.target.value.trim())
+        SetMIN(e.target.value.trim())
+        setprice([MIN, MAX])
+    }
+
+    const handlecngMAX = (e) => {
+        setmaxPrice(e.target.value.trim())
+        SetMAX(e.target.value.trim())
+        setprice([MIN, MAX])
+    }
+
+    useEffect(() => {
+        if (minPrice < 0) {
+            setminPrice(0)
+        }
+        if (maxPrice <= 10) {
+            setmaxPrice(10000)
+        }
+        if (MAX <= 10) {
+            SetMAX(10000)
+        }
+        if (MIN < 0) {
+            SetMIN(0)
+        }
+    }, [maxPrice, minPrice, MAX, MIN])
+
+    const renderPrice = (
+        <Stack spacing={1}>
+            {/* <FormLabel id="demo-radio-buttons-group-label">Price:</FormLabel> */}
+            <Box sx={{ width: 240 }}>
+                <Slider
+                    marks={marks}
+                    step={10}
+                    value={price}
+                    valueLabelDisplay="auto"
+                    min={0}
+                    max={MAX > 10000 ? MAX : 10000}
+                    onChange={handleChange}
+                    style={{ boxShadow: "none" }}
+                />
+                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <div className='flex items-center'>
+                        <input className=' rmv-shadow  ' inputProps={{ min: 0 }}
+                            type='number' onChange={e => [handlecngMIN(e), setpageNumber(1)]} label="Min" value={MIN} style={{ width: "75px", borderBottom: "1px solid black", display: "flex", justifyContent: "center", textAlign: "center" }} id="standard-basic" variant="standard" />
+                    </div>
+                    <div className='flex items-center'>
+                        <input className=' rmv-shadow '
+                            inputProps={{
+                                min: 10,
+                            }}
+                            type='number'
+                            inputmode="numeric" onChange={e => [handlecngMAX(e), setpageNumber(1)]} value={MAX} style={{ width: "75px", borderBottom: "1px solid black", display: "flex", justifyContent: "center", textAlign: "center" }} id="standard-basic" label="Max" variant="standard" />
+                    </div>
+                </Box>
+            </Box>
+        </Stack>
+    );
+
+    const renderSizes = (
+        <Stack spacing={1}>
+            {/* <FormLabel id="demo-radio-buttons-group-label">Size:</FormLabel> */}
+            <div className=" grid grid-cols-4 ">
+                {getsizedata && getsizedata.map((name) => (
+                    name.options.map((opt) => (
+                        <div onClick={() => [setsizes(opt), setpageNumber(1)]}
+                            className='flex m-2 cursor-pointer font-semibold rounded-full justify-center items-center p-[10px]'
+                            style={{ width: "50px", fontSize: "16px", border: sizes === opt ? "3px black solid" : "1px gray solid", }} >
+                            {opt.split("_")[0]}
+                        </div>
+                    ))
+                ))}
+            </div>
+        </Stack>
+    );
+
+    useEffect(() => {
+        if (minDiscount < 0) {
+            setminDiscount(0)
+        }
+        if (minDiscount >= 99) {
+            setminDiscount(99)
+        }
+    }, [minDiscount])
+
+    const renderminDiscount = (
+        <Stack spacing={1}>
+            <div className='flex items-center' >
+                <FormLabel id="demo-radio-buttons-group-label">Min Discount:</FormLabel>
+                <input className='ms-2 rmv-shadow ' type='number'
+                    min="0" minLength={2} max="99" onChange={e => [setminDiscount(e.target.value), setpageNumber(1)]} value={minDiscount} style={{ width: "45px", borderBottom: "1px solid black", }} id="standard-basic" variant="standard" />
+            </div>
+        </Stack>
+    )
+    const renderAvailable = (
+        <Stack spacing={1}>
+            <FormControl>
+                {/* <FormLabel id="demo-radio-buttons-group-label">Available</FormLabel> */}
+                <RadioGroup
+                    defaultValue="female"
+                    aria-labelledby="demo-customized-radios"
+                    name="customized-radios"
+                    value={available}
+                    onChange={(e) => [setavailable(e.target.value), setpageNumber(1)]}
+                >
+                    <div className='flex text-black font-semibold'>
+                        <FormControlLabel value="in_stock" control={<Radio />} label="In stock" />
+                        <FormControlLabel value="out_of_stock" control={<Radio />} label="Out of stock" />
+                    </div>
+                </RadioGroup>
+            </FormControl>
+        </Stack>
+    )
     return (<>
-        <Transition.Root show={mobileFiltersOpen} as={Fragment}>
+        <Transition.Root show={mobileFiltersOpen} as={Fragment} className="z-[1000]" >
             <Dialog as="div" className="relative z-40 lg:hidden" onClose={setMobileFiltersOpen}>
                 <Transition.Child
                     as={Fragment}
@@ -487,50 +641,129 @@ function MobileScreenFilter({ handleFilter, mobileFiltersOpen, setMobileFiltersO
 
                             {/* Filters */}
                             {/* mobile screen */}
-                            <form className="mt-4 border-t border-gray-200">
-                                {/* {filters.map((section) => (
-                                    <Disclosure as="div" key={section.id} className="border-t border-gray-200 px-4 py-6">
-                                        {({ open }) => (
-                                            <>
-                                                <h3 className="-mx-2 -my-3 flow-root">
-                                                    <Disclosure.Button className="flex w-full items-center justify-between bg-white px-2 py-3 text-gray-400 hover:text-gray-500">
-                                                        <span className="font-medium text-gray-900">{section.name}</span>
-                                                        <span className="ml-6 flex items-center">
-                                                            {open ? (
-                                                                <MinusIcon className="h-5 w-5" aria-hidden="true" />
-                                                            ) : (
-                                                                <PlusIcon className="h-5 w-5" aria-hidden="true" />
-                                                            )}
-                                                        </span>
-                                                    </Disclosure.Button>
-                                                </h3>
-                                                <Disclosure.Panel className="pt-6">
-                                                    <div className="space-y-6">
-                                                        {section.options.map((option, optionIdx) => (
-                                                            <div key={option.value} className="flex items-center">
-                                                                <input
-                                                                    id={`filter-mobile-${section.id}-${optionIdx}`}
-                                                                    name={`${section.id}[]`}
-                                                                    defaultValue={option.value}
-                                                                    type="checkbox"
-                                                                    defaultChecked={option.checked}
-                                                                    className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                                                                    onChange={(e) => handleFilter(e, option, section)}
-                                                                />
-                                                                <label
-                                                                    htmlFor={`filter-mobile-${section.id}-${optionIdx}`}
-                                                                    className="ml-3 min-w-0 flex-1 text-gray-500"
-                                                                >
-                                                                    {option.label}
-                                                                </label>
-                                                            </div>
-                                                        ))}
+                            <form className="mt-4 border-t border-gray-200 p-3">
+                                {(thirdparent && thirdparent.length > 0 && searchparam.get('thirdCategoryCheckBox') === "on") &&
+                                    <Accordion defaultExpanded style={{ minWidth: "278px" }} >
+                                        <AccordionSummary
+                                            expandIcon={<ExpandMoreIcon />}
+                                            aria-controls="panel1-content"
+                                            id="panel1-header"
+                                        >
+                                            <Typography > <spam className='text-xl font-semibold tracking-tight text-gray-600' >Categories</spam>
+                                            </Typography>
+                                        </AccordionSummary>
+                                        <AccordionDetails>
+                                            <Typography className='' >
+                                                {third && third.map((section, id) => (
+                                                    <div key={section.name} className="flex items-center">
+                                                        <input
+                                                            id={`filter-${section.id}-${id}`}
+                                                            name={`${section.name}`}
+                                                            value={section.name}
+                                                            checked={searchparam.get('thirdCategory') ? searchparam.get('thirdCategory').checked : searchparam.get('thirdCategory[0]') ? searchparam.get('thirdCategory[0]').checked : searchparam.get('resetThird') === "false" ? section.name ? section.name.checked : false : false}
+                                                            type="checkbox"
+                                                            className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                                                            onChange={(e) => handleFilter(e, section.name, section)}
+                                                        />
+                                                        <label
+                                                            htmlFor={`filter-${section.id}-${id}`}
+                                                            className="ml-3 text-lg cursor-pointer text-black-900"
+                                                        >
+                                                            {section.name.includes("kids_") ? section.name.split("kids_")[1].charAt(0).toUpperCase() + section.name.split("kids_" && "_")[1].slice(1) + " " + (section.name.split("_")[2] ? section.name.split("_")[2].charAt(0).toUpperCase() + section.name.split("_")[2].slice(1) : "") : section.name.split("men_" && "_")[1].charAt(0).toUpperCase() + section.name.split("men_" && "_")[1].slice(1) + " " + (section.name.split("_")[2] ? section.name.split("_")[2].charAt(0).toUpperCase() + section.name.split("_")[2].slice(1) : "")}
+                                                        </label>
                                                     </div>
-                                                </Disclosure.Panel>
-                                            </>
-                                        )}
-                                    </Disclosure>
-                                ))} */}
+                                                ))}
+                                                {
+                                                    searchparam.get('resetThird') === "false" &&
+                                                    <Button variant="outlined" style={{ minWidth: "100%", marginTop: "20px", borderColor: "gray" }} color='error' onClick={() => [setfilter([]), setminPrice(0), setmaxPrice(10000), setsearchparam({ category: searchparam.get('category'), "thirdCategoryCheckBox": "on", "resetThird": "true", sort, pageSize, color, minPrice, maxPrice, pageNumber, sizes, minDiscount, available })]} >clear</Button>
+                                                }
+                                            </Typography>
+                                        </AccordionDetails>
+                                    </Accordion>
+                                }
+                                <Accordion defaultExpanded style={{ minWidth: "278px" }} >
+                                    <AccordionSummary
+                                        expandIcon={<ExpandMoreIcon />}
+                                        aria-controls="panel2-content"
+                                        id="panel2-header"
+                                    >
+                                        <Typography > <spam className='text-xl font-semibold tracking-tight text-gray-600' >Colors</spam> </Typography>
+                                    </AccordionSummary>
+                                    <AccordionDetails>
+                                        <Typography>
+                                            <CompactPicker color={color} onChange={(clr) => setcolor(clr.hex)} />
+                                        </Typography>
+                                    </AccordionDetails>
+                                </Accordion>
+                                <Accordion defaultExpanded style={{ minWidth: "278px" }} >
+                                    <AccordionSummary
+                                        expandIcon={<ExpandMoreIcon />}
+                                        aria-controls="panel2-content"
+                                        id="panel2-header"
+                                    >
+                                        <Typography > <spam className='text-xl font-semibold tracking-tight text-gray-600' >Price Range</spam> </Typography>
+                                    </AccordionSummary>
+                                    <AccordionDetails>
+                                        <Typography>
+                                            {renderPrice}
+                                        </Typography>
+                                    </AccordionDetails>
+                                </Accordion>
+                                <Accordion style={{ minWidth: "278px" }} >
+                                    <AccordionSummary
+                                        expandIcon={<ExpandMoreIcon />}
+                                        aria-controls="panel2-content"
+                                        id="panel2-header"
+                                    >
+                                        <Typography > <spam className='text-xl font-semibold tracking-tight text-gray-600' >Sizes</spam> </Typography>
+                                    </AccordionSummary>
+                                    <AccordionDetails>
+                                        <Typography>
+                                            {renderSizes}
+                                        </Typography>
+                                    </AccordionDetails>
+                                </Accordion>
+                                <Accordion style={{ minWidth: "278px" }} >
+                                    <AccordionSummary
+                                        expandIcon={<ExpandMoreIcon />}
+                                        aria-controls="panel2-content"
+                                        id="panel2-header"
+                                    >
+                                        <Typography > <spam className='text-xl font-semibold tracking-tight text-gray-600' >Discount</spam> </Typography>
+                                    </AccordionSummary>
+                                    <AccordionDetails>
+                                        <Typography>
+                                            {renderminDiscount}
+                                        </Typography>
+                                    </AccordionDetails>
+                                </Accordion>
+                                <Accordion style={{ minWidth: "278px" }} >
+                                    <AccordionSummary
+                                        expandIcon={<ExpandMoreIcon />}
+                                        aria-controls="panel2-content"
+                                        id="panel2-header"
+                                    >
+                                        <Typography > <spam className='text-xl font-semibold tracking-tight text-gray-600' >Available</spam> </Typography>
+                                    </AccordionSummary>
+                                    <AccordionDetails>
+                                        <Typography>
+                                            {renderAvailable}
+                                        </Typography>
+                                    </AccordionDetails>
+                                </Accordion>
+                                <Box sx={{ minWidth: "278px", marginTop: "35px" }}>
+                                    <Button
+                                        fullWidth
+                                        size="large"
+                                        // type="button"
+                                        color="inherit"
+                                        variant="outlined"
+                                        onClick={() => [setfilter([]), setminPrice(0), setmaxPrice(10000), setcolor(""), SetMAX(10000), SetMIN(0), setavailable(""), setsizes(""), setpageSize(12), setpageNumber(1), setminDiscount(""), setsort(""), setsearchparam({ category: searchparam.get('category'), "thirdCategoryCheckBox": "on", "resetThird": "true", sort, pageSize, color, minPrice, maxPrice, pageNumber, sizes, minDiscount, available })]}
+                                        startIcon={<MdClearAll icon="ic:round-clear-all" />}
+                                    >
+                                        Clear All
+                                    </Button>
+                                </Box>
                             </form>
                         </Dialog.Panel>
                     </Transition.Child>
@@ -571,7 +804,7 @@ function ProductGrid({ newproduct, topCategory, location }) {
     }
 
     return (<>
-        <div className="lg:col-span-3">
+        <div className="lg:col-span-3 p-6 ">
             <div className="bg-[#fff] ">
                 <div className="mx-auto max-w-2xl px-4 py-16 sm:px-0 sm:py-0 lg:max-w-7xl lg:px-8">
                     <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:gap-x-8">
@@ -581,20 +814,6 @@ function ProductGrid({ newproduct, topCategory, location }) {
                                 <NavLink to={`/products/${topCategory}/${location.search && location.search.split("?category=")[1].split("&")[0]}/${location.search?.split("&thirdCategory[0]=" || "&thirdCategory=")[1] ? location.search?.split("&thirdCategory[0]=" || "&thirdCategory=")[1] : newproduct[0]?.category?.name}/${product._id}`}>
                                     <Card>
                                         <Box sx={{ pt: '100%', position: 'relative' }}>
-                                            {/* {product && product.createdAt.split("T")[0] === new Date().toISOString().split("T")[0] &&
-                                <Label
-                                    variant="filled"
-                                    color='info'
-                                    sx={{
-                                        zIndex: 9,
-                                        top: 16,
-                                        right: 16,
-                                        position: 'absolute',
-                                        textTransform: 'uppercase',
-                                    }}
-                                >
-                                    new
-                                </Label>} */}
                                             {product &&
                                                 <Box
                                                     component="img"
@@ -791,7 +1010,7 @@ function DesktopScreenFilter({ handleFilter, third, thirdparent, searchparam, se
     )
     return (<>
         <form className="hidden lg:block">
-            <div className='flex justify-between items-center w-[280px] border-b-4 pb-4' >
+            <div className='flex justify-between items-center w-[280px] border-b-4 pb-4' style={{ minWidth: "278px" }} >
                 <span className='text-2xl font-semibold ms-1' >Filter</span>
                 <div className='' >
                     <IoFilter className='text-2xl font-bold' />

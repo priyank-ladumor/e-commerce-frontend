@@ -1,4 +1,4 @@
-import { CFormInput, CFormLabel } from '@coreui/react'
+import { CForm, CFormInput, CFormLabel } from '@coreui/react'
 import { Button } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import { useForm } from "react-hook-form";
@@ -108,7 +108,7 @@ const Address = ({ userProfile }) => {
 
     return (
         <div>
-            <form onSubmit={handleSubmit(onSubmit)} >
+            <CForm onSubmit={handleSubmit(onSubmit)} >
                 <div className='block mt-6' >
                     <div className='grid grid-cols-12 gap-4 p-6 '  >
                         <div className='flex justify-between items-center col-span-12 ' >
@@ -278,7 +278,7 @@ const Address = ({ userProfile }) => {
                             </div>
                     }
                 </div>
-            </form>
+            </CForm>
         </div>
     )
 }

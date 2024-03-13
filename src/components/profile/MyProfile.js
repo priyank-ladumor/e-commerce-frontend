@@ -16,6 +16,10 @@ import PersonalInformation from './PersonalInformation';
 const steps = ['Personal Information', 'Address', 'Reset Password'];
 
 const MyProfile = () => {
+    
+    useEffect(() => {
+        window.scrollTo(0, 0)
+    }, [])
 
     const dispatch = useDispatch()
     const { getUserProfileDATA, updateUserProfileMSG, updateUserProfilePENDING } = useSelector((state) => state.user)

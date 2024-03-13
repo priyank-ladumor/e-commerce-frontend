@@ -1,185 +1,281 @@
 import React, { useEffect, useState } from 'react'
 import Swal from 'sweetalert2'
 import { useNavigate } from 'react-router-dom'
-import { FaPlus, FaMinus } from "react-icons/fa6";
 import { NavLink } from 'react-router-dom';
 import Navbar from '../components/navbar/Navbar';
 import ShoppingCart from '../components/cart/ShoppingCart';
-import { CFormInput, CFormLabel } from '@coreui/react';
+import { CForm, CFormInput, CFormLabel } from '@coreui/react';
 import { Button } from '@mui/material';
+import { useDispatch, useSelector } from 'react-redux';
+import { getUserProfileAction } from '../store/action/userAction';
+import { createAddressAction, deleteAddressAction, getUserAddressAction } from '../store/action/addressAction';
+import { MdLocationOn, MdOutlineLocalPhone, MdOutlineRemoveCircleOutline } from 'react-icons/md';
+import { ThreeDots } from 'react-loader-spinner';
+import { useForm } from "react-hook-form";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { getCartItemsAction } from '../store/action/cartAction';
 
-const products = [
-    {
-        id: 1,
-        name: 'Throwback Hip Bag',
-        href: '#',
-        color: 'Salmon',
-        price: '$90.00',
-        quantity: 1,
-        imageSrc: 'https://tailwindui.com/img/ecommerce-images/shopping-cart-page-04-product-01.jpg',
-        imageAlt: 'Salmon orange fabric pouch with match zipper, gray zipper pull, and adjustable hip belt.',
-    },
-    {
-        id: 2,
-        name: 'Medium Stuff Satchel',
-        href: '#',
-        color: 'Blue',
-        price: '$32.00',
-        quantity: 1,
-        imageSrc: 'https://tailwindui.com/img/ecommerce-images/shopping-cart-page-04-product-02.jpg',
-        imageAlt:
-            'Front of satchel with blue canvas body, black straps and handle, drawstring top, and front zipper pouch.',
-    },
-    // More products...
-]
+const schema = yup.object({
+    firstName: yup
+        .string()
+        .min(2, "First Name must be above 2 characters")
+        .max(20, "First Name must be with in 20 characters")
+        // .matches(/^\S*$/, "No whitespaces allowed")
+        .required("please enter First Name"),
+    lastName: yup
+        .string()
+        .min(2, "Last Name must be above 2 characters")
+        .max(20, "Last Name must be with in 20 characters")
+        // .matches(/^\S*$/, "No whitespaces allowed")
+        .required("please enter Last Name"),
+    streetAddress: yup
+        .string()
+        .min(4, "street address must be above 4 characters")
+        .max(25, "street address must be with in 25 characters")
+        .required("please enter street address"),
+    city: yup
+        .string()
+        .required("please enter your city"),
+    state: yup
+        .string()
+        .required("please enter your state"),
+    phone: yup
+        .string()
+        .required("please enter your contact number")
+        .matches(/^[0-9]+$/, "Must be only digits")
+        .min(10, "Must be exactly 10 digits")
+        .max(10, "Must be exactly 10 digits"),
+    zipCode: yup
+        .string()
+        .required("please enter your zip code")
+        .matches(/^[0-9]+$/, "Must be only digits")
+        .min(6, "Must be exactly 6 digits")
+        .max(6, "Must be exactly 6 digits"),
 
-const addresses = [
-    {
-        name: 'Leslie Alexander',
-        street: '11th chowk',
-        city: "mubai",
-        pincode: 475865,
-        phone: '923-000-1234',
-        state: "gujarat"
-    },
-    {
-        name: 'Leslie ',
-        street: '11th chowk',
-        city: "mubai",
-        pincode: 475865,
-        phone: '923-000-1234',
-        state: "gujarat"
-    },
-    {
-        name: 'Leslie k  Alexander',
-        street: '11th chowk',
-        city: "mubai",
-        pincode: 475865,
-        phone: '923-000-1234',
-        state: "gujarat"
-    },
-]
+});
+
 const CheckOut = () => {
+    const navigate = useNavigate()
+    const {
+        register,
+        handleSubmit,
+        clearErrors,
+        formState: { errors },
+        reset,
+    } = useForm({
+        resolver: yupResolver(schema),
+    });
+    const { getCartItemsPENDING, getCartItemsData, addToCartMSG, removeCartItemsMSG, updateCartItemsMSG } = useSelector((state) => state.cart)
+
+    const [createAddressPopUp, setcreateAddressPopUp] = useState(false)
     const [open, setOpen] = useState(true)
+    const { createAddressPENDING, createAddressMSG, UserAddressPENDING, UserAddress, deleteAddressMSG } = useSelector((state) => state.address)
+    const [address, setaddress] = useState()
+    const dispatch = useDispatch()
+    const { getUserProfileDATA, updateUserProfileMSG, updateUserProfilePENDING } = useSelector((state) => state.user)
+    const [userProfile, setUserProfile] = useState("")
+
+    const [selectedAddress, setselectedAddress] = useState("")
+    const [paymentSys, setPaymentSys] = useState("")
+
+    useEffect(() => {
+        dispatch(getCartItemsAction())
+    }, [])
+  
+    useEffect(() => {
+        const cartItem = getCartItemsData && getCartItemsData.map((ele) => ele.cartItem)
+        if(cartItem && cartItem[0]?.length === 0){
+            Swal.fire({
+                title: "Not available cart items",
+                text: "You won't be able to see this page with zero cart items!",
+                icon: "warning",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    navigate("/")
+                }else{
+                    navigate("/")
+                } 
+            })
+        }
+    }, [getCartItemsData])
+
+    useEffect(() => {
+        dispatch(getUserProfileAction())
+    }, [updateUserProfileMSG])
+
+    useEffect(() => {
+        setUserProfile(getUserProfileDATA)
+    }, [getUserProfileDATA])
+
+    useEffect(() => {
+        if (userProfile) {
+            dispatch(getUserAddressAction(userProfile))
+        }
+    }, [userProfile, createAddressMSG, deleteAddressMSG])
+
+    useEffect(() => {
+        if (UserAddress) {
+            setaddress(UserAddress);
+        }
+    }, [UserAddress])
+
+    const onSubmit = (data, e) => {
+        e.preventDefault();
+        dispatch(createAddressAction(data))
+        reset();
+        setcreateAddressPopUp(true)
+    }
+
+    useEffect(() => {
+        if (createAddressPopUp && createAddressMSG) {
+            <div className='swal2-container'>
+                {Swal.fire({
+                    position: "top-end",
+                    icon: "success",
+                    title: createAddressMSG?.msg,
+                    showConfirmButton: false,
+                    timer: 2500
+                })}
+            </div>
+            setcreateAddressPopUp(false)
+        }
+    }, [createAddressMSG])
+
+    useEffect(() => {
+        window.scrollTo(0, 0)
+    }, [])
+
     return (
         <div>
             <Navbar>
-                {/* <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8"> */}
-                {/* <div className="grid grid-cols-1 gap-x-8 gap-y-10 lg:grid-cols-5"> */}
-
                 <div className="mx-auto mt-12 bg-white max-w-7xl px-4 sm:px-6 lg:px-8">
-                    <form className="bg-white p-5">
+                    <div className="bg-white p-5">
                         <div className="space-y-12">
-                            <div className="border-b border-gray-900/10 pb-12">
+                            <div className="">
                                 <h2 className="text-base font-semibold leading-7 text-gray-900">Personal Information</h2>
                                 <p className="mt-1 text-sm leading-6 text-gray-600">Use a permanent address where you can receive mail.</p>
-
-                                <div className='block mt-4' >
-                                    <div className='grid grid-cols-12 gap-4 '  >
-                                        <div className=' col-span-6 ' >
-                                            <CFormLabel className='text-lg' >First Name</CFormLabel>
-                                            <CFormInput
-                                                className=' w-[100%] mt-2 rounded-md'
-                                                type="text"
-                                                id="exampleFormControlInput1"
-                                                placeholder="Enter your first name"
-                                                // text="Must be 8-20 characters long."
-                                                aria-describedby="exampleFormControlInputHelpInline"
-                                                // defaultValue={userProfile && userProfile.address}
-                                                size="sm"
-                                            />
-                                        </div>
-                                        <div className=' col-span-6 ' >
-                                            <CFormLabel className='text-lg ' >Last Name</CFormLabel>
-                                            <CFormInput
-                                                className=' w-[100%] mt-2 rounded-md'
-                                                type="text"
-                                                id="exampleFormControlInput1"
-                                                placeholder="Enter your last name"
-                                                // text="Must be 8-20 characters long."
-                                                aria-describedby="exampleFormControlInputHelpInline"
-                                                // defaultValue={userProfile && userProfile.address}
-                                                size="sm"
-                                            />
-                                        </div>
-                                        <div className='order-3 col-span-12 ' >
-                                            <CFormLabel className='text-lg ' >Street Address</CFormLabel>
-                                            <CFormInput
-                                                className=' w-[100%] mt-2 rounded-md'
-                                                type="text"
-                                                id="exampleFormControlInput1"
-                                                placeholder="Enter your street address"
-                                                // text="Must be 8-20 characters long."
-                                                aria-describedby="exampleFormControlInputHelpInline"
-                                                // defaultValue={userProfile && userProfile.address}
-                                                size="sm"
-                                            />
-                                        </div>
-                                        <div className='md:col-span-6 order-3 col-span-12 ' >
-                                            <CFormLabel className='text-lg ' >Mobile No</CFormLabel>
-                                            <CFormInput
-                                                className=' w-[100%] mt-2 rounded-md'
-                                                type="text"
-                                                id="exampleFormControlInput1"
-                                                placeholder="Enter your mobile no."
-                                                // text="Must be 8-20 characters long."
-                                                aria-describedby="exampleFormControlInputHelpInline"
-                                                // defaultValue={userProfile && userProfile.address}
-                                                size="sm"
-                                            />
-                                        </div>
-                                        <div className='md:col-span-6 order-3 col-span-12 ' >
-                                            <CFormLabel className='text-lg ' >City</CFormLabel>
-                                            <CFormInput
-                                                className=' w-[100%] mt-2 rounded-md'
-                                                type="text"
-                                                id="exampleFormControlInput1"
-                                                placeholder="Enter your city name"
-                                                // text="Must be 8-20 characters long."
-                                                aria-describedby="exampleFormControlInputHelpInline"
-                                                // defaultValue={userProfile && userProfile.address}
-                                                size="sm"
-                                            />
-                                        </div>
-                                        <div className='md:col-span-6 order-3 col-span-12 ' >
-                                            <CFormLabel className='text-lg ' >State</CFormLabel>
-                                            <CFormInput
-                                                className=' w-[100%] mt-2 rounded-md'
-                                                type="text"
-                                                id="exampleFormControlInput1"
-                                                placeholder="Enter your state name"
-                                                // text="Must be 8-20 characters long."
-                                                aria-describedby="exampleFormControlInputHelpInline"
-                                                // defaultValue={userProfile && userProfile.address}
-                                                size="sm"
-                                            />
-                                        </div>
-                                        <div className='md:col-span-6 order-3 col-span-12 ' >
-                                            <CFormLabel className='text-lg ' >Pin Code</CFormLabel>
-                                            <CFormInput
-                                                className=' w-[100%] mt-2 rounded-md'
-                                                type="number"
-                                                id="exampleFormControlInput1"
-                                                placeholder="Enter your pin code"
-                                                // text="Must be 8-20 characters long."
-                                                aria-describedby="exampleFormControlInputHelpInline"
-                                                // defaultValue={userProfile && userProfile.address}
-                                                size="sm"
-                                            />
+                                <form onSubmit={handleSubmit(onSubmit)}  >
+                                    <div className='block mt-4 border-b border-gray-900/10 pb-12' >
+                                        <div className='grid grid-cols-12 gap-4'  >
+                                            <div className=' col-span-6 ' >
+                                                <CFormLabel className='text-xl font-medium' >First Name</CFormLabel>
+                                                <CFormInput
+                                                    className=' w-[100%] mt-2 rounded-md'
+                                                    type="text"
+                                                    id="exampleFormControlInput1"
+                                                    placeholder="Enter your first name"
+                                                    {...register("firstName")}
+                                                    text={errors && <p style={{ color: "red" }} >{errors.firstName?.message}</p>}
+                                                    aria-describedby="exampleFormControlInputHelpInline"
+                                                    size="sm"
+                                                />
+                                            </div>
+                                            <div className=' col-span-6 ' >
+                                                <CFormLabel className='text-xl font-medium' >Last Name</CFormLabel>
+                                                <CFormInput
+                                                    className=' w-[100%] mt-2 rounded-md'
+                                                    type="text"
+                                                    id="exampleFormControlInput1"
+                                                    placeholder="Enter your last name"
+                                                    {...register("lastName")}
+                                                    text={errors && <p style={{ color: "red" }} >{errors.lastName?.message}</p>}
+                                                    aria-describedby="exampleFormControlInputHelpInline"
+                                                    size="sm"
+                                                />
+                                            </div>
+                                            <div className='order-3 col-span-12 ' >
+                                                <CFormLabel className='text-xl font-medium' >Street Address</CFormLabel>
+                                                <CFormInput
+                                                    className=' w-[100%] mt-2 rounded-md'
+                                                    type="text"
+                                                    id="exampleFormControlInput1"
+                                                    placeholder="Enter your street address"
+                                                    {...register("streetAddress")}
+                                                    text={errors && <p style={{ color: "red" }} >{errors.streetAddress?.message}</p>}
+                                                    aria-describedby="exampleFormControlInputHelpInline"
+                                                    size="sm"
+                                                />
+                                            </div>
+                                            <div className='md:col-span-6 order-3 col-span-12 ' >
+                                                <CFormLabel className='text-xl font-medium' >Mobile No</CFormLabel>
+                                                <CFormInput
+                                                    className=' w-[100%] mt-2 rounded-md'
+                                                    type="text"
+                                                    id="exampleFormControlInput1"
+                                                    placeholder="Enter your mobile no."
+                                                    {...register("phone")}
+                                                    text={errors && <p style={{ color: "red" }} >{errors.phone?.message}</p>}
+                                                    aria-describedby="exampleFormControlInputHelpInline"
+                                                    size="sm"
+                                                />
+                                            </div>
+                                            <div className='md:col-span-6 order-3 col-span-12 ' >
+                                                <CFormLabel className='text-xl font-medium' >City</CFormLabel>
+                                                <CFormInput
+                                                    className=' w-[100%] mt-2 rounded-md'
+                                                    type="text"
+                                                    id="exampleFormControlInput1"
+                                                    placeholder="Enter your city name"
+                                                    {...register("city")}
+                                                    text={errors && <p style={{ color: "red" }} >{errors.city?.message}</p>}
+                                                    aria-describedby="exampleFormControlInputHelpInline"
+                                                    size="sm"
+                                                />
+                                            </div>
+                                            <div className='md:col-span-6 order-3 col-span-12 ' >
+                                                <CFormLabel className='text-xl font-medium' >State</CFormLabel>
+                                                <CFormInput
+                                                    className=' w-[100%] mt-2 rounded-md'
+                                                    type="text"
+                                                    id="exampleFormControlInput1"
+                                                    placeholder="Enter your state name"
+                                                    {...register("state")}
+                                                    text={errors && <p style={{ color: "red" }} >{errors.state?.message}</p>}
+                                                    aria-describedby="exampleFormControlInputHelpInline"
+                                                    size="sm"
+                                                />
+                                            </div>
+                                            <div className='md:col-span-6 order-3 col-span-12 ' >
+                                                <CFormLabel className='text-xl font-medium' >Pin Code</CFormLabel>
+                                                <CFormInput
+                                                    className=' w-[100%] mt-2 rounded-md'
+                                                    type="number"
+                                                    id="exampleFormControlInput1"
+                                                    placeholder="Enter your pin code"
+                                                    {...register("zipCode")}
+                                                    text={errors && <p style={{ color: "red" }} >{errors.zipCode?.message}</p>}
+                                                    aria-describedby="exampleFormControlInputHelpInline"
+                                                    size="sm"
+                                                />
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
-                            <div className="mt-6 flex items-center justify-end gap-x-6">
-                                <button type="button" className="text-sm font-semibold leading-6 text-gray-900">
-                                    Reset
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                >
-                                    Add Address
-                                </button>
+                                    <div className="mt-6 flex items-center justify-end gap-x-6">
+                                        <button type="button" className="text-sm font-semibold leading-6 text-gray-900" onClick={() => [reset(), clearErrors]} >
+                                            Reset
+                                        </button>
+                                        <Button type='submit' color='success' variant="contained">
+                                            {
+                                                createAddressPENDING ?
+                                                    <div className='flex justify-center items-center' >
+                                                        <ThreeDots
+                                                            visible={true}
+                                                            height="20"
+                                                            width="40"
+                                                            color="#fff"
+                                                            radius="9"
+                                                            ariaLabel="three-dots-loading"
+                                                            wrapperStyle={{}}
+                                                            wrapperClass=""
+                                                        />
+                                                    </div>
+                                                    :
+                                                    "Add Address"
+                                            }
+                                        </Button>
+                                    </div>
+                                </form>
                             </div>
                             <div className="border-b border-gray-900/10 pb-12">
                                 <h2 className="text-base font-semibold leading-7 text-gray-900">Existing Address</h2>
@@ -187,28 +283,42 @@ const CheckOut = () => {
                                     Choose from existing address
                                 </p>
                                 <ul role="list" className="">
-
-                                    {addresses.map((address) => (
-                                        <li key={address.name} className="flex justify-between gap-x-6 py-5 border-solid border-2 border-gray-300 focus:text-red my-5 p-4 items-center rounded-md">
-                                            <div className="flex min-w-0 gap-x-4">
-                                                <input
-                                                    name="address"
-                                                    type="radio"
-                                                    className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600"
-                                                />
-                                                <div className="min-w-0 flex-auto">
-                                                    <p className="text-sm font-semibold leading-6 text-gray-900">{address.name}</p>
-                                                    <p className="mt-1 truncate text-xs leading-5 text-gray-500">{address.street}</p>
-                                                    <p className="mt-1 truncate text-xs leading-5 text-gray-500">{address.pincode}</p>
+                                    {
+                                        UserAddressPENDING === false && address && address?.length > 0 ?
+                                            <div className='grid grid-cols-12 gap-4 mt-4'  >
+                                                {
+                                                    address && address?.map((ele) => {
+                                                        return (
+                                                            <>
+                                                                <div className=' col-span-12 p-3 sm:col-span-6 lg:col-span-4 cursor-pointer rounded-md  relative' style={{ border: selectedAddress === ele._id ? "3px solid blue" : "1px solid gray" }} onClick={() => setselectedAddress(ele._id)} >
+                                                                    <p className='capitalize font-semibold mb-4'><span style={{ fontSize: "18px" }} >{ele.firstName}</span>{" "}<span style={{ fontSize: "18px" }} >{ele.lastName}</span></p>
+                                                                    <p className='capitalize flex items-center mb-2'><span className='border-[1px] border-black rounded-full p-1 mr-2' ><MdOutlineLocalPhone /></span><span>+91</span>{" "}<span>{ele.phone}</span></p>
+                                                                    <div className='flex mb-2' >
+                                                                        <div className='' >
+                                                                            <span className='border-[1px] border-black rounded-full flex justify-center items-center p-1' ><MdLocationOn /></span>
+                                                                        </div>
+                                                                        <div className='ml-2' >
+                                                                            <div className='flex items-center '>
+                                                                                <span className='capitalize'>{ele.streetAddress}</span>{", "}
+                                                                            </div>
+                                                                            <span className='capitalize'>{ele.city}</span>{", "}<span className='capitalize'>{ele.state}{", "}<span className='capitalize'>{ele.zipCode}</span></span>
+                                                                        </div>
+                                                                    </div>
+                                                                    {/* <span className='absolute inset-y-0 cursor-pointer right-3 top-3' ><MdOutlineRemoveCircleOutline onClick={() => handleAddressDelete(ele._id)} style={{ fontSize: "20px", color: "red" }} /> </span> */}
+                                                                </div>
+                                                            </>
+                                                        )
+                                                    })
+                                                }
+                                            </div>
+                                            :
+                                            address && address?.length === 0 && UserAddressPENDING === false &&
+                                            <div className='grid grid-cols-12 gap-4 p-6 ' >
+                                                <div className='flex justify-center items-center bg-red-100 h-[100px] col-span-12'>
+                                                    <span className='font-bold' style={{ fontSize: "35px" }} >No Available Address</span>
                                                 </div>
                                             </div>
-                                            <div className="hidden shrink-0 sm:flex sm:flex-col sm:items-end">
-                                                <p className="text-sm leading-6 text-gray-900">{address.phone}</p>
-                                                <p className="text-sm leading-6 text-gray-500">{address.city}</p>
-                                                <p className="text-sm leading-6 text-gray-500">{address.state}</p>
-                                            </div>
-                                        </li>
-                                    ))}
+                                    }
                                 </ul>
                                 <div className="mt-10 space-y-10">
                                     <fieldset>
@@ -219,8 +329,10 @@ const CheckOut = () => {
                                                 <input
                                                     id="cash"
                                                     name="payments"
+                                                    value={"CASH"}
                                                     type="radio"
                                                     className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                                                    onClick={(e) => setPaymentSys(e.target.value)}
                                                 />
                                                 <label htmlFor="cash" className="block text-sm font-medium leading-6 text-gray-900">
                                                     Cash
@@ -230,11 +342,13 @@ const CheckOut = () => {
                                                 <input
                                                     id="card"
                                                     name="payments"
+                                                    value={"ONLINE"}
                                                     type="radio"
+                                                    onClick={(e) => setPaymentSys(e.target.value)}
                                                     className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600"
                                                 />
                                                 <label htmlFor="card" className="block text-sm font-medium leading-6 text-gray-900">
-                                                    Card payment
+                                                    Pay now
                                                 </label>
                                             </div>
                                         </div>
@@ -242,14 +356,11 @@ const CheckOut = () => {
                                 </div>
                             </div>
                         </div>
-                    </form>
+                    </div>
                 </div>
                 <div className="lg:col-span-12">
                     <ShoppingCart />
                 </div>
-                {/* </div> */}
-
-                {/* </div> */}
             </Navbar>
         </div>
     )

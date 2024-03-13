@@ -257,7 +257,7 @@ export default function Navbar({ children }) {
             {/* Mobile menu */}
             {
                 navOpen && <Transition.Root show={open} as={Fragment}>
-                    <Dialog as="div" className="relative z-40 lg:hidden" onClose={setOpen}>
+                    <Dialog as="div" className="relative z-[40000] lg:hidden" onClose={setOpen}>
                         <Transition.Child
                             as={Fragment}
                             enter="transition-opacity ease-linear duration-300"
@@ -328,14 +328,14 @@ export default function Navbar({ children }) {
                                                             className="mt-6 space-y-6 sm:mt-4 sm:space-y-4"
                                                         >
                                                             <li className="flex cursor-pointer" onClick={() => [setAll(section.name)]}>
-                                                                <NavLink to={`/products/${secondParent}/?category=${section.name}&thirdCategoryCheckBox=on`} onClick={() => setNavOpen(false)} className="hover:text-gray-800" style={{ color: section.name === (location.search.split("category=")[1]?.split("&thirdCategoryCheckBox=on")[0] || location.search.split("category=")[1]?.split("&thirdCategoryCheckBox=on")[0]?.split('&')[0]) && "blue" }} >
+                                                                <NavLink to={`/products/${category.name}/?category=${section.name}&thirdCategoryCheckBox=on&NewProduct=true`} onClick={() => setNavOpen(false)} className="hover:text-gray-800" style={{ color: section.name === (location.search.split("category=")[1]?.split("&thirdCategoryCheckBox=on")[0] || location.search.split("category=")[1]?.split("&thirdCategoryCheckBox=on")[0]?.split('&')[0]) && "blue" }}  >
                                                                     All
                                                                 </NavLink>
                                                             </li>
                                                             {third && third.filter((ele) => (ele.parentCategory?.name === section.name)).map((thirdCat) => (
                                                                 <>
                                                                     <li key={thirdCat.name} className="flex cursor-pointer" >
-                                                                        <NavLink to={`/products/${secondParent}/?category=${section.name}&thirdCategory[0]=${thirdCat.name}`} onClick={() => [setNavOpen(false)]} style={{ color: (thirdCategory === thirdCat.name || location.search.split("thirdCategory[0]=")[1] === thirdCat.name) && "blue" }} className="hover:text-gray-800">
+                                                                        <NavLink to={`/products/${category.name}/?category=${section.name}&thirdCategory[0]=${thirdCat.name}&thirdCategoryCheckBox=off&NewProduct=true`} onClick={() => setNavOpen(false)} style={{ color: (thirdCat.name === searchparam.get("thirdCategory[0]") && searchparam.get("thirdCategoryCheckBox") === "off" || thirdCat.name === thirdCategory) && "blue" }} className="hover:text-gray-800">
                                                                             {thirdCat.name.includes("kids_") ? thirdCat.name.split("kids_")[1].charAt(0).toUpperCase() + thirdCat.name.split("kids_" && "_")[1].slice(1) + " " + (thirdCat.name.split("_")[2] ? thirdCat.name.split("_")[2].charAt(0).toUpperCase() + thirdCat.name.split("_")[2].slice(1) : "") : thirdCat.name.split("men_" && "_")[1].charAt(0).toUpperCase() + thirdCat.name.split("men_" && "_")[1].slice(1) + " " + (thirdCat.name.split("_")[2] ? thirdCat.name.split("_")[2].charAt(0).toUpperCase() + thirdCat.name.split("_")[2].slice(1) : "")}
                                                                         </NavLink>
                                                                     </li>
@@ -406,7 +406,7 @@ export default function Navbar({ children }) {
                             </div>
 
                             {/* Flyout menus */}
-                            <Popover.Group className="hidden lg:ml-8 lg:block lg:self-stretch rmv-shadow " >
+                            <Popover.Group className="hidden lg:ml-8 lg:block lg:self-stretch rmv-shadow" >
                                 <div className="flex h-full space-x-8  rmv-shadow">
                                     {top && top.length > 0 && top.map((category) => (
                                         <Popover key={category.name} className="flex" >

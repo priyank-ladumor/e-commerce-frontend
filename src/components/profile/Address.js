@@ -109,7 +109,7 @@ const Address = ({ userProfile }) => {
     return (
         <div>
             <form onSubmit={handleSubmit(onSubmit)} >
-                <div className='block mt-6' style={{ boxShadow: "rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px" }} >
+                <div className='block mt-6' >
                     <div className='grid grid-cols-12 gap-4 p-6 '  >
                         <div className='flex justify-between items-center col-span-12 ' >
                             <h2 className="text-3xl text-gray-900 font-semibold tracking-tighter pb-4">Address</h2>

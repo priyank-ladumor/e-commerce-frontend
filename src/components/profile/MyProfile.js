@@ -2,60 +2,24 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { getUserProfileAction, updateUserProfileAction } from '../../store/action/userAction'
 import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
-import { CForm, CFormInput, CFormLabel } from '@coreui/react'
-import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css'
 import { Button, FormControl, colors } from '@mui/material';
-import { useForm } from "react-hook-form";
-import * as yup from "yup";
-import { yupResolver } from "@hookform/resolvers/yup";
-import Swal from 'sweetalert2';
-import { ThreeDots } from "react-loader-spinner"
 import Address from './Address';
 import ResetPassword from './ResetPassword';
+import Stepper from '@mui/material/Stepper';
+import Step from '@mui/material/Step';
+import StepButton from '@mui/material/StepButton';
+import Typography from '@mui/material/Typography';
+import PersonalInformation from './PersonalInformation';
 
 
-const schema = yup.object({
-    firstName: yup
-        .string()
-        .min(2, "First Name must be above 2 characters")
-        .max(20, "First Name must be with in 20 characters")
-        // .matches(/^\S*$/, "No whitespaces allowed")
-        .required("please enter First Name"),
-    lastName: yup
-        .string()
-        .min(2, "Last Name must be above 2 characters")
-        .max(20, "Last Name must be with in 20 characters")
-        // .matches(/^\S*$/, "No whitespaces allowed")
-        .required("please enter Last Name"),
-    mobile: yup
-        .string()
-        .required("please enter your contact number")
-        .matches(/^[0-9]+$/, "Must be only digits")
-        .min(10, "Must be exactly 10 digits")
-        .max(10, "Must be exactly 10 digits"),
-    email: yup.string().email().required("Please enter your email"),
-});
+const steps = ['Personal Information', 'Address', 'Reset Password'];
 
 const MyProfile = () => {
-
-    const {
-        register,
-        handleSubmit,
-        clearErrors,
-        formState: { errors },
-        reset,
-        setValue,
-    } = useForm({
-        resolver: yupResolver(schema),
-    });
 
     const dispatch = useDispatch()
     const { getUserProfileDATA, updateUserProfileMSG, updateUserProfilePENDING } = useSelector((state) => state.user)
     const [userProfile, setUserProfile] = useState("")
-    const [profileImg, setprofileImg] = useState([])
-    const [updateProfilePopUp, setupdateProfilePopUp] = useState(false)
 
     useEffect(() => {
         dispatch(getUserProfileAction())
@@ -65,197 +29,101 @@ const MyProfile = () => {
         setUserProfile(getUserProfileDATA)
     }, [getUserProfileDATA])
 
-    useEffect(() => {
-        if (userProfile) {
-            setprofileImg(userProfile.profileImg && userProfile.profileImg)
-            setValue("firstName", userProfile?.firstName);
-            setValue("lastName", userProfile?.lastName);
-            setValue("mobile", userProfile?.mobile);
-            setValue("email", userProfile?.email);
-        }
-    }, [userProfile])
+    const [activeStep, setActiveStep] = React.useState(0);
+    const [completed, setCompleted] = React.useState({});
 
-    const uploadprofileImg = (e) => {
-        const files = e.target.files;
+    const totalSteps = () => {
+        return steps.length;
+    };
 
-        const imagePromises = [];
+    const completedSteps = () => {
+        return Object.keys(completed).length;
+    };
 
-        for (let i = 0; i < files.length; i++) {
-            const file = files[i];
-            if (file) {
-                const reader = new FileReader();
-                imagePromises.push(
-                    new Promise((resolve) => {
-                        reader.onload = (e) => {
-                            resolve(e.target.result);
-                        };
-                        reader.readAsDataURL(file);
-                    })
-                );
-            }
-        }
+    const isLastStep = () => {
+        return activeStep === totalSteps() - 1;
+    };
 
+    const allStepsCompleted = () => {
+        return completedSteps() === totalSteps();
+    };
 
-        Promise.all(imagePromises).then((results) => {
-            setprofileImg(results);
-        });
-    }
+    const handleNext = () => {
+        const newActiveStep =
+            isLastStep() && !allStepsCompleted()
+                ? // It's the last step, but not all steps have been completed,
+                // find the first step that has been completed
+                steps.findIndex((step, i) => !(i in completed))
+                : activeStep + 1;
+        setActiveStep(newActiveStep);
+    };
 
-    const onSubmit = (data) => {
-        if (profileImg && profileImg[0]?.includes("data")) {
-            const item = {
-                firstName: data.firstName,
-                mobile: data.mobile,
-                lastName: data.lastName,
-                email: data.email,
-                profileImg: profileImg
-            }
-            dispatch(updateUserProfileAction(item))
-            setupdateProfilePopUp(true)
-            setprofileImg([])
-        } else {
-            const item = {
-                firstName: data.firstName,
-                mobile: data.mobile,
-                lastName: data.lastName,
-                email: data.email
-            }
-            dispatch(updateUserProfileAction(item))
-            setupdateProfilePopUp(true)
-            setprofileImg([])
-        }
-    }
-    useEffect(() => {
-        if (updateProfilePopUp && updateUserProfileMSG) {
-            <div className='swal2-container'>
-                {Swal.fire({
-                    position: "top-end",
-                    icon: "success",
-                    title: updateUserProfileMSG?.msg,
-                    showConfirmButton: false,
-                    timer: 2500
-                })}
-            </div>
-            setupdateProfilePopUp(false)
-            setprofileImg([])
-        }
-    }, [updateUserProfileMSG])
+    const handleBack = () => {
+        setActiveStep((prevActiveStep) => prevActiveStep - 1);
+    };
+
+    const handleStep = (step) => () => {
+        setActiveStep(step);
+    };
 
     return (
         <div>
-            <div className='w-100 bg-white mt-10 rounded-lg p-6' >
-                <form onSubmit={handleSubmit(onSubmit)}>
-                    <h2 className="text-3xl text-gray-900 font-bold tracking-tighter pb-4">My Profile</h2>
-                    <div className='block' style={{ boxShadow: "rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px" }} >
-                        <div className='grid grid-cols-12 gap-4 p-6 '  >
-                            <div className='lg:col-span-6 lg:order-1 order-2 col-span-12 ' >
-                                <div className='mt-4' >
-                                    <CFormLabel className='text-xl font-medium' >First Name</CFormLabel>
-                                    <CFormInput
-                                        className=' w-[100%] mt-2 rounded-md'
-                                        type="text"
-                                        id="exampleFormControlInput1"
-                                        placeholder="Enter your first name"
-                                        text={errors && <p style={{ color: "red" }} >{errors.firstName?.message}</p>}
-                                        {...register("firstName")}
-                                        aria-describedby="exampleFormControlInputHelpInline"
-                                        defaultValue={userProfile && userProfile.firstName}
-                                        size="sm"
-                                    />
-                                </div>
-                                <div className='mt-4' >
-                                    <CFormLabel className='text-xl font-medium' >Last Name</CFormLabel>
-                                    <CFormInput
-                                        className=' w-[100%] mt-2 rounded-md'
-                                        type="text"
-                                        id="exampleFormControlInput1"
-                                        placeholder="Enter your last name"
-                                        text={errors && <p style={{ color: "red" }} >{errors.lastName?.message}</p>}
-                                        {...register("lastName")}
-                                        aria-describedby="exampleFormControlInputHelpInline"
-                                        defaultValue={userProfile && userProfile.lastName}
-                                        size="sm"
-                                    />
-                                </div>
-                                <div className='mt-4' >
-                                    <CFormLabel className='text-xl font-medium' >Email Address</CFormLabel>
-                                    <CFormInput
-                                        className=' w-[100%] mt-2 rounded-md'
-                                        type="email"
-                                        id="exampleFormControlInput1"
-                                        placeholder="Enter your email address"
-                                        text={errors && <p style={{ color: "red" }} >{errors.email?.message}</p>}
-                                        aria-describedby="exampleFormControlInputHelpInline"
-                                        {...register("email")}
-                                        defaultValue={userProfile && userProfile.email}
-                                        size="sm"
-                                    />
-                                </div>
-                                <div className='mt-4' >
-                                    <CFormLabel className='text-xl font-medium' >Mobile No</CFormLabel>
-                                    <CFormInput
-                                        className=' w-[100%] mt-2 rounded-md'
-                                        type="number"
-                                        id="exampleFormControlInput1"
-                                        placeholder="Enter your Mobile No."
-                                        text={errors && <p style={{ color: "red" }} >{errors.mobile?.message}</p>}
-                                        {...register("mobile")}
-                                        aria-describedby="exampleFormControlInputHelpInline"
-                                        defaultValue={userProfile && userProfile.mobile}
-                                        size="sm"
-                                    />
-                                </div>
-                            </div>
-                            <div className='lg:col-span-6 lg:order-2 order-1 col-span-12 flex justify-center items-center' >
-                                <div className=' block' >
+            <div className='hide w-100 bg-white mt-10 rounded-lg p-6' >
+                <h2 className="text-3xl text-gray-900 font-bold tracking-tighter pb-4">My Profile</h2>
+                <Box sx={{ width: '100%', padding: "25px", marginTop: "15px" }} style={{ boxShadow: "rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px" }}  >
+                    <Stepper nonLinear activeStep={activeStep}>
+                        {steps.map((label, index) => (
+                            <Step key={label} completed={completed[index]}>
+                                <StepButton color="inherit" onClick={handleStep(index)}>
+                                    {label}
+                                </StepButton>
+                            </Step>
+                        ))}
+                    </Stepper>
+                    <div>
+                        {allStepsCompleted() ? (
+                            <React.Fragment>
+
+                            </React.Fragment>
+                        ) : (
+                            <React.Fragment>
+                                <Typography sx={{ mt: 2, mb: 1, py: 1 }}>
                                     {
-                                        profileImg && profileImg[0] ?
-                                            <img src={profileImg && profileImg[0]} width="300px" style={{ height: "300px" }} alt='' className='rounded-full border-2 border-black' />
-                                            :
-                                            <img src='https://res.cloudinary.com/dstojqsjz/image/upload/v1709815064/fg5svjtn56sido4zqt7f.png' width="300px" style={{ height: "300px" }} alt='' className='rounded-full border-2 border-black' />
+                                        activeStep === 0 &&
+                                        <PersonalInformation userProfile={userProfile} />
                                     }
-                                    <div className="sm:col-span-6">
-                                        <label htmlFor="uploadimg" style={{ minHeight: "42px", cursor: "pointer", display: "flex", border: "1px solid black", justifyContent: "center", marginTop: "10px", alignItems: "center", fontWeight: "bold", color: "black", }} className=" btn-img d-flex-align-items-center rounded-md hover:bg-slate-300 text-black hover:text-white justify-content-center btn btn-outline-secondary col-12">Upload Profile</label>
-                                        <FormControl fullWidth sx={{ m: 0 }} size="large" >
-                                            <input
-                                                id="uploadimg"
-                                                accept="image/png, image/gif, image/jpeg, image/webp"
-                                                type="file"
-                                                name="photoo"
-                                                onChange={(e) => [uploadprofileImg(e)]}
-                                                style={{ display: "none" }}
-                                                className="form-control"
-                                            />
-                                        </FormControl>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className='p-6 flex justify-between' >
-                            <div className='' >
-                                <Button type='submit' color='success' variant="contained">
                                     {
-                                        updateUserProfilePENDING ?
-                                            <div className='flex justify-center items-center' >
-                                                <ThreeDots
-                                                    visible={true}
-                                                    height="20"
-                                                    width="40"
-                                                    color="#fff"
-                                                    radius="9"
-                                                    ariaLabel="three-dots-loading"
-                                                    wrapperStyle={{}}
-                                                    wrapperClass=""
-                                                />
-                                            </div>
-                                            :
-                                            "Save"
+                                        activeStep === 1 &&
+                                        <Address userProfile={userProfile} />
                                     }
-                                </Button>
-                            </div>
-                        </div>
+                                    {
+                                        activeStep === 2 &&
+                                        <ResetPassword userProfile={userProfile} />
+                                    }
+                                </Typography>
+                                <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
+                                    <Button
+                                        disabled={activeStep === 0}
+                                        onClick={handleBack}
+                                        sx={{ mr: 1 }}
+                                        variant="contained"
+                                    >
+                                        Back
+                                    </Button>
+                                    <Box sx={{ flex: '1 1 auto' }} />
+                                    <Button variant="contained" onClick={handleNext} sx={{ mr: 1 }}>
+                                        Next
+                                    </Button>
+                                </Box>
+                            </React.Fragment>
+                        )}
                     </div>
-                </form>
+                </Box>
+            </div>
+
+            {/* for small screen or mobile view  */}
+            <div className='smallScreenHide w-100 bg-white mt-10 rounded-lg p-6' >
+                <PersonalInformation />
 
 
                 {/* address  */}

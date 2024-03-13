@@ -51,6 +51,7 @@ const ResetPassword = ({ userProfile }) => {
             }
             dispatch(resetPasswordAction(item))
             reset();
+            setshowPass(false)
             setresetPassPopUp(true)
         }
     }
@@ -67,6 +68,7 @@ const ResetPassword = ({ userProfile }) => {
                 })}
             </div>
             setresetPassPopUp(false)
+            setshowPass(false)
         }
     }, [resetPasswordMSG])
 
@@ -82,16 +84,19 @@ const ResetPassword = ({ userProfile }) => {
                 })}
             </div>
             setresetPassPopUp(false)
+            setshowPass(false)
         }
     }, [resetPasswordERROR])
+
+
 
     return (
         <div>
             <form onSubmit={handleSubmit(onSubmit)} >
-                <div className='block mt-6' style={{ boxShadow: "rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px" }} >
+                <div className='block mt-6'>
                     <div className='grid grid-cols-12 gap-4 p-6 '  >
                         <div className=' col-span-12 ' >
-                            <h2 className="text-3xl text-gray-900 font-semibold pb-4">Reset Password</h2>
+                            <h2 className="text-3xl text-gray-900 font-semibold tracking-tighter pb-4">Reset Password</h2>
                         </div>
                         <div className=' col-span-6 ' >
                             <CFormLabel className='text-xl font-medium' >Old Password</CFormLabel>
@@ -107,7 +112,7 @@ const ResetPassword = ({ userProfile }) => {
                             />
                         </div>
                         <div className='col-span-6 ' >
-                            <CFormLabel className='text-xl font-medium' >New  Password</CFormLabel>
+                            <CFormLabel className='text-xl font-medium' >New Password</CFormLabel>
                             <CFormInput
                                 className=' w-[100%] mt-2 rounded-md'
                                 type={showPass ? "text" : "password"}
@@ -123,7 +128,8 @@ const ResetPassword = ({ userProfile }) => {
                             <div className="flex items-center">
                                 <input
                                     type="checkbox"
-                                    value={"Show password"}
+                                    checked={showPass}
+                                    value={showPass}
                                     name="check"
                                     id="showpass"
                                     className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"

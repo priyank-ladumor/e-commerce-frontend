@@ -81,10 +81,21 @@ input::-webkit-inner-spin-button {
   margin: 0;
 }
 
-@media screen and (max-width: 425px) {
+@media screen and (max-width: 424px) {
   .hide {
       display: none;
   }
+  .smallScreenHide {
+    display: block;
+}
+}
+@media screen and (min-width: 424px) {
+  .smallScreenHide {
+      display: none;
+  }
+  .hide {
+    display: block;
+}
 }
 @media screen and (max-width: 560px) {
   .hide2 {

@@ -82,10 +82,10 @@ const CheckOut = () => {
     useEffect(() => {
         dispatch(getCartItemsAction())
     }, [])
-  
+
     useEffect(() => {
         const cartItem = getCartItemsData && getCartItemsData.map((ele) => ele.cartItem)
-        if(cartItem && cartItem[0]?.length === 0){
+        if((cartItem && cartItem[0]?.length === 0) || (getCartItemsData && getCartItemsData.length === 0)){
             Swal.fire({
                 title: "Not available cart items",
                 text: "You won't be able to see this page with zero cart items!",
@@ -331,23 +331,23 @@ const CheckOut = () => {
                                                     name="payments"
                                                     value={"CASH"}
                                                     type="radio"
-                                                    className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                                                    className="h-4 w-4 border-gray-300 text-indigo-600 cursor-pointer focus:ring-indigo-600"
                                                     onClick={(e) => setPaymentSys(e.target.value)}
                                                 />
-                                                <label htmlFor="cash" className="block text-sm font-medium leading-6 text-gray-900">
+                                                <label htmlFor="cash" className="block text-sm font-medium cursor-pointer leading-6 text-gray-900">
                                                     Cash
                                                 </label>
                                             </div>
-                                            <div className="flex items-center gap-x-3">
+                                            <div className="flex items-center gap-x-3 ">
                                                 <input
                                                     id="card"
                                                     name="payments"
                                                     value={"ONLINE"}
                                                     type="radio"
                                                     onClick={(e) => setPaymentSys(e.target.value)}
-                                                    className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                                                    className="h-4 w-4 border-gray-300 text-indigo-600 cursor-pointer focus:ring-indigo-600"
                                                 />
-                                                <label htmlFor="card" className="block text-sm font-medium leading-6 text-gray-900">
+                                                <label htmlFor="card" className="block text-sm font-medium cursor-pointer leading-6 text-gray-900">
                                                     Pay now
                                                 </label>
                                             </div>
@@ -359,7 +359,7 @@ const CheckOut = () => {
                     </div>
                 </div>
                 <div className="lg:col-span-12">
-                    <ShoppingCart />
+                    <ShoppingCart paymentSys={paymentSys} selectedAddress={selectedAddress} />
                 </div>
             </Navbar>
         </div>

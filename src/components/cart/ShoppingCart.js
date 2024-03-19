@@ -3,21 +3,29 @@ import { Fragment, useState } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import { FaPlus, FaMinus } from "react-icons/fa6";
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { cartitemRemoveAction, getCartItemsAction, updateCartItemsAction } from '../../store/action/cartAction';
 import { FaRupeeSign } from "react-icons/fa";
 import { TbTrashXFilled } from "react-icons/tb";
 import { ThreeDots } from "react-loader-spinner"
 import Swal from 'sweetalert2'
+import { createOrderAction } from '../../store/action/orderAction';
 
-const ShoppingCart = () => {
+
+const ShoppingCart = ({ paymentSys, selectedAddress }) => {
+    console.log(paymentSys, "paymentSys");
+    console.log(selectedAddress, "selectedAddress");
+
     const [open, setOpen] = useState(true)
     const [deleteCartItemPopUp, setdeleteCartItemPopUp] = useState(false)
 
     const { getCartItemsPENDING, getCartItemsData, addToCartMSG, removeCartItemsMSG, updateCartItemsMSG } = useSelector((state) => state.cart)
+    const {createOrderMSG} = useSelector((state) => state.order)
+    const [orderCreatedPopUp, setorderCreatedPopUp] = useState(false);
 
     const dispatch = useDispatch()
+    const navigate = useNavigate()
     const location = useLocation()
     const [cartItemData, setcartItemData] = useState()
 
@@ -58,6 +66,24 @@ const ShoppingCart = () => {
         }
     }, [removeCartItemsMSG])
 
+    // create order popup
+    useEffect(() => {
+        if (orderCreatedPopUp && createOrderMSG) {
+            console.log("efrgth");
+            <div className='swal2-container'>
+                {Swal.fire({
+                    position: "top-end",
+                    icon: "success",
+                    title: createOrderMSG,
+                    showConfirmButton: false,
+                    timer: 2500
+                })}
+            </div>
+            setorderCreatedPopUp(false)
+            navigate("/")
+        }
+    }, [createOrderMSG])
+
     const handleQuantityPlusUpdate = (product) => {
         const item = {
             size: product.size,
@@ -79,6 +105,30 @@ const ShoppingCart = () => {
         }
         dispatch(updateCartItemsAction(item))
     }
+
+    //create order func
+    const handlePlaceOrder = (getCartItemsData) => {
+        if (selectedAddress?.length === 0 || paymentSys?.length === 0) {
+            Swal.fire({
+                position: "top-end",
+                icon: "error",
+                title: "Please Select Address And  Payment System!",
+                showConfirmButton: false,
+                timer: 2500
+            })
+        }else{
+            if(selectedAddress){
+                const items = {
+                    selectedAddress,
+                    paymentSys,
+                    cartId: getCartItemsData[0]?._id
+                }
+                dispatch(createOrderAction(items))
+                setorderCreatedPopUp(true)
+            }
+        }
+    }
+
     return (
         <div>
             {/* <div className="mx-auto mt-12 bg-white max-w-7xl px-0 sm:px-0 lg:px-0"> */}
@@ -201,12 +251,21 @@ const ShoppingCart = () => {
                     <div className="mt-6">
                         {
                             location.pathname.split("/")[1] === "checkout" ?
-                                <NavLink
-                                    to={"/pay"}
-                                    className="flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700"
-                                >
-                                    Continue Order
-                                </NavLink>
+                                paymentSys === "ONLINE" && getCartItemsData && getCartItemsData[0]?.totalItem > 0 ?
+                                    <NavLink
+                                        to={"/pay"}
+                                        className="flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700"
+                                    >
+                                        Continue Order
+                                    </NavLink>
+                                    :
+                                    <NavLink
+                                        // to={"/pay"}
+                                        className="flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700"
+                                        onClick={() => handlePlaceOrder(getCartItemsData)}
+                                    >
+                                        Create Order
+                                    </NavLink>
                                 :
                                 getCartItemsData && getCartItemsData[0]?.totalItem > 0 ?
                                     <NavLink

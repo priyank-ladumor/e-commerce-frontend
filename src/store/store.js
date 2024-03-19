@@ -6,6 +6,7 @@ import sizeSlice from "./slice/sizeSlice";
 import cartSlice from "./slice/cartSlice";
 import userSlice from "./slice/userSlice";
 import addressSlice from "./slice/addressSlice";
+import orderSlice from "./slice/orderSlice";
 
 
 
@@ -18,6 +19,7 @@ const store = configureStore({
     cart: cartSlice,
     user: userSlice,
     address: addressSlice,
+    order: orderSlice,
   },
 });
 

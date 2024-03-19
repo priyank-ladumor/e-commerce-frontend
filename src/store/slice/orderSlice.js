@@ -1,11 +1,14 @@
 
 import { createSlice } from "@reduxjs/toolkit";
-import { createOrderAction } from "../action/orderAction";
+import { checkAvailableQuantityAction, createOrderAction } from "../action/orderAction";
 
 
 const initialState = {
     createOrderMSG: null,
     createOrderPENDING: false,
+    checkAvailableQuantityMSG: [],
+    checkAvailableQuantityERROR: null,
+    checkAvailableQuantityPENDING: false,
 };
 
 const orderSlice = createSlice({
@@ -29,6 +32,24 @@ const orderSlice = createSlice({
         builder.addCase(createOrderAction.rejected, (state, { payload }) => {
             state.createOrderMSG = null;
             state.createOrderPENDING = false;
+        })
+      
+        builder.addCase(checkAvailableQuantityAction.pending, (state, { payload }) => {
+            state.checkAvailableQuantityMSG = null;
+            state.checkAvailableQuantityERROR = null;
+            state.checkAvailableQuantityPENDING = true;
+        })
+
+        builder.addCase(checkAvailableQuantityAction.fulfilled, (state, { payload }) => {
+            state.checkAvailableQuantityMSG = payload;
+            state.checkAvailableQuantityERROR = null;
+            state.checkAvailableQuantityPENDING = false;
+        })
+
+        builder.addCase(checkAvailableQuantityAction.rejected, (state, { payload }) => {
+            state.checkAvailableQuantityMSG = null;
+            state.checkAvailableQuantityERROR = payload;
+            state.checkAvailableQuantityPENDING = false;
         })
 
     }

@@ -15,6 +15,7 @@ import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { getCartItemsAction } from '../store/action/cartAction';
+import { checkAvailableQuantityAction } from '../store/action/orderAction';
 
 const schema = yup.object({
     firstName: yup
@@ -67,6 +68,7 @@ const CheckOut = () => {
         resolver: yupResolver(schema),
     });
     const { getCartItemsPENDING, getCartItemsData, addToCartMSG, removeCartItemsMSG, updateCartItemsMSG } = useSelector((state) => state.cart)
+    const { checkAvailableQuantityERROR, checkAvailableQuantityPENDING, checkAvailableQuantityMSG } = useSelector((state) => state.order)
 
     const [createAddressPopUp, setcreateAddressPopUp] = useState(false)
     const [open, setOpen] = useState(true)
@@ -85,7 +87,7 @@ const CheckOut = () => {
 
     useEffect(() => {
         const cartItem = getCartItemsData && getCartItemsData.map((ele) => ele.cartItem)
-        if((cartItem && cartItem[0]?.length === 0) || (getCartItemsData && getCartItemsData.length === 0)){
+        if ((cartItem && cartItem[0]?.length === 0) || (getCartItemsData && getCartItemsData.length === 0)) {
             Swal.fire({
                 title: "Not available cart items",
                 text: "You won't be able to see this page with zero cart items!",
@@ -93,9 +95,9 @@ const CheckOut = () => {
             }).then((result) => {
                 if (result.isConfirmed) {
                     navigate("/")
-                }else{
+                } else {
                     navigate("/")
-                } 
+                }
             })
         }
     }, [getCartItemsData])
@@ -145,6 +147,95 @@ const CheckOut = () => {
     useEffect(() => {
         window.scrollTo(0, 0)
     }, [])
+
+    const [cartItemDetails, setcartItemDetails] = useState([])
+
+    useEffect(() => {
+        const findCartItems = getCartItemsData && getCartItemsData[0].cartItem?.map((ele) => ele.product[0])
+        const findsizesAndColor = findCartItems?.map((ele) => ele.sizesAndColor)
+
+        if (findsizesAndColor && findsizesAndColor?.length > 0) {
+            for (let quantity of findsizesAndColor) {
+                const findSameProductAndCart = quantity?.map((ele) =>
+                    getCartItemsData && getCartItemsData[0].cartItem?.filter((cartItem) => cartItem.color === ele.color && cartItem.size === ele.size)
+                )
+                const rmvEmptyfindSameProductAndCart = findSameProductAndCart?.filter((ele) => ele?.length > 0)
+
+                for (let product of rmvEmptyfindSameProductAndCart) {
+                    const bothsizeAndQuantity = product?.map((ele) => getCartItemsData && getCartItemsData[0].cartItem?.filter((cartItem) => cartItem.color === ele.color && cartItem.size === ele.size))
+                    const cartData = bothsizeAndQuantity &&
+                        bothsizeAndQuantity[0]?.map((ele) =>
+                            [{
+                                size: ele.size,
+                                color: ele.color,
+                                quantity: ele.quantity,
+                                pid: ele.product[0]._id
+                            }]
+                        )
+                    console.log(cartData, "cartData");
+                }
+            }
+        }
+    }, [])
+
+
+
+
+    // useEffect(() => {
+    //     if (checkAvailableQuantityERROR !== null) {
+    //         setError(checkAvailableQuantityERROR)
+    //     }
+    // }, [checkAvailableQuantityERROR])
+
+    // useEffect(() => {
+    //     if (error !== null && checkAvailableQuantityERROR !== null) {
+    //         Swal.fire({
+    //             position: "top-end",
+    //             icon: "error",
+    //             title: checkAvailableQuantityERROR,
+    //             showConfirmButton: false,
+    //             timer: 2500
+    //         })
+    //     }
+    // }, [error])
+
+    // useEffect(() => {
+    //     const findCartItems = getCartItemsData && getCartItemsData[0].cartItem?.map((ele) => ele.product[0])
+    //     const findsizesAndColor = findCartItems?.map((ele) => ele.sizesAndColor)
+
+    //     if (findsizesAndColor && findsizesAndColor?.length > 0) {
+    //         for (let quantity of findsizesAndColor) {
+    //             const findSameProductAndCart = quantity?.map((ele) =>
+    //                 getCartItemsData && getCartItemsData[0].cartItem?.filter((cartItem) => cartItem.color === ele.color && cartItem.size === ele.size)
+    //             )
+    //             const rmvEmptyfindSameProductAndCart = findSameProductAndCart?.filter((ele) => ele?.length > 0)
+
+    //             for (let product of rmvEmptyfindSameProductAndCart) {
+    //                 const bothsizeAndQuantity = product?.map((ele) => getCartItemsData && getCartItemsData[0].cartItem?.filter((cartItem) => cartItem.color === ele.color && cartItem.size === ele.size))
+    //                 bothsizeAndQuantity &&
+    //                     bothsizeAndQuantity[0]?.map((ele) =>
+    //                         checkAvailableQuantityERROR === null && checkAvailableQuantityMSG !== null &&
+    //                         dispatch(checkAvailableQuantityAction({
+    //                             size: ele.size,
+    //                             color: ele.color,
+    //                             quantity: ele.quantity,
+    //                             pid: ele.product[0]._id
+    //                         }))
+    //                     )
+    //             }
+    //         }
+    //     }
+
+    //     if (error !== null && checkAvailableQuantityERROR !== null) {
+    //         Swal.fire({
+    //             position: "top-end",
+    //             icon: "error",
+    //             title: checkAvailableQuantityERROR,
+    //             showConfirmButton: false,
+    //             timer: 2500
+    //         })
+    //     }
+    // }, [error])
 
     return (
         <div>

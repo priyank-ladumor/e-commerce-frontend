@@ -10,18 +10,16 @@ import { FaRupeeSign } from "react-icons/fa";
 import { TbTrashXFilled } from "react-icons/tb";
 import { ThreeDots } from "react-loader-spinner"
 import Swal from 'sweetalert2'
-import { createOrderAction } from '../../store/action/orderAction';
+import { checkAvailableQuantityAction, createOrderAction } from '../../store/action/orderAction';
 
 
 const ShoppingCart = ({ paymentSys, selectedAddress }) => {
-    console.log(paymentSys, "paymentSys");
-    console.log(selectedAddress, "selectedAddress");
-
     const [open, setOpen] = useState(true)
     const [deleteCartItemPopUp, setdeleteCartItemPopUp] = useState(false)
 
     const { getCartItemsPENDING, getCartItemsData, addToCartMSG, removeCartItemsMSG, updateCartItemsMSG } = useSelector((state) => state.cart)
-    const {createOrderMSG} = useSelector((state) => state.order)
+    const { checkAvailableQuantityERROR, checkAvailableQuantityPENDING, checkAvailableQuantityMSG } = useSelector((state) => state.order)
+    const { createOrderMSG } = useSelector((state) => state.order)
     const [orderCreatedPopUp, setorderCreatedPopUp] = useState(false);
 
     const dispatch = useDispatch()
@@ -52,7 +50,6 @@ const ShoppingCart = ({ paymentSys, selectedAddress }) => {
 
     useEffect(() => {
         if (deleteCartItemPopUp && removeCartItemsMSG) {
-            console.log("efrgth");
             <div className='swal2-container'>
                 {Swal.fire({
                     position: "top-end",
@@ -69,7 +66,6 @@ const ShoppingCart = ({ paymentSys, selectedAddress }) => {
     // create order popup
     useEffect(() => {
         if (orderCreatedPopUp && createOrderMSG) {
-            console.log("efrgth");
             <div className='swal2-container'>
                 {Swal.fire({
                     position: "top-end",
@@ -116,8 +112,8 @@ const ShoppingCart = ({ paymentSys, selectedAddress }) => {
                 showConfirmButton: false,
                 timer: 2500
             })
-        }else{
-            if(selectedAddress){
+        } else {
+            if (selectedAddress && checkAvailableQuantityERROR === null) {
                 const items = {
                     selectedAddress,
                     paymentSys,
@@ -127,6 +123,10 @@ const ShoppingCart = ({ paymentSys, selectedAddress }) => {
                 setorderCreatedPopUp(true)
             }
         }
+    }
+
+    const handleCheckOut = (cartData) => {
+        navigate("/checkout")
     }
 
     return (
@@ -262,18 +262,18 @@ const ShoppingCart = ({ paymentSys, selectedAddress }) => {
                                     <NavLink
                                         // to={"/pay"}
                                         className="flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700"
-                                        onClick={() => handlePlaceOrder(getCartItemsData)}
+                                        onClick={() => [handlePlaceOrder(getCartItemsData)]}
                                     >
                                         Create Order
                                     </NavLink>
                                 :
                                 getCartItemsData && getCartItemsData[0]?.totalItem > 0 ?
-                                    <NavLink
-                                        to={"/checkout"}
-                                        className="flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700"
+                                    <div
+                                        className="flex cursor-pointer items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700"
+                                        onClick={() => handleCheckOut(getCartItemsData[0])}
                                     >
                                         Checkout
-                                    </NavLink>
+                                    </div>
                                     :
                                     <p className="flex items-center justify-center rounded-md border border-transparent bg-indigo-300 px-6 py-3 text-base font-medium text-white shadow-sm">
                                         Checkout

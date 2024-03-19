@@ -201,7 +201,7 @@ export default function ProductDetails() {
 
   useEffect(() => {
     window.scrollTo(0, 0)
-}, [])
+  }, [])
 
   return (
     <>
@@ -273,7 +273,7 @@ export default function ProductDetails() {
                     </a>
                   </div>
                 </div>
-                
+
 
                 <form className="mt-10">
                   {/* Colors */}
@@ -302,23 +302,28 @@ export default function ProductDetails() {
                           availableSize && availableSize.map((ele) => {
                             return (
                               <>
-                                <div class="col-span-6">
-                                  <p className='p-2 flex rounded-full justify-center w-36 ' style={{ cursor: "pointer", fontSize: "24px", border: selectedSize === ele.size ? "3px solid blue" : "2px solid black" }} onClick={() => setSelectedSize(ele.size)} >{ele.size}</p>
-                                </div>
+                                {/* for check quantity is available or not  */}
+                                {ele?.quantity > 0 &&
+                                  <div class="col-span-6">
+                                    <p className='p-2 flex rounded-full justify-center w-36 ' style={{ cursor: "pointer", fontSize: "24px", border: selectedSize === ele.size ? "3px solid blue" : "2px solid black" }} onClick={() => setSelectedSize(ele.size)} >{ele.size}</p>
+                                  </div>
+                                }
                               </>
                             )
                           })
                           :
                           <>
-                            {AllSizesrmvSameSize && AllSizesrmvSameSize.map((size) => {
-                              return (
-                                <>
-                                  <div class="col-span-6">
-                                    <p className='p-2 me-2 flex rounded-full justify-center w-36 border-black border-2' style={{ cursor: "no-drop", fontSize: "24px" }} > {size}</p>
-                                  </div>
-                                </>
-                              )
-                            })}
+                            {
+                              AllSizesrmvSameSize && AllSizesrmvSameSize.map((size) => {
+                                return (
+                                  <>
+                                    <div class="col-span-6">
+                                      <p className='p-2 me-2 flex rounded-full justify-center w-36 border-black border-2' style={{ cursor: "no-drop", fontSize: "24px" }} > {size}</p>
+                                    </div>
+                                  </>
+                                )
+                              })
+                            }
                           </>
                         }
                       </div>

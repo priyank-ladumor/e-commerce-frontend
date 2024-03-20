@@ -151,9 +151,9 @@ const CheckOut = () => {
     const [cartItemDetails, setcartItemDetails] = useState([])
 
     useEffect(() => {
+        let cartArray = []
         const findCartItems = getCartItemsData && getCartItemsData[0].cartItem?.map((ele) => ele.product[0])
         const findsizesAndColor = findCartItems?.map((ele) => ele.sizesAndColor)
-
         if (findsizesAndColor && findsizesAndColor?.length > 0) {
             for (let quantity of findsizesAndColor) {
                 const findSameProductAndCart = quantity?.map((ele) =>
@@ -169,73 +169,16 @@ const CheckOut = () => {
                                 size: ele.size,
                                 color: ele.color,
                                 quantity: ele.quantity,
-                                pid: ele.product[0]._id
+                                pid: ele.product[0]._id,
+                                id: Math.floor(Math.random() * 100)
                             }]
                         )
-                    console.log(cartData, "cartData");
+                    cartArray.push(cartData[0][0]);
+                    setcartItemDetails(cartArray);
                 }
             }
         }
-    }, [])
-
-
-
-
-    // useEffect(() => {
-    //     if (checkAvailableQuantityERROR !== null) {
-    //         setError(checkAvailableQuantityERROR)
-    //     }
-    // }, [checkAvailableQuantityERROR])
-
-    // useEffect(() => {
-    //     if (error !== null && checkAvailableQuantityERROR !== null) {
-    //         Swal.fire({
-    //             position: "top-end",
-    //             icon: "error",
-    //             title: checkAvailableQuantityERROR,
-    //             showConfirmButton: false,
-    //             timer: 2500
-    //         })
-    //     }
-    // }, [error])
-
-    // useEffect(() => {
-    //     const findCartItems = getCartItemsData && getCartItemsData[0].cartItem?.map((ele) => ele.product[0])
-    //     const findsizesAndColor = findCartItems?.map((ele) => ele.sizesAndColor)
-
-    //     if (findsizesAndColor && findsizesAndColor?.length > 0) {
-    //         for (let quantity of findsizesAndColor) {
-    //             const findSameProductAndCart = quantity?.map((ele) =>
-    //                 getCartItemsData && getCartItemsData[0].cartItem?.filter((cartItem) => cartItem.color === ele.color && cartItem.size === ele.size)
-    //             )
-    //             const rmvEmptyfindSameProductAndCart = findSameProductAndCart?.filter((ele) => ele?.length > 0)
-
-    //             for (let product of rmvEmptyfindSameProductAndCart) {
-    //                 const bothsizeAndQuantity = product?.map((ele) => getCartItemsData && getCartItemsData[0].cartItem?.filter((cartItem) => cartItem.color === ele.color && cartItem.size === ele.size))
-    //                 bothsizeAndQuantity &&
-    //                     bothsizeAndQuantity[0]?.map((ele) =>
-    //                         checkAvailableQuantityERROR === null && checkAvailableQuantityMSG !== null &&
-    //                         dispatch(checkAvailableQuantityAction({
-    //                             size: ele.size,
-    //                             color: ele.color,
-    //                             quantity: ele.quantity,
-    //                             pid: ele.product[0]._id
-    //                         }))
-    //                     )
-    //             }
-    //         }
-    //     }
-
-    //     if (error !== null && checkAvailableQuantityERROR !== null) {
-    //         Swal.fire({
-    //             position: "top-end",
-    //             icon: "error",
-    //             title: checkAvailableQuantityERROR,
-    //             showConfirmButton: false,
-    //             timer: 2500
-    //         })
-    //     }
-    // }, [error])
+    }, [getCartItemsData])
 
     return (
         <div>
@@ -450,7 +393,7 @@ const CheckOut = () => {
                     </div>
                 </div>
                 <div className="lg:col-span-12">
-                    <ShoppingCart paymentSys={paymentSys} selectedAddress={selectedAddress} />
+                    <ShoppingCart paymentSys={paymentSys} selectedAddress={selectedAddress} cartItemDetails={cartItemDetails} />
                 </div>
             </Navbar>
         </div>

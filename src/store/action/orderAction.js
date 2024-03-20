@@ -18,11 +18,8 @@ export const createOrderAction = createAsyncThunk(
             );
             return result.data;
         } catch (error) {
-            if (error.response && error.response.data.message) {
-                return rejectWithValue(error.response.data.message);
-            } else {
-                return rejectWithValue(error.message);
-            }
+
+            return rejectWithValue(error.response.data.msg)
         }
     }
 );
@@ -44,13 +41,13 @@ export const checkAvailableQuantityAction = createAsyncThunk(
             return result.data;
         }
         catch (error) {
-            // if (error.response.data.error) {
-            //     return rejectWithValue(error.response.data.error);
-            // } else if (error.message) {
-            //     return rejectWithValue(error.message);
-            // } else {
+            if (error.response.data.error) {
+                return rejectWithValue(error.response.data.error);
+            } else if (error.message) {
+                return rejectWithValue(error.message);
+            } else {
                 return rejectWithValue(error.response.data.msg)
-            // }
+            }
         }
     }
 );

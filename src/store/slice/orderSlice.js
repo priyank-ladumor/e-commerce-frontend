@@ -5,6 +5,7 @@ import { checkAvailableQuantityAction, createOrderAction } from "../action/order
 
 const initialState = {
     createOrderMSG: null,
+    createOrderERROR: null,
     createOrderPENDING: false,
     checkAvailableQuantityMSG: [],
     checkAvailableQuantityERROR: null,
@@ -22,16 +23,19 @@ const orderSlice = createSlice({
         builder.addCase(createOrderAction.pending, (state, { payload }) => {
             state.createOrderMSG = null;
             state.createOrderPENDING = true;
+            state.createOrderERROR = null;
         })
 
         builder.addCase(createOrderAction.fulfilled, (state, { payload }) => {
             state.createOrderMSG = payload;
             state.createOrderPENDING = false;
+            state.createOrderERROR = null;
         })
 
         builder.addCase(createOrderAction.rejected, (state, { payload }) => {
             state.createOrderMSG = null;
             state.createOrderPENDING = false;
+            state.createOrderERROR = payload;
         })
       
         builder.addCase(checkAvailableQuantityAction.pending, (state, { payload }) => {

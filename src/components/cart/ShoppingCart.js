@@ -13,12 +13,12 @@ import Swal from 'sweetalert2'
 import { checkAvailableQuantityAction, createOrderAction } from '../../store/action/orderAction';
 
 
-const ShoppingCart = ({ paymentSys, selectedAddress }) => {
+const ShoppingCart = ({ paymentSys, selectedAddress, cartItemDetails }) => {
     const [open, setOpen] = useState(true)
     const [deleteCartItemPopUp, setdeleteCartItemPopUp] = useState(false)
 
     const { getCartItemsPENDING, getCartItemsData, addToCartMSG, removeCartItemsMSG, updateCartItemsMSG } = useSelector((state) => state.cart)
-    const { checkAvailableQuantityERROR, checkAvailableQuantityPENDING, checkAvailableQuantityMSG } = useSelector((state) => state.order)
+    const { checkAvailableQuantityERROR, checkAvailableQuantityPENDING, checkAvailableQuantityMSG, createOrderERROR, createOrderPENDING } = useSelector((state) => state.order)
     const { createOrderMSG } = useSelector((state) => state.order)
     const [orderCreatedPopUp, setorderCreatedPopUp] = useState(false);
 
@@ -76,9 +76,25 @@ const ShoppingCart = ({ paymentSys, selectedAddress }) => {
                 })}
             </div>
             setorderCreatedPopUp(false)
-            navigate("/")
+            navigate("/myorder")
         }
     }, [createOrderMSG])
+
+    useEffect(() => {
+        if (orderCreatedPopUp && createOrderERROR) {
+            <div className='swal2-container'>
+                {Swal.fire({
+                    position: "top-end",
+                    icon: "error",
+                    title: createOrderERROR,
+                    showConfirmButton: false,
+                    timer: 2500
+                })}
+            </div>
+            setorderCreatedPopUp(false)
+            // navigate("/")
+        }
+    }, [createOrderERROR])
 
     const handleQuantityPlusUpdate = (product) => {
         const item = {
@@ -117,7 +133,8 @@ const ShoppingCart = ({ paymentSys, selectedAddress }) => {
                 const items = {
                     selectedAddress,
                     paymentSys,
-                    cartId: getCartItemsData[0]?._id
+                    cartId: getCartItemsData[0]?._id,
+                    cartItemDetails
                 }
                 dispatch(createOrderAction(items))
                 setorderCreatedPopUp(true)
@@ -264,7 +281,23 @@ const ShoppingCart = ({ paymentSys, selectedAddress }) => {
                                         className="flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700"
                                         onClick={() => [handlePlaceOrder(getCartItemsData)]}
                                     >
-                                        Create Order
+                                        {
+                                            createOrderPENDING ?
+                                                <div className='flex justify-center items-center' >
+                                                    <ThreeDots
+                                                        visible={true}
+                                                        height="20"
+                                                        width="40"
+                                                        color="#fff"
+                                                        radius="9"
+                                                        ariaLabel="three-dots-loading"
+                                                        wrapperStyle={{}}
+                                                        wrapperClass=""
+                                                    />
+                                                </div>
+                                                :
+                                                "Create Order"
+                                        }
                                     </NavLink>
                                 :
                                 getCartItemsData && getCartItemsData[0]?.totalItem > 0 ?

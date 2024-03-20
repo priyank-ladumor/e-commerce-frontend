@@ -123,3 +123,67 @@ input::-webkit-inner-spin-button {
     display: block;
   }
 }
+
+
+.track-progress {
+  margin: 0;
+  padding: 10px 10px 0 10px;
+  background: white;
+  height: 80px;
+  border-radius: 10px; }
+  .track-progress li {
+    list-style-type: none;
+    display: inline-block;
+    position: relative;
+    font: 14px/14px Helvetica, sans-serif;
+    text-transform: uppercase;
+    text-align: center;
+    color: #bbb;
+    border-bottom: 4px #bbb solid;
+    line-height: 3em;
+    width: 20%;
+    float: left; }
+    .track-progress li:after {
+      content: "\00a0\00a0";
+      /*non-breaking space */ }
+    .track-progress li:before {
+      position: relative;
+      bottom: -2.5em;
+      float: left;
+      left: 50%;
+      line-height: 1em; }
+    @media (max-width: 800px) {
+      .track-progress li {
+        font-size: 0.7em; } }
+    .track-progress li span {
+      padding-left: 0.75em; }
+      @media (max-width: 640px) {
+        .track-progress li span {
+          display: none; } }
+  .track-progress li.done {
+    color: #bbb;
+    font-weight: bold;
+    border-bottom: 4px blue solid; }
+    .track-progress li.done:before {
+      content: "";
+      background: blue;
+      height: 1.2em;
+      width: 1.2em;
+      line-height: 1.2em;
+      border: none;
+      border-radius: 1.2em; }
+  .track-progress li.todo:before {
+    content: "";
+    background: white;
+    border: 0.25em solid #bbb;
+    height: 0.8em;
+    width: 0.8em;
+    border-radius: 0.8em; }
+  .track-progress em {
+    display: none;
+    font-weight: 700;
+    padding-left: 0.75em; }
+    @media (max-width: 640px) {
+      .track-progress em {
+        display: inline; } }
+

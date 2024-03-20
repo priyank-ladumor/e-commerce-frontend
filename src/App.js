@@ -21,6 +21,7 @@ import LoginVerified from "./pages/LoginVerified";
 import RegLogProtected from "./RegLogProtected";
 import FilterProductList from "./pages/FilterProductList";
 import MyProfilePage from "./pages/Profile";
+import MyOrder from "./pages/MyOrder";
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
             <Route exact path="/cart" element={<Cart />} />
             <Route exact path="/checkout" element={<CheckOut />} />
             <Route exact path="/myprofile" element={<MyProfilePage />} />
+            <Route exact path="/myorder" element={<MyOrder />} />
           </Route>
           <Route path='/' element={<RegLogProtected />}>
             <Route exact path="/login" element={<Login />} />

@@ -56,7 +56,7 @@ const Order = () => {
 
     return (
         <div>
-            <div className='w-100 bg-white mt-10 rounded-lg p-6' >
+            <div className='w-100 bg-white mt-10 rounded-lg md:p-4' >
                 <h2 className="text-3xl p-4 text-gray-900 font-bold tracking-tighter">My Order</h2>
                 {/* <h2 className="text-3xl text-gray-900 font-bold tracking-tighter pb-4">My Order</h2> */}
                 <div className='m-3' >
@@ -64,11 +64,11 @@ const Order = () => {
                         {
                             orderData && orderData?.map((ele) => {
                                 return (
-                                    <div className='grid grid-cols-12 gap-3 p-4 my-8' style={{ boxShadow: "rgba(99, 99, 99, 0.2) 0px 2px 8px 0px" }}  >
+                                    <div className='grid  grid-cols-12 gap-3 p-4 my-8' style={{ boxShadow: "rgba(99, 99, 99, 0.2) 0px 2px 8px 0px" }}  >
                                         <div className='flex justify-end col-span-12' >
                                             {ele?.orderStatus === "CANCELLED" && <RiDeleteBinFill onClick={() => [dispatch(DeleteOrderAction(ele?._id)), setdeleteOrderPopUp(true)]} style={{ fontSize: "20px", color: "red", cursor: "pointer" }} />}
                                         </div>
-                                        <ol class="track-progress col-span-12">
+                                        <ol class="track-progress hidden sm:block col-span-12">
                                             <li class={ele?.orderStatus === "CANCELLED" ? "cancel" : ele?.orderStatus === "Placed" && "done"}>
                                                 <em>1</em>
                                                 <span>Placed</span>
@@ -90,6 +90,12 @@ const Order = () => {
                                                 <span>Delivered</span>
                                             </li>
                                         </ol>
+                                        <p className='block sm:hidden col-span-12' >
+                                            <div className='flex' style={{fontSize:"20px"}} >
+                                                <span className='font-semibold' >Order Status:</span>
+                                                <span className='ms-2 font-bold' >{ele?.orderStatus}</span>
+                                            </div>
+                                        </p>
                                         {ele && ele?.orderItem?.map((item) => {
                                             return (
                                                 <>

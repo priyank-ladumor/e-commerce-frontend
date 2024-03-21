@@ -46,6 +46,50 @@ export const findAllUserOrderAction = createAsyncThunk(
     }
 );
 
+export const DeleteOrderAction = createAsyncThunk(
+    "delete/cancelUserOrder",
+    async (id, { rejectWithValue }) => {
+        try {
+            const result = await axios.delete(
+                `${process.env.REACT_APP_BASE_URL}/order/delete/${id}`,
+                // item,
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": localStorage.getItem('token')
+                    },
+                }
+            );
+            return result.data;
+        } catch (error) {
+
+            return rejectWithValue(error.response.data.msg)
+        }
+    }
+);
+
+export const CancelOrderAction = createAsyncThunk(
+    "cancel/Order",
+    async (id, { rejectWithValue }) => {
+        try {
+            const result = await axios.get(
+                `${process.env.REACT_APP_BASE_URL}/order/cancel/${id}`,
+                // id,
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": localStorage.getItem('token')
+                    },
+                }
+            );
+            return result.data;
+        } catch (error) {
+
+            return rejectWithValue(error.response.data.msg)
+        }
+    }
+);
+
 export const checkAvailableQuantityAction = createAsyncThunk(
     "check/quantity",
     async (item, { rejectWithValue }) => {

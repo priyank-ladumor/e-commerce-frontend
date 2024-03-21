@@ -172,6 +172,18 @@ input::-webkit-inner-spin-button {
       line-height: 1.2em;
       border: none;
       border-radius: 1.2em; }
+  .track-progress li.cancel {
+    color: #bbb;
+    font-weight: bold;
+    border-bottom: 4px red solid; }
+    .track-progress li.cancel:before {
+      content: "";
+      background: red;
+      height: 1.2em;
+      width: 1.2em;
+      line-height: 1.2em;
+      border: none;
+      border-radius: 1.2em; }
   .track-progress li.todo:before {
     content: "";
     background: white;

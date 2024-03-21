@@ -1,6 +1,6 @@
 
 import { createSlice } from "@reduxjs/toolkit";
-import { checkAvailableQuantityAction, createOrderAction, findAllUserOrderAction } from "../action/orderAction";
+import { CancelOrderAction, DeleteOrderAction, checkAvailableQuantityAction, createOrderAction, findAllUserOrderAction } from "../action/orderAction";
 
 
 const initialState = {
@@ -9,6 +9,8 @@ const initialState = {
     createOrderPENDING: false,
     getAllOrderData: null,
     getAllOrderPENDING: false,
+    DeleteOrderMSG: null,
+    CancelOrderMSG: null,
     checkAvailableQuantityMSG: [],
     checkAvailableQuantityERROR: null,
     checkAvailableQuantityPENDING: false,
@@ -53,6 +55,30 @@ const orderSlice = createSlice({
         builder.addCase(findAllUserOrderAction.rejected, (state, { payload }) => {
             state.getAllOrderData = null;
             state.getAllOrderPENDING = false;
+        })
+   
+        builder.addCase(DeleteOrderAction.pending, (state, { payload }) => {
+            state.DeleteOrderMSG = null;
+        })
+
+        builder.addCase(DeleteOrderAction.fulfilled, (state, { payload }) => {
+            state.DeleteOrderMSG = payload;
+        })
+
+        builder.addCase(DeleteOrderAction.rejected, (state, { payload }) => {
+            state.DeleteOrderMSG = null;
+        })
+    
+        builder.addCase(CancelOrderAction.pending, (state, { payload }) => {
+            state.CancelOrderMSG = null;
+        })
+
+        builder.addCase(CancelOrderAction.fulfilled, (state, { payload }) => {
+            state.CancelOrderMSG = payload;
+        })
+
+        builder.addCase(CancelOrderAction.rejected, (state, { payload }) => {
+            state.CancelOrderMSG = null;
         })
       
         builder.addCase(checkAvailableQuantityAction.pending, (state, { payload }) => {

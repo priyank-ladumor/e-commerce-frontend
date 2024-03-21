@@ -1,18 +1,22 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { findAllUserOrderAction } from '../../store/action/orderAction'
+import { CancelOrderAction, DeleteOrderAction, findAllUserOrderAction } from '../../store/action/orderAction'
 import { Box, Slider, Typography, styled } from '@mui/material'
 import { FaIndianRupeeSign, FaRupeeSign } from 'react-icons/fa6'
+import { RiDeleteBinFill } from "react-icons/ri";
+import Swal from 'sweetalert2'
 
 const Order = () => {
     const dispatch = useDispatch()
-    const { getAllOrderPENDING, getAllOrderData } = useSelector((state) => state.order)
+    const { getAllOrderPENDING, getAllOrderData, DeleteOrderMSG, CancelOrderMSG } = useSelector((state) => state.order)
 
     const [orderData, setorderData] = useState("")
+    const [deleteOrderPopUp, setdeleteOrderPopUp] = useState(false);
+    const [cancelOrderPopUp, setcancelOrderPopUp] = useState(false);
 
     useEffect(() => {
         dispatch(findAllUserOrderAction())
-    }, [])
+    }, [DeleteOrderMSG, CancelOrderMSG])
 
     useEffect(() => {
         if (getAllOrderData) {
@@ -20,9 +24,39 @@ const Order = () => {
         }
     }, [getAllOrderData])
 
+    useEffect(() => {
+        if (deleteOrderPopUp && DeleteOrderMSG) {
+            <div className='swal2-container'>
+                {Swal.fire({
+                    position: "top-end",
+                    icon: "success",
+                    title: DeleteOrderMSG,
+                    showConfirmButton: false,
+                    timer: 2500
+                })}
+            </div>
+            setdeleteOrderPopUp(false)
+        }
+    }, [DeleteOrderMSG])
+
+    useEffect(() => {
+        if (cancelOrderPopUp && CancelOrderMSG) {
+            <div className='swal2-container'>
+                {Swal.fire({
+                    position: "top-end",
+                    icon: "success",
+                    title: CancelOrderMSG,
+                    showConfirmButton: false,
+                    timer: 2500
+                })}
+            </div>
+            setcancelOrderPopUp(false)
+        }
+    }, [CancelOrderMSG])
+
     return (
         <div>
-            <div className='hide w-100 bg-white mt-10 rounded-lg p-6' >
+            <div className='w-100 bg-white mt-10 rounded-lg p-6' >
                 <h2 className="text-3xl p-4 text-gray-900 font-bold tracking-tighter">My Order</h2>
                 {/* <h2 className="text-3xl text-gray-900 font-bold tracking-tighter pb-4">My Order</h2> */}
                 <div className='m-3' >
@@ -31,24 +65,27 @@ const Order = () => {
                             orderData && orderData?.map((ele) => {
                                 return (
                                     <div className='grid grid-cols-12 gap-3 p-4 my-8' style={{ boxShadow: "rgba(99, 99, 99, 0.2) 0px 2px 8px 0px" }}  >
+                                        <div className='flex justify-end col-span-12' >
+                                            {ele?.orderStatus === "CANCELLED" && <RiDeleteBinFill onClick={() => [dispatch(DeleteOrderAction(ele?._id)), setdeleteOrderPopUp(true)]} style={{ fontSize: "20px", color: "red", cursor: "pointer" }} />}
+                                        </div>
                                         <ol class="track-progress col-span-12">
-                                            <li class="done">
+                                            <li class={ele?.orderStatus === "CANCELLED" ? "cancel" : ele?.orderStatus === "Placed" && "done"}>
                                                 <em>1</em>
                                                 <span>Placed</span>
                                             </li>
-                                            <li class="done">
+                                            <li class={(ele?.orderStatus === "Confirmed" || ele?.orderStatus === "Packed" || ele?.orderStatus === "Shipped" || ele?.orderStatus === "Delivered") ? "done" : ele?.orderStatus === "CANCELLED" ? "cancel" : "todo"}>
                                                 <em>2</em>
                                                 <span>Confirmed</span>
                                             </li>
-                                            <li class="done">
+                                            <li class={(ele?.orderStatus === "Packed" || ele?.orderStatus === "Shipped" || ele?.orderStatus === "Delivered") ? "done" : "todo"} >
                                                 <em>3</em>
                                                 <span>Packed</span>
                                             </li>
-                                            <li class="done">
+                                            <li class={(ele?.orderStatus === "Shipped" || ele?.orderStatus === "Delivered") ? "done" : "todo"} >
                                                 <em>4</em>
                                                 <span>Shipped</span>
                                             </li>
-                                            <li class="todo">
+                                            <li class={(ele?.orderStatus === "Delivered") ? "done" : "todo"} >
                                                 <em>5</em>
                                                 <span>Delivered</span>
                                             </li>
@@ -99,15 +136,25 @@ const Order = () => {
                                         })}
                                         <div className='col-span-12 flex justify-between' >
                                             <button type="button"
-                                                className="font-medium text-[#F44E3B] hover:text-[#D33115] ms-1" >
+                                                className={ele?.orderStatus === "CANCELLED" ? "font-medium text-[gray] ms-1" : "font-medium text-[#F44E3B] hover:text-[#D33115] ms-1"}
+                                                onClick={() => [dispatch(CancelOrderAction(ele?._id)), setcancelOrderPopUp(true)]}
+                                                disabled={ele?.orderStatus === "CANCELLED"} >
                                                 Cancel Order
                                             </button>
-                                            <div className='flex' >
-                                                <span className='text-lg font-semibold me-1 ' style={{ fontSize: "16px" }} >Total Price:</span>
-                                                <p className="rounded-full mt-[2px] text-lg flex justify-center items-center text-gray-800">
-                                                    <span><FaIndianRupeeSign className='' /></span>
-                                                    <span className='font-bold -mt-[2px]' >{ele?.totalPrice}</span>
-                                                </p>
+                                            <div className='' >
+                                                <div className='flex' >
+                                                    <span className='text-lg font-semibold me-1 ' style={{ fontSize: "16px" }} >Payment Method:</span>
+                                                    <p className="rounded-full mt-[2px] text-lg flex justify-center items-center text-gray-800">
+                                                        <span className='font-bold -mt-[2px]' >{ele?.paymentDetails?.paymentMethod}</span>
+                                                    </p>
+                                                </div>
+                                                <div className='flex' >
+                                                    <span className='text-lg font-semibold me-1 ' style={{ fontSize: "16px" }} >Total Price:</span>
+                                                    <p className="rounded-full mt-[2px] text-lg flex justify-center items-center text-gray-800">
+                                                        <span><FaIndianRupeeSign className='' /></span>
+                                                        <span className='font-bold -mt-[2px]' >{ele?.totalPrice}</span>
+                                                    </p>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

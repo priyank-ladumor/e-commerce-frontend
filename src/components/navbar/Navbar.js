@@ -253,7 +253,8 @@ export default function Navbar({ children }) {
         }
     }, [])
     return (
-        <div className="bg-[#F5F5F5]"  >
+        // <div className="bg-[url('https://res.cloudinary.com/dstojqsjz/image/upload/v1711620629/pwbti1n4wkw00awkff3i.webp')] bg-cover bg-repeat"  >
+        <div className="bg-gradient-to-r from-yellow-50 to-red-50"  >
             {/* Mobile menu */}
             {
                 navOpen && <Transition.Root show={open} as={Fragment}>
@@ -593,7 +594,7 @@ export default function Navbar({ children }) {
                 </nav>
             </header>
             <main>
-                <div className="mx-auto max-w-7xl pt-3 pb-16 sm:px-6 lg:px-8">
+                <div className="mx-auto to-pink-500 max-w-7xl pt-3 pb-16 sm:px-6 lg:px-8">
                     {children}
                 </div>
             </main>

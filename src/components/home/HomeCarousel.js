@@ -1,21 +1,33 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import AliceCarousel from 'react-alice-carousel';
 import 'react-alice-carousel/lib/alice-carousel.css';
+import { useDispatch, useSelector } from 'react-redux';
+import { getBannerAction } from '../../store/action/bannerLogoAction';
 
-const images = [
-    "https://pbs.twimg.com/media/Ec20SmEX0AUTXCo?format=png&name=medium",
-    "https://cdna.artstation.com/p/assets/images/images/040/183/038/large/sonam-saxena-ntcc-8.jpg?1628098115",
-    "https://akm-img-a-in.tosshub.com/businesstoday/images/story/202109/242473827_10160157467293221_2645921924837005982_n-sixteen_nine.jpg?size=948:533"
-];
+
 const responsive = {
     0: { items: 1 },
     568: { items: 1 },
     1024: { items: 1 },
 };
 const HomeCarousel = () => {
+    const dispatch = useDispatch()
+    const { getBannerDATA } = useSelector((state) => state.bannerLogo)
+    const [banner, setbanner] = useState();
+
+    useEffect(() => {
+        dispatch(getBannerAction())
+    }, [])
+
+    useEffect(() => {
+        if (getBannerDATA) {
+            setbanner(getBannerDATA)
+        }
+    }, [getBannerDATA])
+
     const items =
-        images.map((ele) => {
-            return <img className="h-[650px] w-[100%]" src={ele} alt={ele} />
+        banner && banner.map((ele) => {
+            return <img className="h-[650px] w-[100%]" src={ele.img[0]} alt={ele.img[0]} />
         })
     return (
         <div className=''>

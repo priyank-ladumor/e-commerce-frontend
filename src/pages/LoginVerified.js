@@ -1,12 +1,25 @@
-import React, { useEffect } from 'react'
-import { useDispatch } from 'react-redux'
+import React, { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { NavLink, useParams } from 'react-router-dom'
 import { userAccountVerified } from '../store/action/authAction'
+import { getLogoAction } from '../store/action/bannerLogoAction'
 
 const LoginVerified = () => {
     const { token } = useParams()
     const dispatch = useDispatch()
 
+    const [getLogo, setgetLogo] = useState("")
+    const { getLogoDATA, addLogoMSG } = useSelector((state) => state.bannerLogo)
+  
+    useEffect(() => {
+      dispatch(getLogoAction())
+    }, [addLogoMSG])
+  
+    useEffect(() => {
+      if (getLogoDATA) {
+        setgetLogo(getLogoDATA)
+      }
+    }, [getLogoDATA])
     if (token) {
         dispatch(userAccountVerified(token))
     }
@@ -20,7 +33,7 @@ const LoginVerified = () => {
                     <div className="sm:mx-auto sm:w-full sm:max-w-sm">
                         <img
                             className="mx-auto h-16 rounded-lg w-auto"
-                            src="https://i.imgur.com/d7MoWpc.png"
+                            src={getLogo?.logo}
                             alt="Your Company"
                         />
                         <h2 className="mt-2 text-center text-3xl font-bold leading-9 tracking-tight text-gray-900">

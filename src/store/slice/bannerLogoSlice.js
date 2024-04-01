@@ -1,13 +1,14 @@
 
 import { createSlice } from "@reduxjs/toolkit";
-import { getBannerAction } from "../action/bannerLogoAction";
+import { getBannerAction, getLogoAction } from "../action/bannerLogoAction";
 
 
 
 const initialState = {
     getBannerPENDING: false,
     getBannerDATA: null,
-
+    getLogoDATA: null,
+    getLogoPENDING: false,
 };
 
 const bannerLogoSlice = createSlice({
@@ -31,6 +32,21 @@ const bannerLogoSlice = createSlice({
         builder.addCase(getBannerAction.rejected, (state, { payload }) => {
             state.getBannerDATA = null;
             state.getBannerPENDING = false;
+        })
+
+        builder.addCase(getLogoAction.pending, (state, { payload }) => {
+            state.getLogoDATA = null;
+            state.getLogoPENDING = true;
+        })
+
+        builder.addCase(getLogoAction.fulfilled, (state, { payload }) => {
+            state.getLogoDATA = payload;
+            state.getLogoPENDING = false;
+        })
+
+        builder.addCase(getLogoAction.rejected, (state, { payload }) => {
+            state.getLogoDATA = null;
+            state.getLogoPENDING = false;
         })
     }
 });

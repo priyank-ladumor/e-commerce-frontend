@@ -62,20 +62,20 @@ const Order = () => {
                 <div className='m-3' >
                     <div className='' >
                         {
-                            orderData && orderData?.map((ele) => {
+                            orderData.length > 0 ? orderData?.map((ele) => {
                                 return (
                                     <div className='grid  grid-cols-12 gap-3 p-4 my-8' style={{ boxShadow: "rgba(99, 99, 99, 0.2) 0px 2px 8px 0px" }}  >
                                         <div className='flex justify-end col-span-12' >
                                             {ele?.orderStatus === "CANCELLED" && <RiDeleteBinFill onClick={() => [dispatch(DeleteOrderAction(ele?._id)), setdeleteOrderPopUp(true)]} style={{ fontSize: "20px", color: "red", cursor: "pointer" }} />}
                                         </div>
                                         <ol class="track-progress hidden sm:block col-span-12">
-                                            <li class={ele?.orderStatus === "CANCELLED" ? "cancel" : ele?.orderStatus === "Placed" && "done"}>
+                                            <li class={ele?.orderStatus === "CANCELLED" ? "cancel" : (ele?.orderStatus === "Placed" || ele?.orderStatus === "Confirmed" || ele?.orderStatus === "Packed" || ele?.orderStatus === "Shipped" || ele?.orderStatus === "Delivered") && "done"}>
                                                 <em>1</em>
                                                 <span>Placed</span>
                                             </li>
                                             <li class={(ele?.orderStatus === "Confirmed" || ele?.orderStatus === "Packed" || ele?.orderStatus === "Shipped" || ele?.orderStatus === "Delivered") ? "done" : ele?.orderStatus === "CANCELLED" ? "cancel" : "todo"}>
                                                 <em>2</em>
-                                                <span>Confirmed</span>
+                                                <span>{ele?.orderStatus === "CANCELLED" ? "Cancelled" : "Confirmed"}</span>
                                             </li>
                                             <li class={(ele?.orderStatus === "Packed" || ele?.orderStatus === "Shipped" || ele?.orderStatus === "Delivered") ? "done" : "todo"} >
                                                 <em>3</em>
@@ -91,7 +91,7 @@ const Order = () => {
                                             </li>
                                         </ol>
                                         <p className='block sm:hidden col-span-12' >
-                                            <div className='flex' style={{fontSize:"20px"}} >
+                                            <div className='flex' style={{ fontSize: "20px" }} >
                                                 <span className='font-semibold' >Order Status:</span>
                                                 <span className='ms-2 font-bold' >{ele?.orderStatus}</span>
                                             </div>
@@ -141,12 +141,22 @@ const Order = () => {
                                             )
                                         })}
                                         <div className='col-span-12 flex justify-between' >
-                                            <button type="button"
-                                                className={ele?.orderStatus === "CANCELLED" ? "font-medium text-[gray] ms-1" : "font-medium text-[#F44E3B] hover:text-[#D33115] ms-1"}
-                                                onClick={() => [dispatch(CancelOrderAction(ele?._id)), setcancelOrderPopUp(true)]}
-                                                disabled={ele?.orderStatus === "CANCELLED"} >
-                                                Cancel Order
-                                            </button>
+                                            {ele?.orderStatus === "Delivered" ?
+                                                <button type="button"
+                                                    className={ele?.orderStatus === "CANCELLED" ? "font-medium text-[gray] ms-1" : "font-medium text-[#F44E3B] hover:text-[#D33115] ms-1"}
+                                                    // onClick={() => [dispatch(CancelOrderAction(ele?._id)), setcancelOrderPopUp(true)]}
+                                                    // disabled={ele?.orderStatus === "CANCELLED"}
+                                                >
+                                                    Return Order
+                                                </button>
+                                                :
+                                                <button type="button"
+                                                    className={ele?.orderStatus === "CANCELLED" ? "font-medium text-[gray] ms-1" : "font-medium text-[#F44E3B] hover:text-[#D33115] ms-1"}
+                                                    onClick={() => [dispatch(CancelOrderAction(ele?._id)), setcancelOrderPopUp(true)]}
+                                                    disabled={ele?.orderStatus === "CANCELLED"} >
+                                                    Cancel Order
+                                                </button>
+                                            }
                                             <div className='' >
                                                 <div className='flex' >
                                                     <span className='text-lg font-semibold me-1 ' style={{ fontSize: "16px" }} >Payment Method:</span>
@@ -165,7 +175,12 @@ const Order = () => {
                                         </div>
                                     </div>
                                 )
-                            })
+                            }
+                            )
+                                :
+                                <div className='flex m-[50px] justify-center p-10 items-center bg-red-100 h-[200px] col-span-3'>
+                                    <span className='font-bold' style={{ fontSize: "35px" }} >No Order Available</span>
+                                </div>
                         }
                     </div>
                 </div>

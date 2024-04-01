@@ -11,6 +11,7 @@ import FormControl from '@mui/material/FormControl';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { userCreate } from '../store/action/authAction';
+import { getLogoAction } from '../store/action/bannerLogoAction';
 
 const schema = yup.object({
     email: yup.string().email().required("please enter your email"),
@@ -30,6 +31,19 @@ const schema = yup.object({
 const Register = () => {
     const dispatch = useDispatch()
     const navigate = useNavigate()
+
+    const [getLogo, setgetLogo] = useState("")
+    const { getLogoDATA, addLogoMSG } = useSelector((state) => state.bannerLogo)
+  
+    useEffect(() => {
+      dispatch(getLogoAction())
+    }, [addLogoMSG])
+  
+    useEffect(() => {
+      if (getLogoDATA) {
+        setgetLogo(getLogoDATA)
+      }
+    }, [getLogoDATA])
 
     const { userCreateError, userCreateSuccess } = useSelector((state) => state.auth)
     const [registerSucc, setRegisterSucc] = useState(userCreateSuccess)
@@ -88,7 +102,7 @@ const Register = () => {
                     <div className="sm:mx-auto sm:w-full sm:max-w-sm">
                         <img
                             className="mx-auto h-16 rounded-lg w-auto"
-                            src="https://i.imgur.com/d7MoWpc.png"
+                            src={getLogo?.logo}
                             alt="Your Company"
                         />
                         <h2 className="mt-8 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">

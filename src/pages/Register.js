@@ -29,7 +29,6 @@ const schema = yup.object({
 });
 
 const Register = () => {
-    console.log(process.env.REACT_APP_CAPTCHA_SITE_KEY,"process.env.REACT_APP_CAPTCHA_SITE_KEY");
     const dispatch = useDispatch()
     const navigate = useNavigate()
 

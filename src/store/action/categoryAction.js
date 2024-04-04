@@ -102,3 +102,15 @@ export const getthirdlevelCategoryFilterAction = createAsyncThunk(
     }
   }
 );
+
+export const getNavbarByTopAction = createAsyncThunk(
+  'get/navbar',
+  async (requestData) => {
+    try {
+      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}/categories/navbar`, {top : requestData.top});
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+);

@@ -29,6 +29,7 @@ const schema = yup.object({
 });
 
 const Register = () => {
+
     const dispatch = useDispatch()
     const navigate = useNavigate()
 
@@ -47,6 +48,7 @@ const Register = () => {
 
     const { userCreateError, userCreateSuccess } = useSelector((state) => state.auth)
     const [registerSucc, setRegisterSucc] = useState(userCreateSuccess)
+
     useEffect(() => {
         setRegisterSucc(userCreateSuccess)
     }, [userCreateSuccess])
@@ -66,7 +68,6 @@ const Register = () => {
     const onChangeCaptcha = () => {
         setIsVerify(!isVerify)
     }
-    console.log(isVerify);
 
     const onsubmit = (data) => {
 
@@ -75,7 +76,8 @@ const Register = () => {
                 firstName: data.firstname,
                 lastName: data.lastname,
                 email: data.email,
-                password: data.password
+                password: data.password,
+                location: window.location.href.split("/register")[0]
             }
             dispatch(userCreate(itmes))
             if (registerSucc?.msg) {

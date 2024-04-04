@@ -14,7 +14,7 @@ import { getCartItemsAction } from '../../store/action/cartAction'
 import { getUserProfileAction } from '../../store/action/userAction'
 import { getLogoAction } from '../../store/action/bannerLogoAction'
 import { ThreeDots } from 'react-loader-spinner'
-import Skeleton from '@mui/material/Skeleton';
+import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
 
 
 const userNavigation = [
@@ -180,8 +180,14 @@ export default function Navbar({ children }) {
                                             [0, 1, 2].map((ele) => {
                                                 return (
                                                     <div className='block'>
-                                                        <Skeleton variant="text" className='w-[80%] m-4' sx={{ height: "30px" }} />
-                                                        <Skeleton variant="rectangular" className='w-[90%] m-4' height={260} />
+                                                        <SkeletonTheme baseColor="whitesmoke" highlightColor="#fff">
+                                                            <p className='p-2' >
+                                                                <Skeleton count={1} className='w-[80%] m-4' style={{ height: "30px" }} />
+                                                                <Skeleton count={1} className='w-[90%] m-4' style={{ height: "260px" }} />
+                                                            </p>
+                                                        </SkeletonTheme>
+                                                        {/* <Skeleton variant="text" className='w-[80%] m-4' sx={{ height: "30px" }} /> */}
+                                                        {/* <Skeleton variant="rounded" className='w-[90%] m-4' height={260} /> */}
                                                     </div>
                                                 )
                                             })
@@ -262,7 +268,11 @@ export default function Navbar({ children }) {
                                 <NavLink to="/">
                                     {getLogoPENDING
                                         ?
-                                        <Skeleton variant="" className=' rounded-xl' width={40} height={40} />
+                                        <SkeletonTheme baseColor="whitesmoke" highlightColor="#fff">
+                                            <p className='p-2' >
+                                                <Skeleton count={1} className='rounded-lg' width={40} height={40} />
+                                            </p>
+                                        </SkeletonTheme>
                                         : <img
                                             className="h-15 w-12 rounded-xl"
                                             src={getLogo?.logo}
@@ -276,7 +286,12 @@ export default function Navbar({ children }) {
                                 <div className="flex h-full space-x-8  rmv-shadow">
                                     {categoryTopPENDING ?
                                         <div className="relative flex items-center"  >
-                                            <Skeleton variant="text" className='' sx={{ width: "200px", height: "30px" }} />
+                                            <SkeletonTheme baseColor="whitesmoke" highlightColor="#fff">
+                                                <p className='p-2' >
+                                                    <Skeleton count={1} className='rounded-lg' style={{ width: "300px", height: "30px" }} />
+                                                </p>
+                                            </SkeletonTheme>
+                                            {/* <Skeleton variant="text" className='' sx={{ width: "200px", height: "30px" }} /> */}
                                             {/* <Skeleton variant="text" className='mx-10' sx={{ width: "60px", height: "30px" }} /> */}
                                             {/* <Skeleton variant="text" className='' sx={{ width: "60px", height: "30px" }} /> */}
                                         </div>
@@ -319,9 +334,13 @@ export default function Navbar({ children }) {
                                                                                         ?
                                                                                         [0, 1, 2, 3, 4, 5, 6].map((ele) => {
                                                                                             return (
-                                                                                                <div className='block'>
-                                                                                                    <Skeleton variant="text" className='' sx={{ width: "100px", height: "30px" }} />
-                                                                                                    <Skeleton variant="rectangular" width={140} height={260} />
+                                                                                                <div className='-mt-6 block'>
+                                                                                                    <SkeletonTheme baseColor="#f0f0f0" highlightColor="whitesmoke">
+                                                                                                        <p className='p-2' >
+                                                                                                            <Skeleton count={1} className='rounded-lg' style={{ width: "100px", height: "30px" }} />
+                                                                                                            <Skeleton count={1} className='rounded-lg mt-4' width={140} height={260}  />
+                                                                                                        </p>
+                                                                                                    </SkeletonTheme>
                                                                                                 </div>
                                                                                             )
                                                                                         })

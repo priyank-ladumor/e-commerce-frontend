@@ -3,6 +3,7 @@ import AliceCarousel from 'react-alice-carousel';
 import 'react-alice-carousel/lib/alice-carousel.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { getBannerAction } from '../../store/action/bannerLogoAction';
+import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
 
 
 const responsive = {
@@ -33,7 +34,13 @@ const HomeCarousel = () => {
         <div className=''>
             <AliceCarousel
                 mouseTracking
-                items={items}
+                items={items?.length > 0 ? items : [1, 2, 3, 4].map((ele) =>
+                                <SkeletonTheme baseColor="white" highlightColor="#f0f0f0">
+                                    <p className='p-2' >
+                                        <Skeleton count={1} style={{ height: "650px", width: "100%" }} />
+                                    </p>
+                                </SkeletonTheme>
+                            )}
                 disableButtonsControls
                 autoPlay
                 infinite

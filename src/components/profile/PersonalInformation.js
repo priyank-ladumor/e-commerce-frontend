@@ -55,7 +55,7 @@ const PersonalInformation = () => {
     });
 
     const dispatch = useDispatch()
-    const { getUserProfileDATA, updateUserProfileMSG, updateUserProfilePENDING } = useSelector((state) => state.user)
+    const { getUserProfileDATA, updateUserProfileMSG, updateUserProfilePENDING, getUserProfilePENDING } = useSelector((state) => state.user)
     const [userProfile, setUserProfile] = useState("")
     const [profileImg, setprofileImg] = useState([])
     const [updateProfilePopUp, setupdateProfilePopUp] = useState(false)
@@ -143,20 +143,25 @@ const PersonalInformation = () => {
                         <div className='lg:col-span-6 lg:order-1 order-2 col-span-12 ' >
                             <div className='mt-4' >
                                 <CFormLabel className='text-xl font-medium' >First Name</CFormLabel>
-                                <CFormInput
-                                    className=' w-[100%] mt-2 rounded-md'
-                                    type="text"
-                                    id="exampleFormControlInput1"
-                                    placeholder="Enter your first name"
-                                    text={errors && <p style={{ color: "red" }} >{errors.firstName?.message}</p>}
-                                    {...register("firstName")}
-                                    aria-describedby="exampleFormControlInputHelpInline"
-                                    defaultValue={userProfile && userProfile.firstName}
-                                    size="sm"
-                                />
+                                {getUserProfilePENDING || updateUserProfilePENDING?
+                                 <Skeleton count={1} className='w-[100%] mt-2 rounded-md block' style={{ height: "40px" }} /> :
+                                    <CFormInput
+                                        className=' w-[100%] mt-2 rounded-md'
+                                        type="text"
+                                        id="exampleFormControlInput1"
+                                        placeholder="Enter your first name"
+                                        text={errors && <p style={{ color: "red" }} >{errors.firstName?.message}</p>}
+                                        {...register("firstName")}
+                                        aria-describedby="exampleFormControlInputHelpInline"
+                                        defaultValue={userProfile && userProfile.firstName}
+                                        size="sm"
+                                    />
+                                }
                             </div>
                             <div className='mt-4' >
                                 <CFormLabel className='text-xl font-medium' >Last Name</CFormLabel>
+                                {getUserProfilePENDING || updateUserProfilePENDING?
+                                 <Skeleton count={1} className='w-[100%] mt-2 rounded-md block' style={{ height: "40px" }} /> :
                                 <CFormInput
                                     className=' w-[100%] mt-2 rounded-md'
                                     type="text"
@@ -167,10 +172,12 @@ const PersonalInformation = () => {
                                     aria-describedby="exampleFormControlInputHelpInline"
                                     defaultValue={userProfile && userProfile.lastName}
                                     size="sm"
-                                />
+                                />}
                             </div>
                             <div className='mt-4' >
                                 <CFormLabel className='text-xl font-medium' >Email Address</CFormLabel>
+                                {getUserProfilePENDING || updateUserProfilePENDING?
+                                 <Skeleton count={1} className='w-[100%] mt-2 rounded-md block' style={{ height: "40px" }} /> :
                                 <CFormInput
                                     className=' w-[100%] mt-2 rounded-md'
                                     type="email"
@@ -181,10 +188,12 @@ const PersonalInformation = () => {
                                     {...register("email")}
                                     defaultValue={userProfile && userProfile.email}
                                     size="sm"
-                                />
+                                />}
                             </div>
                             <div className='mt-4' >
                                 <CFormLabel className='text-xl font-medium' >Mobile No</CFormLabel>
+                                {getUserProfilePENDING || updateUserProfilePENDING?
+                                 <Skeleton count={1} className='w-[100%] mt-2 rounded-md block' style={{ height: "40px" }} /> :
                                 <CFormInput
                                     className=' w-[100%] mt-2 rounded-md'
                                     type="number"
@@ -195,7 +204,7 @@ const PersonalInformation = () => {
                                     aria-describedby="exampleFormControlInputHelpInline"
                                     defaultValue={userProfile && userProfile.mobile}
                                     size="sm"
-                                />
+                                />}
                             </div>
                         </div>
                         <div className='lg:col-span-6 lg:order-2 order-1 col-span-12 flex justify-center items-center' >

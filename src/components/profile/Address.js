@@ -11,6 +11,7 @@ import Swal from 'sweetalert2';
 import { FaPlus } from "react-icons/fa6";
 import { MdLocationOn, MdOutlineClose, MdOutlineLocalPhone, MdOutlineRemoveCircleOutline } from 'react-icons/md';
 import { IoRemoveCircle } from 'react-icons/io5';
+import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
 
 const schema = yup.object({
     firstName: yup
@@ -253,7 +254,7 @@ const Address = ({ userProfile }) => {
                                                     <p className='capitalize flex items-center mb-2'><span className='border-[1px] border-black rounded-full p-1 mr-2' ><MdOutlineLocalPhone /></span><span>+91</span>{" "}<span>{ele.phone}</span></p>
                                                     <div className='flex mb-2' >
                                                         <div className='' >
-                                                          <span className='border-[1px] border-black rounded-full flex justify-center items-center p-1' ><MdLocationOn /></span>
+                                                            <span className='border-[1px] border-black rounded-full flex justify-center items-center p-1' ><MdLocationOn /></span>
                                                         </div>
                                                         <div className='ml-2' >
                                                             <div className='flex items-center '>
@@ -270,12 +271,42 @@ const Address = ({ userProfile }) => {
                                 }
                             </div>
                             :
-                            address && address?.length === 0 && UserAddressPENDING === false &&
-                            <div className='grid grid-cols-12 gap-4 p-6 ' >
-                                <div className='flex justify-center items-center bg-red-100 h-[100px] col-span-12'>
-                                    <span className='font-bold' style={{ fontSize: "35px" }} >No Available Address</span>
+                            address && address?.length === 0 && UserAddressPENDING === false ?
+                                <div className='grid grid-cols-12 gap-4 p-6 ' >
+                                    <div className='flex justify-center items-center bg-red-100 h-[100px] col-span-12'>
+                                        <span className='font-bold' style={{ fontSize: "35px" }} >No Available Address</span>
+                                    </div>
                                 </div>
-                            </div>
+                                :
+                                UserAddressPENDING === true &&
+                                <div className='grid grid-cols-12 gap-3 ' >
+                                    {
+                                        [0, 1, 2]?.map((ele) => {
+                                            return (
+                                                <>
+                                                    <div className=' col-span-12 p-3 sm:col-span-6 lg:col-span-4  rounded-md border-[1px] border-gray-400 relative' >
+                                                        <SkeletonTheme baseColor="#f0f0f0" highlightColor="whitesmoke" >
+                                                            <p className='p-1' >
+                                                                <div className='flex justify-between' >
+                                                                    <Skeleton count={1} className='rounded-lg' style={{ width: "200px", height: "30px" }} />
+                                                                    <Skeleton count={1} className='rounded-full' style={{ width: "30px", height: "30px" }} />
+                                                                </div>
+                                                                <div className='flex justify-start mt-4' >
+                                                                    <Skeleton count={1} className='rounded-full' style={{ width: "30px", height: "30px" }} />
+                                                                    <Skeleton count={1} className='ms-4 rounded-lg' style={{ width: "200px", height: "30px" }} />
+                                                                </div>
+                                                                <div className='flex justify-start mt-4' >
+                                                                    <Skeleton count={1} className='rounded-full' style={{ width: "30px", height: "30px" }} />
+                                                                    <Skeleton count={1} className='ms-4 rounded-lg' style={{ width: "200px", height: "60px" }} />
+                                                                </div>
+                                                            </p>
+                                                        </SkeletonTheme>
+                                                    </div>
+                                                </>
+                                            )
+                                        })
+                                    }
+                                </div>
                     }
                 </div>
             </CForm>
@@ -284,3 +315,5 @@ const Address = ({ userProfile }) => {
 }
 
 export default Address
+
+

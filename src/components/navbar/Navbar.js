@@ -64,6 +64,7 @@ export default function Navbar({ children }) {
     const [All, setAll] = useState("")
     const [secondParent, setsecondParent] = useState("")
     const [navData, setNavData] = useState("")
+    console.log('✌️navData --->', navData);
     const { getCartItemsPENDING, getCartItemsData, removeCartItemsMSG, addToCartMSG } = useSelector((state) => state.cart)
 
     useEffect(() => {
@@ -97,6 +98,10 @@ export default function Navbar({ children }) {
             settop(categoryTop)
         }
     }, [categoryTop])
+
+    // useEffect(() => {
+    //     dispatch(getNavbarByTopAction())
+    // }, [])
 
     useEffect(() => {
         const item = {
@@ -186,8 +191,6 @@ export default function Navbar({ children }) {
                                                                 <Skeleton count={1} className='w-[90%] m-4' style={{ height: "260px" }} />
                                                             </p>
                                                         </SkeletonTheme>
-                                                        {/* <Skeleton variant="text" className='w-[80%] m-4' sx={{ height: "30px" }} /> */}
-                                                        {/* <Skeleton variant="rounded" className='w-[90%] m-4' height={260} /> */}
                                                     </div>
                                                 )
                                             })

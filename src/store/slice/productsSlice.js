@@ -5,6 +5,7 @@ import { getKidsProductAction, getMensProductAction, getProducts, getProductsByI
 const initialState = {
     products: [],
     getFilterProductPENDING: false,
+    getFilterProductSUCCESS: false,
     productsDetailsPENDING: false,
     productsDetails: null,
     menProducts: [],
@@ -24,16 +25,19 @@ const productsSlice = createSlice({
         builder.addCase(getProducts.pending, (state, { payload }) => {
             state.products = null;
             state.getFilterProductPENDING = true;
+            state.getFilterProductSUCCESS = false;
         })
 
         builder.addCase(getProducts.fulfilled, (state, { payload }) => {
             state.products = payload;
             state.getFilterProductPENDING = false;
+            state.getFilterProductSUCCESS = true;
         })
 
         builder.addCase(getProducts.rejected, (state, { payload }) => {
             state.products = null;
             state.getFilterProductPENDING = false;
+            state.getFilterProductSUCCESS = false;
         })
 
         builder.addCase(getProductsByIDAction.pending, (state, { payload }) => {

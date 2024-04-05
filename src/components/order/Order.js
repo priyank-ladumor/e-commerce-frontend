@@ -56,6 +56,16 @@ const Order = () => {
         }
     }, [CancelOrderMSG])
 
+    const [showMessage, setShowMessage] = useState(false);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setShowMessage(true);
+        }, 500);
+
+        return () => clearTimeout(timer);
+    }, [getAllOrderSUCCESS]);
+
     return (
         <div>
             <div className='w-100 bg-white mt-10 rounded-lg md:p-4' >
@@ -249,7 +259,7 @@ const Order = () => {
                                         </SkeletonTheme>
                                     </div>
                                     :
-                                    getAllOrderPENDING === false && getAllOrderSUCCESS &&
+                                    getAllOrderSUCCESS && getAllOrderPENDING === false && showMessage &&
                                     <div className='flex m-[50px] justify-center p-10 items-center bg-red-100 h-[200px] col-span-3'>
                                         <span className='font-bold' style={{ fontSize: "35px" }} >No Order Available</span>
                                     </div>

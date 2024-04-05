@@ -42,6 +42,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { FaRupeeSign } from "react-icons/fa";
 import { alpha } from '@mui/material/styles';
 import { Bars } from 'react-loader-spinner'
+import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
 
 
 
@@ -59,7 +60,7 @@ const ProductList = () => {
     const [thirdparent, setthirdparent] = useState()
     const [third, setthird] = useState()
     const [categoryThirdData, setcategoryThirdData] = useState()
-    const { products, getFilterProductPENDING } = useSelector((state) => state.products)
+    const { products, getFilterProductPENDING, getFilterProductSUCCESS } = useSelector((state) => state.products)
     const [filter, setfilter] = useState([])
     const [getsizedata, setgetsizedata] = useState("")
     const [MIN, SetMIN] = React.useState(0)
@@ -154,6 +155,10 @@ const ProductList = () => {
         )
     }, [sort, pageSize, color, minPrice, maxPrice, available, pageNumber, sizes, minDiscount])
 
+    useEffect(() => {
+        setpageNumber(1)
+    }, [sort, pageSize, color, minPrice, maxPrice, available, sizes, minDiscount])
+
 
     useEffect(() => {
         dispatch(getProducts(location.search))
@@ -218,7 +223,7 @@ const ProductList = () => {
     }, [products])
 
     const handleFilter = async (e, option, section) => {
-
+        setpageNumber(1)
         if (e.target.checked) {
             if (filter[section._id]) {
                 filter[section._id].push(option);
@@ -303,6 +308,17 @@ const ProductList = () => {
     useEffect(() => {
         window.scrollTo(0, 0)
     }, [getFilterProductPENDING])
+
+    //for pending msg showing delay
+    const [showMessage, setShowMessage] = useState(false);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setShowMessage(true);
+        }, 1000);
+
+        return () => clearTimeout(timer);
+    }, [getFilterProductSUCCESS]);
 
     return (
         <div>
@@ -390,7 +406,7 @@ const ProductList = () => {
                                         })
                                         ]
                                         : setMobileFiltersOpen(true)
-                                        }
+                                    }
                                 >
                                     <span className="sr-only">Filters</span>
                                     <FunnelIcon className="h-5 w-5" aria-hidden="true" />
@@ -415,31 +431,65 @@ const ProductList = () => {
 
                                 {/* Product grid */}
                                 {
-                                    getFilterProductPENDING ?
-                                        <div className='flex justify-center items-center  m-[50px]  h-[600px] col-span-3'>
-                                            <Bars
-                                                visible={true}
-                                                height="80"
-                                                width="80"
-                                                ariaLabel="magnifying-glass-loading"
-                                                wrapperStyle={{}}
-                                                wrapperClass="magnifying-glass-wrapper"
-                                                glassColor="#c0efff"
-                                                color="blue"
-                                            />
+                                    getFilterProductPENDING === true ?
+                                        <div className="lg:col-span-3 p-6 ">
+                                            <div className="bg-[#fff] ">
+                                                <div className="mx-auto max-w-2xl px-4 py-16 sm:px-0 sm:py-0 lg:max-w-7xl lg:px-8">
+                                                    <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:gap-x-8">
+                                                        <SkeletonTheme baseColor="#f0f0f0" highlightColor="whitesmoke" >
+                                                            {[0, 1, 2]?.map((product) =>
+                                                            (
+                                                                <>
+                                                                    <Card>
+                                                                        <Skeleton count={1} className='rounded-lg' style={{
+                                                                            height: "220px"
+                                                                        }} />
+                                                                        <Stack spacing={2} sx={{ p: 3 }}>
+                                                                            <Link color="inherit" underline="hover" variant="subtitle2" noWrap>
+                                                                                <Skeleton count={1} className='rounded-lg' style={{ width: "200px", height: "20px" }} />
+                                                                            </Link>
+
+                                                                            <Stack direction="row" alignItems="center" justifyContent="space-between">
+                                                                                <Skeleton count={1} className='rounded-full' style={{ width: "25px", height: "25px" }} />
+                                                                                <Typography variant="subtitle1 flex justify-center items-center">
+                                                                                    <Typography
+                                                                                        component="span"
+                                                                                        variant="body1"
+                                                                                        sx={{
+                                                                                            color: 'text.disabled',
+                                                                                            textDecoration: 'line-through',
+                                                                                        }}
+                                                                                    >
+                                                                                        <div className='flex items-center justify-center'>
+                                                                                            <Skeleton count={1} className='rounded-lg' style={{ width: "50px", height: "20px" }} />
+                                                                                        </div>
+                                                                                    </Typography>
+                                                                                    &nbsp;
+                                                                                    <div className='flex  items-center justify-center'>
+                                                                                        <Skeleton count={1} className='rounded-lg' style={{ width: "50px", height: "20px" }} />
+                                                                                    </div>
+                                                                                </Typography>
+                                                                            </Stack>
+                                                                        </Stack>
+                                                                    </Card>
+                                                                </>
+                                                            ))}
+                                                        </SkeletonTheme>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                         :
-                                        newproduct?.length > 0 ?
+                                        newproduct?.length > 0 && getFilterProductSUCCESS ?
                                             <ProductGrid newproduct={newproduct} topCategory={topCategory} location={location} />
                                             :
-                                            getFilterProductPENDING === false &&
+                                            getFilterProductSUCCESS && getFilterProductPENDING === false && showMessage &&
                                             <div className='flex m-[50px] justify-center items-center bg-red-100 h-[200px] col-span-3'>
                                                 <span className='font-bold' style={{ fontSize: "35px" }} >No filtered product found</span>
                                             </div>
                                 }
                             </div>
                         </section>
-
                         <PaginationFun handleChangePageNumber={handleChangePageNumber} pageNumber={pageNumber} products={products} />
                     </main>
                 </div>

@@ -147,6 +147,16 @@ const ShoppingCart = ({ paymentSys, selectedAddress, cartItemDetails }) => {
         navigate("/checkout")
     }
 
+    const [showMessage, setShowMessage] = useState(false);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setShowMessage(true);
+        }, 500);
+
+        return () => clearTimeout(timer);
+    }, [getCartItemsDataSuccess]);
+
     return (
         <div>
             {/* <div className="mx-auto mt-12 bg-white max-w-7xl px-0 sm:px-0 lg:px-0"> */}
@@ -292,7 +302,7 @@ const ShoppingCart = ({ paymentSys, selectedAddress, cartItemDetails }) => {
                                 </ul>
                             </div>
                             :
-                            getCartItemsDataSuccess && getCartItemsPENDING === false &&
+                            getCartItemsDataSuccess && getCartItemsPENDING === false && showMessage &&
                             <div className='flex p-5 justify-center items-center bg-red-100 h-[300px] w-[100%]'>
                                 <span className='font-bold' style={{ fontSize: "35px" }} >Not selected Any Cart Items Available</span>
                             </div>

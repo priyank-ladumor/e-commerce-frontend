@@ -64,7 +64,6 @@ export default function Navbar({ children }) {
     const [All, setAll] = useState("")
     const [secondParent, setsecondParent] = useState("")
     const [navData, setNavData] = useState("")
-    console.log('✌️navData --->', navData);
     const { getCartItemsPENDING, getCartItemsData, removeCartItemsMSG, addToCartMSG } = useSelector((state) => state.cart)
 
     useEffect(() => {

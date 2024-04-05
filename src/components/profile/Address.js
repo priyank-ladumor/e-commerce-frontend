@@ -106,7 +106,16 @@ const Address = ({ userProfile }) => {
     const handleAddressDelete = (id) => {
         dispatch(deleteAddressAction(id))
     }
-    const [userAddressPending, setUserAddressPending] = useState(true);
+
+    const [showMessage, setShowMessage] = useState(false);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setShowMessage(true);
+        }, 500);
+
+        return () => clearTimeout(timer);
+    }, [UserAddressSuccess]);
 
     return (
         <div>
@@ -272,7 +281,7 @@ const Address = ({ userProfile }) => {
                                 }
                             </div>
                             :
-                            address && address?.length === 0 && UserAddressPENDING === false && UserAddressSuccess ?
+                            address && address?.length === 0 && UserAddressPENDING === false && UserAddressSuccess && showMessage ?
                                 <div className='grid grid-cols-12 gap-4 p-6 ' >
                                     <div className='flex justify-center items-center bg-red-100 h-[100px] col-span-12'>
                                         <span className='font-bold' style={{ fontSize: "35px" }} >No Available Address</span>

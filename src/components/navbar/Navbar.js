@@ -186,7 +186,7 @@ export default function Navbar({ children }) {
                                                     <div className='block'>
                                                         <SkeletonTheme baseColor="whitesmoke" highlightColor="#fff">
                                                             <p className='p-2' >
-                                                                <Skeleton count={1} className='w-[80%] m-4' style={{ height: "30px" }} />
+                                                                <Skeleton count={1} className='w-[90%] m-4' style={{ height: "30px" }} />
                                                                 <Skeleton count={1} className='w-[90%] m-4' style={{ height: "260px" }} />
                                                             </p>
                                                         </SkeletonTheme>
@@ -332,15 +332,19 @@ export default function Navbar({ children }) {
                                                                         <div className="relative bg-white" >
                                                                             <div className="mx-auto max-w-7xl px-8">
                                                                                 <div className="row-start-1 grid gap-x-8 gap-y-10 py-16 grid-cols-7 text-sm">
-                                                                                    {getNavbarByTopPENDING
+                                                                                    {!getNavbarByTopPENDING
                                                                                         ?
                                                                                         [0, 1, 2, 3, 4, 5, 6].map((ele) => {
                                                                                             return (
                                                                                                 <div className='-mt-6 block'>
                                                                                                     <SkeletonTheme baseColor="#f0f0f0" highlightColor="whitesmoke">
                                                                                                         <p className='p-2' >
-                                                                                                            <Skeleton count={1} className='rounded-lg' style={{ width: "100px", height: "30px" }} />
-                                                                                                            <Skeleton count={1} className='rounded-lg mt-4' width={140} height={260}  />
+                                                                                                            <Skeleton count={1} className='rounded-lg' width={140} style={{ height: "30px" }} />
+                                                                                                        </p>
+                                                                                                    </SkeletonTheme>
+                                                                                                    <SkeletonTheme highlightColor="#f0f0f0" baseColor="whitesmoke">
+                                                                                                        <p className='px-2' >
+                                                                                                            <Skeleton count={1} className='rounded-lg mt-4' width={140} height={260} />
                                                                                                         </p>
                                                                                                     </SkeletonTheme>
                                                                                                 </div>

@@ -18,7 +18,7 @@ const ShoppingCart = ({ paymentSys, selectedAddress, cartItemDetails }) => {
     const [open, setOpen] = useState(true)
     const [deleteCartItemPopUp, setdeleteCartItemPopUp] = useState(false)
 
-    const { getCartItemsPENDING, getCartItemsData, addToCartMSG, removeCartItemsMSG, updateCartItemsMSG } = useSelector((state) => state.cart)
+    const { getCartItemsPENDING, getCartItemsData, addToCartMSG, removeCartItemsMSG, updateCartItemsMSG, getCartItemsDataSuccess } = useSelector((state) => state.cart)
     const { checkAvailableQuantityERROR, checkAvailableQuantityPENDING, checkAvailableQuantityMSG, createOrderERROR, createOrderPENDING } = useSelector((state) => state.order)
     const { createOrderMSG } = useSelector((state) => state.order)
     const [orderCreatedPopUp, setorderCreatedPopUp] = useState(false);
@@ -292,6 +292,7 @@ const ShoppingCart = ({ paymentSys, selectedAddress, cartItemDetails }) => {
                                 </ul>
                             </div>
                             :
+                            getCartItemsDataSuccess && getCartItemsPENDING === false &&
                             <div className='flex p-5 justify-center items-center bg-red-100 h-[300px] w-[100%]'>
                                 <span className='font-bold' style={{ fontSize: "35px" }} >Not selected Any Cart Items Available</span>
                             </div>

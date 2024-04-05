@@ -9,6 +9,7 @@ const initialState = {
     createOrderPENDING: false,
     getAllOrderData: null,
     getAllOrderPENDING: false,
+    getAllOrderSUCCESS: false,
     DeleteOrderMSG: null,
     CancelOrderMSG: null,
     checkAvailableQuantityMSG: [],
@@ -45,16 +46,19 @@ const orderSlice = createSlice({
         builder.addCase(findAllUserOrderAction.pending, (state, { payload }) => {
             state.getAllOrderData = null;
             state.getAllOrderPENDING = true;
+            state.getAllOrderSUCCESS = false;
         })
 
         builder.addCase(findAllUserOrderAction.fulfilled, (state, { payload }) => {
             state.getAllOrderData = payload;
             state.getAllOrderPENDING = false;
+            state.getAllOrderSUCCESS = true;
         })
 
         builder.addCase(findAllUserOrderAction.rejected, (state, { payload }) => {
             state.getAllOrderData = null;
             state.getAllOrderPENDING = false;
+            state.getAllOrderSUCCESS = false;
         })
    
         builder.addCase(DeleteOrderAction.pending, (state, { payload }) => {

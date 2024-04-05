@@ -57,7 +57,7 @@ const Address = ({ userProfile }) => {
     const [createAddressPopUp, setcreateAddressPopUp] = useState(false)
     const [showForm, setshowForm] = useState(false)
     const [address, setaddress] = useState()
-    const { createAddressPENDING, createAddressMSG, UserAddressPENDING, UserAddress, deleteAddressMSG } = useSelector((state) => state.address)
+    const { createAddressPENDING, createAddressMSG, UserAddressPENDING, UserAddress, deleteAddressMSG, UserAddressSuccess } = useSelector((state) => state.address)
     const {
         register,
         handleSubmit,
@@ -272,7 +272,7 @@ const Address = ({ userProfile }) => {
                                 }
                             </div>
                             :
-                            address && address?.length === 0 && UserAddressPENDING === false ?
+                            address && address?.length === 0 && UserAddressPENDING === false && UserAddressSuccess ?
                                 <div className='grid grid-cols-12 gap-4 p-6 ' >
                                     <div className='flex justify-center items-center bg-red-100 h-[100px] col-span-12'>
                                         <span className='font-bold' style={{ fontSize: "35px" }} >No Available Address</span>

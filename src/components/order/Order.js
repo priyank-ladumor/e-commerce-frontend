@@ -10,7 +10,7 @@ import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
 
 const Order = () => {
     const dispatch = useDispatch()
-    const { getAllOrderPENDING, getAllOrderData, DeleteOrderMSG, CancelOrderMSG } = useSelector((state) => state.order)
+    const { getAllOrderPENDING, getAllOrderData, DeleteOrderMSG, CancelOrderMSG, getAllOrderSUCCESS } = useSelector((state) => state.order)
 
     const [orderData, setorderData] = useState("")
     const [deleteOrderPopUp, setdeleteOrderPopUp] = useState(false);
@@ -249,7 +249,7 @@ const Order = () => {
                                         </SkeletonTheme>
                                     </div>
                                     :
-                                    getAllOrderPENDING === false &&
+                                    getAllOrderPENDING === false && getAllOrderSUCCESS &&
                                     <div className='flex m-[50px] justify-center p-10 items-center bg-red-100 h-[200px] col-span-3'>
                                         <span className='font-bold' style={{ fontSize: "35px" }} >No Order Available</span>
                                     </div>

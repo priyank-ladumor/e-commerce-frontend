@@ -8,6 +8,7 @@ const initialState = {
     addToCartERROR: null,
     getCartItemsPENDING: false,
     getCartItemsData: null,
+    getCartItemsDataSuccess: false,
     removeCartItemsMSG: null,
     updateCartItemsMSG: null,
 };
@@ -40,16 +41,19 @@ const cartSlice = createSlice({
         builder.addCase(getCartItemsAction.pending, (state, { payload }) => {
             state.getCartItemsPENDING = true;
             state.getCartItemsData = null;
+            state.getCartItemsDataSuccess = false;
         })
 
         builder.addCase(getCartItemsAction.fulfilled, (state, { payload }) => {
             state.getCartItemsPENDING = false;
             state.getCartItemsData = payload;
+            state.getCartItemsDataSuccess = true;
         })
 
         builder.addCase(getCartItemsAction.rejected, (state, { payload }) => {
             state.getCartItemsPENDING = false;
             state.getCartItemsData = null;
+            state.getCartItemsDataSuccess = false;
         })
 
         builder.addCase(cartitemRemoveAction.pending, (state, { payload }) => {

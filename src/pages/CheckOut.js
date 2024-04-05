@@ -16,6 +16,7 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { getCartItemsAction } from '../store/action/cartAction';
 import { checkAvailableQuantityAction } from '../store/action/orderAction';
+import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
 
 const schema = yup.object({
     firstName: yup
@@ -75,7 +76,7 @@ const CheckOut = () => {
     const { createAddressPENDING, createAddressMSG, UserAddressPENDING, UserAddress, deleteAddressMSG } = useSelector((state) => state.address)
     const [address, setaddress] = useState()
     const dispatch = useDispatch()
-    const { getUserProfileDATA, updateUserProfileMSG, updateUserProfilePENDING } = useSelector((state) => state.user)
+    const { getUserProfileDATA, updateUserProfileMSG, updateUserProfilePENDING, UserAddressSuccess } = useSelector((state) => state.user)
     const [userProfile, setUserProfile] = useState("")
 
     const [selectedAddress, setselectedAddress] = useState("")
@@ -346,12 +347,43 @@ const CheckOut = () => {
                                                 }
                                             </div>
                                             :
-                                            address && address?.length === 0 && UserAddressPENDING === false &&
-                                            <div className='grid grid-cols-12 gap-4 p-6 ' >
-                                                <div className='flex justify-center items-center bg-red-100 h-[100px] col-span-12'>
-                                                    <span className='font-bold' style={{ fontSize: "35px" }} >No Available Address</span>
+                                            UserAddressPENDING === true ?
+                                                <div className='grid grid-cols-12 gap-3 ' >
+                                                    {
+                                                        [0, 1, 2]?.map((ele) => {
+                                                            return (
+                                                                <>
+                                                                    <div className=' col-span-12 p-3 sm:col-span-6 lg:col-span-4  rounded-md border-[1px] border-gray-400 relative' >
+                                                                        <SkeletonTheme baseColor="#f0f0f0" highlightColor="whitesmoke" >
+                                                                            <p className='p-1' >
+                                                                                <div className='flex justify-between' >
+                                                                                    <Skeleton count={1} className='rounded-lg' style={{ width: "200px", height: "25px" }} />
+                                                                                    <Skeleton count={1} className='rounded-full' style={{ width: "30px", height: "30px" }} />
+                                                                                </div>
+                                                                                <div className='flex justify-start mt-4' >
+                                                                                    <Skeleton count={1} className='rounded-full' style={{ width: "30px", height: "30px" }} />
+                                                                                    <Skeleton count={1} className='ms-4 rounded-lg' style={{ width: "200px", height: "25px" }} />
+                                                                                </div>
+                                                                                <div className='flex justify-start mt-4' >
+                                                                                    <Skeleton count={1} className='rounded-full' style={{ width: "30px", height: "25px" }} />
+                                                                                    <Skeleton count={1} className='ms-4 rounded-lg' style={{ width: "200px", height: "50px" }} />
+                                                                                </div>
+                                                                            </p>
+                                                                        </SkeletonTheme>
+                                                                    </div>
+                                                                </>
+                                                            )
+                                                        })
+                                                    }
                                                 </div>
-                                            </div>
+                                                :
+                                                UserAddressPENDING === false && address && address?.length === 0 && UserAddressSuccess &&
+                                                <div className='grid grid-cols-12 gap-4 p-6 ' >
+                                                    <div className='flex justify-center items-center bg-red-100 h-[100px] col-span-12'>
+                                                        <span className='font-bold' style={{ fontSize: "35px" }} >No Available Address</span>
+                                                    </div>
+                                                </div>
+
                                     }
                                 </ul>
                                 <div className="mt-10 space-y-10">

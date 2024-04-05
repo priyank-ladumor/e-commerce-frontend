@@ -144,7 +144,7 @@ const PersonalInformation = () => {
                             <div className='mt-4' >
                                 <CFormLabel className='text-xl font-medium' >First Name</CFormLabel>
                                 {getUserProfilePENDING || updateUserProfilePENDING?
-                                 <Skeleton count={1} className='w-[100%] mt-2 rounded-md block' style={{ height: "40px" }} /> :
+                                 <Skeleton count={1} className='w-[100%] mt-2 rounded-md block' style={{ height: "35px" }} /> :
                                     <CFormInput
                                         className=' w-[100%] mt-2 rounded-md'
                                         type="text"
@@ -161,7 +161,7 @@ const PersonalInformation = () => {
                             <div className='mt-4' >
                                 <CFormLabel className='text-xl font-medium' >Last Name</CFormLabel>
                                 {getUserProfilePENDING || updateUserProfilePENDING?
-                                 <Skeleton count={1} className='w-[100%] mt-2 rounded-md block' style={{ height: "40px" }} /> :
+                                 <Skeleton count={1} className='w-[100%] mt-2 rounded-md block' style={{ height: "35px" }} /> :
                                 <CFormInput
                                     className=' w-[100%] mt-2 rounded-md'
                                     type="text"
@@ -177,7 +177,7 @@ const PersonalInformation = () => {
                             <div className='mt-4' >
                                 <CFormLabel className='text-xl font-medium' >Email Address</CFormLabel>
                                 {getUserProfilePENDING || updateUserProfilePENDING?
-                                 <Skeleton count={1} className='w-[100%] mt-2 rounded-md block' style={{ height: "40px" }} /> :
+                                 <Skeleton count={1} className='w-[100%] mt-2 rounded-md block' style={{ height: "35px" }} /> :
                                 <CFormInput
                                     className=' w-[100%] mt-2 rounded-md'
                                     type="email"
@@ -193,7 +193,7 @@ const PersonalInformation = () => {
                             <div className='mt-4' >
                                 <CFormLabel className='text-xl font-medium' >Mobile No</CFormLabel>
                                 {getUserProfilePENDING || updateUserProfilePENDING?
-                                 <Skeleton count={1} className='w-[100%] mt-2 rounded-md block' style={{ height: "40px" }} /> :
+                                 <Skeleton count={1} className='w-[100%] mt-2 rounded-md block' style={{ height: "35px" }} /> :
                                 <CFormInput
                                     className=' w-[100%] mt-2 rounded-md'
                                     type="number"

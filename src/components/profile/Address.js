@@ -288,16 +288,16 @@ const Address = ({ userProfile }) => {
                                                         <SkeletonTheme baseColor="#f0f0f0" highlightColor="whitesmoke" >
                                                             <p className='p-1' >
                                                                 <div className='flex justify-between' >
-                                                                    <Skeleton count={1} className='rounded-lg' style={{ width: "200px", height: "30px" }} />
+                                                                    <Skeleton count={1} className='rounded-lg' style={{ width: "200px", height: "25px" }} />
                                                                     <Skeleton count={1} className='rounded-full' style={{ width: "30px", height: "30px" }} />
                                                                 </div>
                                                                 <div className='flex justify-start mt-4' >
                                                                     <Skeleton count={1} className='rounded-full' style={{ width: "30px", height: "30px" }} />
-                                                                    <Skeleton count={1} className='ms-4 rounded-lg' style={{ width: "200px", height: "30px" }} />
+                                                                    <Skeleton count={1} className='ms-4 rounded-lg' style={{ width: "200px", height: "25px" }} />
                                                                 </div>
                                                                 <div className='flex justify-start mt-4' >
-                                                                    <Skeleton count={1} className='rounded-full' style={{ width: "30px", height: "30px" }} />
-                                                                    <Skeleton count={1} className='ms-4 rounded-lg' style={{ width: "200px", height: "60px" }} />
+                                                                    <Skeleton count={1} className='rounded-full' style={{ width: "30px", height: "25px" }} />
+                                                                    <Skeleton count={1} className='ms-4 rounded-lg' style={{ width: "200px", height: "50px" }} />
                                                                 </div>
                                                             </p>
                                                         </SkeletonTheme>

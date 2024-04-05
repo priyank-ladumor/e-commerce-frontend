@@ -161,7 +161,7 @@ const ShoppingCart = ({ paymentSys, selectedAddress, cartItemDetails }) => {
                                         <div className="flow-root">
                                             <ul role="list" className="-my-6 divide-y divide-gray-200">
                                                 <li className="flex py-6">
-                                                    <div className="h-36 w-36 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
+                                                    <div className="flex-shrink-0 overflow-hidden rounded-md ">
                                                         <Skeleton count={1} className='rounded-md' style={{ width: "144px", height: "144px" }} />
                                                     </div>
 
@@ -185,19 +185,14 @@ const ShoppingCart = ({ paymentSys, selectedAddress, cartItemDetails }) => {
                                                                 <span className=' text-lg font-semibold me-2' >Color:</span>
                                                                 <Skeleton count={1} className='rounded-full' style={{ width: "25px", height: "25px" }} />
                                                             </div>
-                                                        </div>
-                                                        <div className=" flex flex-1 items-end justify-between text-sm mb-2 ">
-                                                            <div className="text-gray-500 flex items-center justify-center gap-[5px]">Qty:
-                                                                <Skeleton count={1} className='rounded-lg' style={{ width: "200px", height: "25px" }} />
-
-                                                            </div>
-                                                            <div className="flex text-2xl ">
-                                                                <button
-                                                                    type="button"
-                                                                    className="font-medium text-indigo-600 hover:text-indigo-500"
-                                                                >
-                                                                    <Skeleton count={1} className='rounded-full' style={{ width: "25px", height: "25px" }} />
-                                                                </button>
+                                                            <div className=" flex justify-between text-sm mb-2 ">
+                                                                <div className='flex' >
+                                                                    <span className=' text-lg font-semibold me-2' >Qty:</span>
+                                                                    <p className="rounded-full mt-[2px] text-lg text-gray-800"><Skeleton count={1} className='rounded-lg' style={{ width: "200px", height: "25px" }} /></p>
+                                                                </div>
+                                                                <div>
+                                                                    <Skeleton count={1} className='rounded-lg' style={{ width: "30px", height: "35px" }} />
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>

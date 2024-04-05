@@ -11,6 +11,7 @@ import { TbTrashXFilled } from "react-icons/tb";
 import { ThreeDots } from "react-loader-spinner"
 import Swal from 'sweetalert2'
 import { checkAvailableQuantityAction, createOrderAction } from '../../store/action/orderAction';
+import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
 
 
 const ShoppingCart = ({ paymentSys, selectedAddress, cartItemDetails }) => {
@@ -153,15 +154,60 @@ const ShoppingCart = ({ paymentSys, selectedAddress, cartItemDetails }) => {
                 <h2 className="text-3xl p-4 text-gray-900 font-bold tracking-tighter">Cart</h2>
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     {getCartItemsPENDING ?
-                        <div className='flex justify-center items-center w-[100%] h-[200px]' >
-                            <ThreeDots
-                                color="blue"
-                                width="60"
-                                height={60}
-                                visible={true}
-                                ariaLabel="falling-circles-loading"
-                            />
-                        </div>
+                        [0]?.map((ele) => {
+                            return (
+                                <>
+                                    <SkeletonTheme baseColor="#f0f0f0" highlightColor="whitesmoke" >
+                                        <div className="flow-root">
+                                            <ul role="list" className="-my-6 divide-y divide-gray-200">
+                                                <li className="flex py-6">
+                                                    <div className="h-36 w-36 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
+                                                        <Skeleton count={1} className='rounded-md' style={{ width: "144px", height: "144px" }} />
+                                                    </div>
+
+                                                    <div className="ml-4 flex flex-1 flex-col">
+                                                        <div>
+                                                            <div className="displayBlock flex justify-between text-base font-medium text-gray-900 mb-1 ">
+                                                                <h3>
+                                                                    <span className='text-lg font-semibold me-2' >Title:</span>
+                                                                    <Skeleton count={1} className='rounded-lg' style={{ width: "200px", height: "25px" }} />
+                                                                </h3>
+                                                                <div className='flex mt-1 items-center ' >
+                                                                    <FaRupeeSign />
+                                                                    <p className=""><Skeleton count={1} className='rounded-lg' style={{ width: "50px", height: "25px" }} /></p>
+                                                                </div>
+                                                            </div>
+                                                            <div className='flex items-center mb-1' >
+                                                                <span className='text-lg font-semibold me-2' >Size:</span>
+                                                                <p className="rounded-full mt-[2px] text-lg text-gray-800"><Skeleton count={1} className='rounded-lg' style={{ width: "200px", height: "25px" }} /></p>
+                                                            </div>
+                                                            <div className='flex items-center' >
+                                                                <span className=' text-lg font-semibold me-2' >Color:</span>
+                                                                <Skeleton count={1} className='rounded-full' style={{ width: "25px", height: "25px" }} />
+                                                            </div>
+                                                        </div>
+                                                        <div className=" flex flex-1 items-end justify-between text-sm mb-2 ">
+                                                            <div className="text-gray-500 flex items-center justify-center gap-[5px]">Qty:
+                                                                <Skeleton count={1} className='rounded-lg' style={{ width: "200px", height: "25px" }} />
+
+                                                            </div>
+                                                            <div className="flex text-2xl ">
+                                                                <button
+                                                                    type="button"
+                                                                    className="font-medium text-indigo-600 hover:text-indigo-500"
+                                                                >
+                                                                    <Skeleton count={1} className='rounded-full' style={{ width: "25px", height: "25px" }} />
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </SkeletonTheme>
+                                </>
+                            )
+                        })
                         :
                         getCartItemsData && getCartItemsData[0]?.totalItem > 0 ?
                             <div className="flow-root">
@@ -331,7 +377,7 @@ const ShoppingCart = ({ paymentSys, selectedAddress, cartItemDetails }) => {
                 </div>
             </div>
 
-        </div>
+        </div >
     )
 }
 

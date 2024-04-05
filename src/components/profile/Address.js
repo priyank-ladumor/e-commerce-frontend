@@ -106,6 +106,7 @@ const Address = ({ userProfile }) => {
     const handleAddressDelete = (id) => {
         dispatch(deleteAddressAction(id))
     }
+    const [userAddressPending, setUserAddressPending] = useState(true);
 
     return (
         <div>

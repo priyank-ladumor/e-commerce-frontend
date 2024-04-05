@@ -5,6 +5,8 @@ import { Box, Slider, Typography, styled } from '@mui/material'
 import { FaIndianRupeeSign, FaRupeeSign } from 'react-icons/fa6'
 import { RiDeleteBinFill } from "react-icons/ri";
 import Swal from 'sweetalert2'
+import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
+
 
 const Order = () => {
     const dispatch = useDispatch()
@@ -144,8 +146,8 @@ const Order = () => {
                                             {ele?.orderStatus === "Delivered" ?
                                                 <button type="button"
                                                     className={ele?.orderStatus === "CANCELLED" ? "font-medium text-[gray] ms-1" : "font-medium text-[#F44E3B] hover:text-[#D33115] ms-1"}
-                                                    // onClick={() => [dispatch(CancelOrderAction(ele?._id)), setcancelOrderPopUp(true)]}
-                                                    // disabled={ele?.orderStatus === "CANCELLED"}
+                                                // onClick={() => [dispatch(CancelOrderAction(ele?._id)), setcancelOrderPopUp(true)]}
+                                                // disabled={ele?.orderStatus === "CANCELLED"}
                                                 >
                                                     Return Order
                                                 </button>
@@ -178,9 +180,79 @@ const Order = () => {
                             }
                             )
                                 :
-                                <div className='flex m-[50px] justify-center p-10 items-center bg-red-100 h-[200px] col-span-3'>
-                                    <span className='font-bold' style={{ fontSize: "35px" }} >No Order Available</span>
-                                </div>
+                                getAllOrderPENDING === true ?
+                                    <div className='grid  grid-cols-12 gap-3 p-4 my-8' style={{ boxShadow: "rgba(99, 99, 99, 0.2) 0px 2px 8px 0px" }}  >
+                                        <SkeletonTheme baseColor="#f0f0f0" highlightColor="whitesmoke" >
+                                            <div className='flex justify-end col-span-12' >
+                                                <Skeleton count={1} className='rounded-full' style={{ width: "30px", height: "30px" }} />
+                                            </div>
+                                            <div className='hidden sm:block col-span-12' >
+                                                <Skeleton count={1} className='rounded-md w-[100%] h-[30px]' />
+                                            </div>
+
+                                            <p className='block sm:hidden col-span-12' >
+                                                <div className='flex' style={{ fontSize: "20px" }} >
+                                                    <span className='font-semibold' >Order Status:</span>
+                                                    <span className='ms-2 font-bold' ><Skeleton count={1} className='rounded-md w-[100px] h-[30px]' /></span>
+                                                </div>
+                                            </p>
+
+                                            <div className='col-span-12 flex py-4  border-b border-gray-300'>
+                                                <div className="h-32 w-32 flex-shrink-0 overflow-hidden rounded-md ">
+                                                    <Skeleton count={1} className='rounded-md h-full w-full object-cover object-center' />
+                                                </div>
+                                                <div className="ml-4 flex flex-1 flex-col">
+                                                    <div>
+                                                        <div className="displayBlock flex justify-between text-base font-medium text-gray-900 mb-1 ">
+                                                            <h3>
+                                                                <span className='text-lg font-semibold me-2' >Title:</span>
+                                                                <Skeleton count={1} className='rounded-md w-[70px] h-[20px] md:w-[200px] md:h-[25px]' />
+                                                            </h3>
+                                                        </div>
+                                                        <div className='flex items-center mb-1' >
+                                                            <span className='text-lg font-semibold me-2' >Size:</span>
+                                                            <p className="rounded-full mt-[2px] text-lg text-gray-800"><Skeleton count={1} className='rounded-md w-[70px] h-[20px] md:w-[200px] md:h-[25px]' /></p>
+                                                        </div>
+                                                        <div className='flex items-center mb-1' >
+                                                            <span className='text-lg font-semibold me-2' >Quantity:</span>
+                                                            <p className="rounded-full mt-[2px] text-lg text-gray-800"><Skeleton count={1} className='rounded-md w-[50px] h-[20px] md:w-[200px] md:h-[25px]' /></p>
+                                                        </div>
+                                                        <div className='flex items-center mb-1' >
+                                                            <span className='text-lg font-semibold me-2' >Price:</span>
+                                                            <p className="rounded-full mt-[2px] text-lg text-gray-800"><Skeleton count={1} className='rounded-md w-[70px] h-[20px] md:w-[200px] md:h-[25px]' /></p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className='col-span-12 flex justify-between' >
+                                                <button type="button"
+                                                    className={"font-medium text-[#F44E3B] hover:text-[#D33115] ms-1"} >
+                                                    Cancel Order
+                                                </button>
+                                                <div className='' >
+                                                    <div className='flex' >
+                                                        <span className='text-lg font-semibold me-1 ' style={{ fontSize: "16px" }} >Payment Method:</span>
+                                                        <p className="rounded-full mt-[2px] text-lg flex justify-center items-center text-gray-800">
+                                                            <span className='font-bold -mt-[2px]' ><Skeleton count={1} className='rounded-md w-[70px] h-[20px] md:w-[100px] md:h-[25px]' /></span>
+                                                        </p>
+                                                    </div>
+                                                    <div className='flex' >
+                                                        <span className='text-lg font-semibold me-1 ' style={{ fontSize: "16px" }} >Total Price:</span>
+                                                        <p className="rounded-full mt-[2px] text-lg flex justify-center items-center text-gray-800">
+                                                            <span><FaIndianRupeeSign className='' /></span>
+                                                            <span className='font-bold -mt-[2px]' ><Skeleton count={1} className='rounded-md w-[70px] h-[20px] md:w-[100px] md:h-[25px]' /></span>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </SkeletonTheme>
+                                    </div>
+                                    :
+                                    getAllOrderPENDING === false &&
+                                    <div className='flex m-[50px] justify-center p-10 items-center bg-red-100 h-[200px] col-span-3'>
+                                        <span className='font-bold' style={{ fontSize: "35px" }} >No Order Available</span>
+                                    </div>
                         }
                     </div>
                 </div>

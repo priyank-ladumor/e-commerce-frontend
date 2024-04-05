@@ -162,7 +162,7 @@ const ShoppingCart = ({ paymentSys, selectedAddress, cartItemDetails }) => {
                                             <ul role="list" className="-my-6 divide-y divide-gray-200">
                                                 <li className="flex py-6">
                                                     <div className="flex-shrink-0 overflow-hidden rounded-md ">
-                                                        <Skeleton count={1} className='rounded-md' style={{ width: "144px", height: "144px" }} />
+                                                        <Skeleton count={1} className='rounded-md w-[144px] h-[144px] ' />
                                                     </div>
 
                                                     <div className="ml-4 flex flex-1 flex-col">
@@ -170,16 +170,16 @@ const ShoppingCart = ({ paymentSys, selectedAddress, cartItemDetails }) => {
                                                             <div className="displayBlock flex justify-between text-base font-medium text-gray-900 mb-1 ">
                                                                 <h3>
                                                                     <span className='text-lg font-semibold me-2' >Title:</span>
-                                                                    <Skeleton count={1} className='rounded-lg' style={{ width: "200px", height: "25px" }} />
+                                                                    <Skeleton count={1} className='rounded-md w-[70px] h-[20px] md:w-[200px] md:h-[25px]'/>
                                                                 </h3>
                                                                 <div className='flex mt-1 items-center ' >
                                                                     <FaRupeeSign />
-                                                                    <p className=""><Skeleton count={1} className='rounded-lg' style={{ width: "50px", height: "25px" }} /></p>
+                                                                    <p className=""><Skeleton count={1}  className='rounded-md w-[70px] h-[20px] md:w-[70px] md:h-[25px]'/></p>
                                                                 </div>
                                                             </div>
                                                             <div className='flex items-center mb-1' >
                                                                 <span className='text-lg font-semibold me-2' >Size:</span>
-                                                                <p className="rounded-full mt-[2px] text-lg text-gray-800"><Skeleton count={1} className='rounded-lg' style={{ width: "200px", height: "25px" }} /></p>
+                                                                <p className="rounded-full mt-[2px] text-lg text-gray-800"><Skeleton count={1}  className='rounded-md w-[70px] h-[20px] md:w-[200px] md:h-[25px]' /></p>
                                                             </div>
                                                             <div className='flex items-center' >
                                                                 <span className=' text-lg font-semibold me-2' >Color:</span>
@@ -188,7 +188,7 @@ const ShoppingCart = ({ paymentSys, selectedAddress, cartItemDetails }) => {
                                                             <div className=" flex justify-between text-sm mb-2 ">
                                                                 <div className='flex' >
                                                                     <span className=' text-lg font-semibold me-2' >Qty:</span>
-                                                                    <p className="rounded-full mt-[2px] text-lg text-gray-800"><Skeleton count={1} className='rounded-lg' style={{ width: "200px", height: "25px" }} /></p>
+                                                                    <p className="rounded-full mt-[2px] text-lg text-gray-800"><Skeleton count={1}  className='rounded-md w-[40px] h-[20px] md:w-[200px] md:h-[25px]' /></p>
                                                                 </div>
                                                                 <div>
                                                                     <Skeleton count={1} className='rounded-lg' style={{ width: "30px", height: "35px" }} />

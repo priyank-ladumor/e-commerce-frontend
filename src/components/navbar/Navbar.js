@@ -332,7 +332,7 @@ export default function Navbar({ children }) {
                                                                         <div className="relative bg-white" >
                                                                             <div className="mx-auto max-w-7xl px-8">
                                                                                 <div className="row-start-1 grid gap-x-8 gap-y-10 py-16 grid-cols-7 text-sm">
-                                                                                    {!getNavbarByTopPENDING
+                                                                                    {getNavbarByTopPENDING
                                                                                         ?
                                                                                         [0, 1, 2, 3, 4, 5, 6].map((ele) => {
                                                                                             return (

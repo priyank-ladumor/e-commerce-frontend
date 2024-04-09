@@ -15,6 +15,8 @@ const Order = () => {
     const [orderData, setorderData] = useState("")
     const [deleteOrderPopUp, setdeleteOrderPopUp] = useState(false);
     const [cancelOrderPopUp, setcancelOrderPopUp] = useState(false);
+    const { createOrderMSG, createOrderSTRIPE_ID } = useSelector((state) => state.order)
+    const [orderCreatedPopUp, setorderCreatedPopUp] = useState(false);
 
     useEffect(() => {
         dispatch(findAllUserOrderAction())
@@ -65,6 +67,22 @@ const Order = () => {
 
         return () => clearTimeout(timer);
     }, [getAllOrderSUCCESS]);
+
+    // create order popup for online paymented
+    useEffect(() => {
+        if (orderCreatedPopUp && createOrderMSG) {
+            <div className='swal2-container'>
+                {Swal.fire({
+                    position: "top-end",
+                    icon: "success",
+                    title: createOrderMSG,
+                    showConfirmButton: false,
+                    timer: 2500
+                })}
+            </div>
+            setorderCreatedPopUp(false)
+        }
+    }, [createOrderMSG])
 
     return (
         <div>

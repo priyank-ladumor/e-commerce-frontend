@@ -143,8 +143,6 @@ const PersonalInformation = () => {
                         <div className='lg:col-span-6 lg:order-1 order-2 col-span-12 ' >
                             <div className='mt-4' >
                                 <CFormLabel className='text-xl font-medium' >First Name</CFormLabel>
-                                {getUserProfilePENDING || updateUserProfilePENDING?
-                                 <Skeleton count={1} className='w-[100%] mt-2 rounded-md block' style={{ height: "35px" }} /> :
                                     <CFormInput
                                         className=' w-[100%] mt-2 rounded-md'
                                         type="text"
@@ -156,12 +154,9 @@ const PersonalInformation = () => {
                                         defaultValue={userProfile && userProfile.firstName}
                                         size="sm"
                                     />
-                                }
                             </div>
                             <div className='mt-4' >
                                 <CFormLabel className='text-xl font-medium' >Last Name</CFormLabel>
-                                {getUserProfilePENDING || updateUserProfilePENDING?
-                                 <Skeleton count={1} className='w-[100%] mt-2 rounded-md block' style={{ height: "35px" }} /> :
                                 <CFormInput
                                     className=' w-[100%] mt-2 rounded-md'
                                     type="text"
@@ -172,12 +167,10 @@ const PersonalInformation = () => {
                                     aria-describedby="exampleFormControlInputHelpInline"
                                     defaultValue={userProfile && userProfile.lastName}
                                     size="sm"
-                                />}
+                                />
                             </div>
                             <div className='mt-4' >
                                 <CFormLabel className='text-xl font-medium' >Email Address</CFormLabel>
-                                {getUserProfilePENDING || updateUserProfilePENDING?
-                                 <Skeleton count={1} className='w-[100%] mt-2 rounded-md block' style={{ height: "35px" }} /> :
                                 <CFormInput
                                     className=' w-[100%] mt-2 rounded-md'
                                     type="email"
@@ -188,12 +181,10 @@ const PersonalInformation = () => {
                                     {...register("email")}
                                     defaultValue={userProfile && userProfile.email}
                                     size="sm"
-                                />}
+                                />
                             </div>
                             <div className='mt-4' >
                                 <CFormLabel className='text-xl font-medium' >Mobile No</CFormLabel>
-                                {getUserProfilePENDING || updateUserProfilePENDING?
-                                 <Skeleton count={1} className='w-[100%] mt-2 rounded-md block' style={{ height: "35px" }} /> :
                                 <CFormInput
                                     className=' w-[100%] mt-2 rounded-md'
                                     type="number"
@@ -204,7 +195,7 @@ const PersonalInformation = () => {
                                     aria-describedby="exampleFormControlInputHelpInline"
                                     defaultValue={userProfile && userProfile.mobile}
                                     size="sm"
-                                />}
+                                />
                             </div>
                         </div>
                         <div className='lg:col-span-6 lg:order-2 order-1 col-span-12 flex justify-center items-center' >

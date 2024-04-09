@@ -12,6 +12,7 @@ import { ThreeDots } from "react-loader-spinner"
 import Swal from 'sweetalert2'
 import { checkAvailableQuantityAction, createOrderAction } from '../../store/action/orderAction';
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
+import { loadStripe } from '@stripe/stripe-js';
 
 
 const ShoppingCart = ({ paymentSys, selectedAddress, cartItemDetails }) => {
@@ -20,7 +21,7 @@ const ShoppingCart = ({ paymentSys, selectedAddress, cartItemDetails }) => {
 
     const { getCartItemsPENDING, getCartItemsData, addToCartMSG, removeCartItemsMSG, updateCartItemsMSG, getCartItemsDataSuccess } = useSelector((state) => state.cart)
     const { checkAvailableQuantityERROR, checkAvailableQuantityPENDING, checkAvailableQuantityMSG, createOrderERROR, createOrderPENDING } = useSelector((state) => state.order)
-    const { createOrderMSG } = useSelector((state) => state.order)
+    const { createOrderMSG, createOrderSTRIPE_ID } = useSelector((state) => state.order)
     const [orderCreatedPopUp, setorderCreatedPopUp] = useState(false);
 
     const dispatch = useDispatch()
@@ -66,7 +67,7 @@ const ShoppingCart = ({ paymentSys, selectedAddress, cartItemDetails }) => {
 
     // create order popup
     useEffect(() => {
-        if (orderCreatedPopUp && createOrderMSG) {
+        if (orderCreatedPopUp && createOrderMSG && paymentSys === "CASH") {
             <div className='swal2-container'>
                 {Swal.fire({
                     position: "top-end",
@@ -103,7 +104,7 @@ const ShoppingCart = ({ paymentSys, selectedAddress, cartItemDetails }) => {
             id: product._id,
             quantity: product.quantity + 1,
             order: "plus",
-            color: product.color
+            color: product.color,
         }
         dispatch(updateCartItemsAction(item))
     }
@@ -120,7 +121,7 @@ const ShoppingCart = ({ paymentSys, selectedAddress, cartItemDetails }) => {
     }
 
     //create order func
-    const handlePlaceOrder = (getCartItemsData) => {
+    const handlePlaceOrder = async (getCartItemsData) => {
         if (selectedAddress?.length === 0 || paymentSys?.length === 0) {
             Swal.fire({
                 position: "top-end",
@@ -129,19 +130,38 @@ const ShoppingCart = ({ paymentSys, selectedAddress, cartItemDetails }) => {
                 showConfirmButton: false,
                 timer: 2500
             })
+            return;
         } else {
             if (selectedAddress && checkAvailableQuantityERROR === null) {
                 const items = {
                     selectedAddress,
                     paymentSys,
                     cartId: getCartItemsData[0]?._id,
-                    cartItemDetails
+                    cartItemDetails,
+                    location: window.location.href.split("/checkout")[0]
                 }
                 dispatch(createOrderAction(items))
                 setorderCreatedPopUp(true)
             }
         }
     }
+
+    useEffect(() => {
+        if (paymentSys === "ONLINE" && createOrderSTRIPE_ID) {
+            async function fetchData() {
+                const stripe = await loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY);
+
+                await stripe.redirectToCheckout({
+                    sessionId: createOrderSTRIPE_ID
+                });
+            }
+            fetchData();
+        }else{
+            // if(paymentSys){
+            //     navigate("/myorder")
+            // }
+        }
+    }, [createOrderSTRIPE_ID])
 
     const handleCheckOut = (cartData) => {
         navigate("/checkout")
@@ -180,16 +200,16 @@ const ShoppingCart = ({ paymentSys, selectedAddress, cartItemDetails }) => {
                                                             <div className="displayBlock flex justify-between text-base font-medium text-gray-900 mb-1 ">
                                                                 <h3>
                                                                     <span className='text-lg font-semibold me-2' >Title:</span>
-                                                                    <Skeleton count={1} className='rounded-md w-[70px] h-[20px] md:w-[200px] md:h-[25px]'/>
+                                                                    <Skeleton count={1} className='rounded-md w-[70px] h-[20px] md:w-[200px] md:h-[25px]' />
                                                                 </h3>
                                                                 <div className='flex mt-1 items-center ' >
                                                                     <FaRupeeSign />
-                                                                    <p className=""><Skeleton count={1}  className='rounded-md w-[70px] h-[20px] md:w-[70px] md:h-[25px]'/></p>
+                                                                    <p className=""><Skeleton count={1} className='rounded-md w-[70px] h-[20px] md:w-[70px] md:h-[25px]' /></p>
                                                                 </div>
                                                             </div>
                                                             <div className='flex items-center mb-1' >
                                                                 <span className='text-lg font-semibold me-2' >Size:</span>
-                                                                <p className="rounded-full mt-[2px] text-lg text-gray-800"><Skeleton count={1}  className='rounded-md w-[70px] h-[20px] md:w-[200px] md:h-[25px]' /></p>
+                                                                <p className="rounded-full mt-[2px] text-lg text-gray-800"><Skeleton count={1} className='rounded-md w-[70px] h-[20px] md:w-[200px] md:h-[25px]' /></p>
                                                             </div>
                                                             <div className='flex items-center' >
                                                                 <span className=' text-lg font-semibold me-2' >Color:</span>
@@ -198,7 +218,7 @@ const ShoppingCart = ({ paymentSys, selectedAddress, cartItemDetails }) => {
                                                             <div className=" flex justify-between text-sm mb-2 ">
                                                                 <div className='flex' >
                                                                     <span className=' text-lg font-semibold me-2' >Qty:</span>
-                                                                    <p className="rounded-full mt-[2px] text-lg text-gray-800"><Skeleton count={1}  className='rounded-md w-[40px] h-[20px] md:w-[200px] md:h-[25px]' /></p>
+                                                                    <p className="rounded-full mt-[2px] text-lg text-gray-800"><Skeleton count={1} className='rounded-md w-[40px] h-[20px] md:w-[200px] md:h-[25px]' /></p>
                                                                 </div>
                                                                 <div>
                                                                     <Skeleton count={1} className='rounded-lg' style={{ width: "30px", height: "35px" }} />
@@ -322,10 +342,27 @@ const ShoppingCart = ({ paymentSys, selectedAddress, cartItemDetails }) => {
                             location.pathname.split("/")[1] === "checkout" ?
                                 paymentSys === "ONLINE" && getCartItemsData && getCartItemsData[0]?.totalItem > 0 ?
                                     <NavLink
-                                        to={"/pay"}
+                                        // to={"/pay"}
+                                        onClick={() => [handlePlaceOrder(getCartItemsData)]}
                                         className="flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700"
                                     >
-                                        Continue Order
+                                        {
+                                            createOrderPENDING ?
+                                                <div className='flex justify-center items-center' >
+                                                    <ThreeDots
+                                                        visible={true}
+                                                        height="20"
+                                                        width="40"
+                                                        color="#fff"
+                                                        radius="9"
+                                                        ariaLabel="three-dots-loading"
+                                                        wrapperStyle={{}}
+                                                        wrapperClass=""
+                                                    />
+                                                </div>
+                                                :
+                                                "Pay now"
+                                        }
                                     </NavLink>
                                     :
                                     <NavLink
@@ -382,8 +419,7 @@ const ShoppingCart = ({ paymentSys, selectedAddress, cartItemDetails }) => {
                     </div>
                 </div>
             </div>
-
-        </div >
+        </div>
     )
 }
 

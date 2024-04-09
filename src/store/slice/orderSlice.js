@@ -7,6 +7,7 @@ const initialState = {
     createOrderMSG: null,
     createOrderERROR: null,
     createOrderPENDING: false,
+    createOrderSTRIPE_ID: null,
     getAllOrderData: null,
     getAllOrderPENDING: false,
     getAllOrderSUCCESS: false,
@@ -29,16 +30,19 @@ const orderSlice = createSlice({
             state.createOrderMSG = null;
             state.createOrderPENDING = true;
             state.createOrderERROR = null;
+            state.createOrderSTRIPE_ID = null;
         })
 
         builder.addCase(createOrderAction.fulfilled, (state, { payload }) => {
-            state.createOrderMSG = payload;
+            state.createOrderMSG = payload.msg;
+            state.createOrderSTRIPE_ID = payload.id;
             state.createOrderPENDING = false;
             state.createOrderERROR = null;
         })
 
         builder.addCase(createOrderAction.rejected, (state, { payload }) => {
             state.createOrderMSG = null;
+            state.createOrderSTRIPE_ID = null;
             state.createOrderPENDING = false;
             state.createOrderERROR = payload;
         })

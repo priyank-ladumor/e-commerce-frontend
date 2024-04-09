@@ -18,6 +18,7 @@ import { getCartItemsAction } from '../store/action/cartAction';
 import { checkAvailableQuantityAction } from '../store/action/orderAction';
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
 
+
 const schema = yup.object({
     firstName: yup
         .string()
@@ -171,6 +172,9 @@ const CheckOut = () => {
                                 color: ele.color,
                                 quantity: ele.quantity,
                                 pid: ele.product[0]._id,
+                                thumbnail: ele.product[0].thumbnail,
+                                title: ele.product[0].title,
+                                price: ele.product[0].price,
                                 id: Math.floor(Math.random() * 100)
                             }]
                         )

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import Swal from 'sweetalert2'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { NavLink } from 'react-router-dom';
 import Navbar from '../components/navbar/Navbar';
 import ShoppingCart from '../components/cart/ShoppingCart';
@@ -17,6 +17,8 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { getCartItemsAction } from '../store/action/cartAction';
 import { checkAvailableQuantityAction } from '../store/action/orderAction';
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
+import { FaCcVisa } from 'react-icons/fa6';
+import { BsCash } from "react-icons/bs";
 
 
 const schema = yup.object({
@@ -81,7 +83,8 @@ const CheckOut = () => {
     const [userProfile, setUserProfile] = useState("")
 
     const [selectedAddress, setselectedAddress] = useState("")
-    const [paymentSys, setPaymentSys] = useState("")
+    const [paymentSys, setPaymentSys] = useState("CASH")
+    const [searchPaymentParams, setsearchPaymentParams] = useSearchParams()
 
     useEffect(() => {
         dispatch(getCartItemsAction())
@@ -395,12 +398,13 @@ const CheckOut = () => {
                                         <h2 className="text-base font-semibold leading-7 text-gray-900">Payment methods</h2>
                                         <p className="mt-1 text-sm leading-6 text-gray-600">Choose one</p>
                                         <div className="mt-6 space-y-6">
-                                            <div className="flex items-center gap-x-3">
+                                            {/* <div className="flex items-center gap-x-3">
                                                 <input
                                                     id="cash"
                                                     name="payments"
                                                     value={"CASH"}
                                                     type="radio"
+                                                    defaultChecked={paymentSys === "CASH"}
                                                     className="h-4 w-4 border-gray-300 text-indigo-600 cursor-pointer focus:ring-indigo-600"
                                                     onClick={(e) => setPaymentSys(e.target.value)}
                                                 />
@@ -414,12 +418,23 @@ const CheckOut = () => {
                                                     name="payments"
                                                     value={"ONLINE"}
                                                     type="radio"
+                                                    defaultChecked={paymentSys === "ONLINE"}
                                                     onClick={(e) => setPaymentSys(e.target.value)}
                                                     className="h-4 w-4 border-gray-300 text-indigo-600 cursor-pointer focus:ring-indigo-600"
                                                 />
                                                 <label htmlFor="card" className="block text-sm font-medium cursor-pointer leading-6 text-gray-900">
                                                     Pay now
                                                 </label>
+                                            </div> */}
+                                            <div className='grid grid-cols-12 gap-4 mt-4'>
+                                                <div className='flex justify-between items-center font-semibold col-span-12 sm:col-span-3 p-3 bg-gray-200 hover:bg-gray-300 cursor-pointer rounded-md  relative' style={{ border: paymentSys === "CASH" ? "3px solid blue" : "1px solid gray" }} onClick={() => setPaymentSys("CASH")} >
+                                                    <span style={{ fontSize: "17px" }} > Cash On Deliver </span>
+                                                    <span style={{ fontSize: "32px", color: paymentSys === "CASH" ? "blue" : "black" }} ><BsCash /></span>
+                                                </div>
+                                                <div className='flex justify-between items-center font-semibold col-span-12 sm:col-span-3 p-3 bg-gray-200 hover:bg-gray-300  cursor-pointer rounded-md  relative' style={{ border: paymentSys === "ONLINE" ? "3px solid blue" : "1px solid gray" }} onClick={() => setPaymentSys("ONLINE")} >
+                                                    <span style={{ fontSize: "17px" }} >Pay With Card </span>
+                                                    <span style={{ fontSize: "32px", color: paymentSys === "ONLINE" ? "blue" : "black" }} ><FaCcVisa /></span>
+                                                </div>
                                             </div>
                                         </div>
                                     </fieldset>

@@ -1,3 +1,6 @@
+/* eslint-disable react/jsx-no-target-blank */
+/* eslint-disable jsx-a11y/anchor-is-valid */
+/* eslint-disable jsx-a11y/anchor-has-content */
 import React, { useEffect } from 'react'
 import { Fragment, useState } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
@@ -151,15 +154,11 @@ const ShoppingCart = ({ paymentSys, selectedAddress, cartItemDetails }) => {
             async function fetchData() {
                 const stripe = await loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY);
 
-                await stripe.redirectToCheckout({
+                const result = await stripe.redirectToCheckout({
                     sessionId: createOrderSTRIPE_ID
                 });
             }
             fetchData();
-        }else{
-            // if(paymentSys){
-            //     navigate("/myorder")
-            // }
         }
     }, [createOrderSTRIPE_ID])
 

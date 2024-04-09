@@ -22,6 +22,7 @@ import RegLogProtected from "./RegLogProtected";
 import FilterProductList from "./pages/FilterProductList";
 import MyProfilePage from "./pages/Profile";
 import MyOrder from "./pages/MyOrder";
+import PaymentDone from "./pages/PaymentDone";
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
           <Route exact path="/products/:topCategory" element={<FilterProductList />} />
           <Route exact path="/products/:topCategory/:secondCategory/:thirdCategory/:id" element={<ProductDetailsPage />} />
           <Route exact path="/user/verified/:token" element={<LoginVerified />} />
+          <Route exact path="/payment/success" element={<PaymentDone />} />
           <Route path='/' element={<Protected />}>
             <Route exact path="/cart" element={<Cart />} />
             <Route exact path="/checkout" element={<CheckOut />} />

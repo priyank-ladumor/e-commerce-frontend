@@ -68,21 +68,21 @@ const Order = () => {
         return () => clearTimeout(timer);
     }, [getAllOrderSUCCESS]);
 
-    // create order popup for online paymented
-    useEffect(() => {
-        if (orderCreatedPopUp && createOrderMSG) {
-            <div className='swal2-container'>
-                {Swal.fire({
-                    position: "top-end",
-                    icon: "success",
-                    title: createOrderMSG,
-                    showConfirmButton: false,
-                    timer: 2500
-                })}
-            </div>
-            setorderCreatedPopUp(false)
-        }
-    }, [createOrderMSG])
+    // // create order popup for online paymented
+    // useEffect(() => {
+    //     if (orderCreatedPopUp && createOrderMSG) {
+    //         <div className='swal2-container'>
+    //             {Swal.fire({
+    //                 position: "top-end",
+    //                 icon: "success",
+    //                 title: createOrderMSG,
+    //                 showConfirmButton: false,
+    //                 timer: 2500
+    //             })}
+    //         </div>
+    //         setorderCreatedPopUp(false)
+    //     }
+    // }, [createOrderMSG])
 
     return (
         <div>
